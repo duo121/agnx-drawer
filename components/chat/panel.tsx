@@ -23,14 +23,9 @@ import {
 } from "react"
 import { Toaster, toast } from "sonner"
 import { ButtonWithTooltip } from "@/components/button-with-tooltip"
+import { HeaderActionButton } from "@/components/header-action-button"
 import { ChatInput, type ChatInputRef } from "./input"
 import { ModelConfigDialog } from "@/components/model/config-dialog"
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { i18n, type Locale } from "@/shared/i18n/config"
 import { useEngine, type ExcalidrawScene, EMPTY_EXCALIDRAW_SCENE } from "@/hooks/engines/engine-context"
 import { useDiagramToolHandlers } from "@/hooks/use-diagram-tool-handlers"
@@ -1456,9 +1451,10 @@ export default function ChatPanel({
             <header
                 className={`${isMobile ? "px-3 py-2" : "px-5 py-4"} flex justify-center`}
             >
+                <div className="input-glow-wrapper">
                 <div 
                     className={cn(
-                        "group relative inline-flex items-center rounded-2xl border border-border/30 bg-muted shadow-sm backdrop-blur-sm overflow-hidden transition-all duration-300"
+                        "group relative inline-flex items-center rounded-2xl border border-border/30 bg-muted shadow-sm backdrop-blur-sm overflow-hidden transition-all duration-300 input-glow-inner"
                     )}
                     style={{ minHeight: '48px' }}
                 >
@@ -1490,116 +1486,56 @@ export default function ChatPanel({
 
                     {/* Action Buttons - Hover state */}
                     <div className="flex items-center gap-0 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300">
-                        {/* Language Toggle */}
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <button
-                                        onClick={handleLanguageToggle}
-                                        className="h-12 w-12 flex items-center justify-center hover:bg-accent transition-colors rounded-full"
-                                    >
-                                        <Languages className="h-5 w-5 text-foreground" />
-                                    </button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{dict.settings.language}: {LANGUAGE_LABELS[currentLang]}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                        <HeaderActionButton
+                            onClick={handleLanguageToggle}
+                            tooltip={`${dict.settings.language}: ${LANGUAGE_LABELS[currentLang]}`}
+                        >
+                            <Languages className="h-5 w-5 text-foreground" />
+                        </HeaderActionButton>
 
-                        {/* Theme Toggle */}
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <button
-                                        onClick={onToggleDarkMode}
-                                        className="h-12 w-12 flex items-center justify-center hover:bg-accent transition-colors rounded-full"
-                                    >
-                                        {darkMode ? (
-                                            <Sun className="h-5 w-5 text-foreground" />
-                                        ) : (
-                                            <Moon className="h-5 w-5 text-foreground" />
-                                        )}
-                                    </button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{dict.settings.theme}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                        <HeaderActionButton
+                            onClick={onToggleDarkMode}
+                            tooltip={dict.settings.theme}
+                        >
+                            {darkMode ? (
+                                <Sun className="h-5 w-5 text-foreground" />
+                            ) : (
+                                <Moon className="h-5 w-5 text-foreground" />
+                            )}
+                        </HeaderActionButton>
 
-                        {/* DrawIO Style Toggle */}
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <button
-                                        onClick={onToggleDrawioUi}
-                                        className="h-12 w-12 flex items-center justify-center hover:bg-accent transition-colors rounded-full"
-                                    >
-                                        <Palette className="h-5 w-5 text-foreground" />
-                                    </button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{dict.settings.drawioStyle}: {drawioUi === "min" ? dict.settings.minimal : dict.settings.sketch}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                        <HeaderActionButton
+                            onClick={onToggleDrawioUi}
+                            tooltip={`${dict.settings.drawioStyle}: ${drawioUi === "min" ? dict.settings.minimal : dict.settings.sketch}`}
+                        >
+                            <Palette className="h-5 w-5 text-foreground" />
+                        </HeaderActionButton>
 
-                        {/* New Chat */}
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <button
-                                        onClick={handleNewChat}
-                                        disabled={status === "streaming" || status === "submitted"}
-                                        className="h-12 w-12 flex items-center justify-center hover:bg-accent transition-colors rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
-                                        data-testid="new-chat-button"
-                                    >
-                                        <MessageSquarePlus className="h-5 w-5 text-foreground" />
-                                    </button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{dict.nav.newChat}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                        <HeaderActionButton
+                            onClick={handleNewChat}
+                            disabled={status === "streaming" || status === "submitted"}
+                            tooltip={dict.nav.newChat}
+                        >
+                            <MessageSquarePlus className="h-5 w-5 text-foreground" />
+                        </HeaderActionButton>
 
-                        {/* GitHub */}
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <button
-                                        onClick={() => window.open('https://github.com/duo121/agnx-drawer', '_blank')}
-                                        className="h-12 w-12 flex items-center justify-center hover:bg-accent transition-colors rounded-full"
-                                    >
-                                        <Github className="h-5 w-5 text-foreground" />
-                                    </button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>GitHub</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                        <HeaderActionButton
+                            onClick={() => window.open('https://github.com/duo121/agnx-drawer', '_blank')}
+                            tooltip="GitHub"
+                        >
+                            <Github className="h-5 w-5 text-foreground" />
+                        </HeaderActionButton>
 
-                        {/* Hide Panel */}
                         {!isMobile && (
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <button
-                                            onClick={onToggleVisibility}
-                                            className="h-12 w-12 flex items-center justify-center hover:bg-accent transition-colors rounded-full"
-                                        >
-                                            <PanelRightClose className="h-5 w-5 text-foreground" />
-                                        </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>{dict.nav.hidePanel}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
+                            <HeaderActionButton
+                                onClick={onToggleVisibility}
+                                tooltip={dict.nav.hidePanel}
+                            >
+                                <PanelRightClose className="h-5 w-5 text-foreground" />
+                            </HeaderActionButton>
                         )}
                     </div>
+                </div>
                 </div>
             </header>
 

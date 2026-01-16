@@ -399,3 +399,107 @@
         animation: none;
     }
 }
+
+/* ============================================
+   INPUT GLOW BORDER ANIMATION
+   ============================================ */
+
+/* 流光边框动画 */
+@keyframes border-glow-flow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* 输入框流光边框容器 - 使用外层包装实现 */
+.input-glow-wrapper {
+    position: relative;
+    border-radius: 1rem;
+    padding: 2px;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.input-glow-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+        90deg,
+        oklch(0.7 0.16 265 / 0),
+        oklch(0.7 0.16 265 / 0),
+        oklch(0.7 0.16 265 / 0)
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.input-glow-wrapper:hover::before {
+    opacity: 1;
+    background: linear-gradient(
+        90deg,
+        oklch(0.6 0.18 265 / 0.3),
+        oklch(0.65 0.22 290 / 1),
+        oklch(0.6 0.2 320 / 1),
+        oklch(0.65 0.22 290 / 1),
+        oklch(0.6 0.18 265 / 0.3)
+    );
+    background-size: 300% 100%;
+    animation: border-glow-flow 3s linear infinite;
+}
+
+/* 聚焦时更明显的流光效果 */
+.input-glow-wrapper:focus-within::before {
+    opacity: 1;
+    background: linear-gradient(
+        90deg,
+        oklch(0.6 0.18 265 / 0.4),
+        oklch(0.65 0.24 290 / 1),
+        oklch(0.6 0.22 320 / 1),
+        oklch(0.65 0.24 290 / 1),
+        oklch(0.6 0.18 265 / 0.4)
+    );
+    background-size: 300% 100%;
+    animation: border-glow-flow 2.5s linear infinite;
+}
+
+/* 内层容器 */
+.input-glow-wrapper > .input-glow-inner {
+    position: relative;
+    z-index: 1;
+    border-radius: calc(1rem - 2px);
+    background: var(--muted);
+}
+
+/* 暗色模式调整 */
+.dark .input-glow-wrapper:hover::before {
+    background: linear-gradient(
+        90deg,
+        oklch(0.7 0.18 265 / 0.3),
+        oklch(0.75 0.24 280 / 1),
+        oklch(0.7 0.22 310 / 1),
+        oklch(0.75 0.24 280 / 1),
+        oklch(0.7 0.18 265 / 0.3)
+    );
+    background-size: 300% 100%;
+}
+
+.dark .input-glow-wrapper:focus-within::before {
+    background: linear-gradient(
+        90deg,
+        oklch(0.7 0.18 265 / 0.4),
+        oklch(0.8 0.26 280 / 1),
+        oklch(0.75 0.24 310 / 1),
+        oklch(0.8 0.26 280 / 1),
+        oklch(0.7 0.18 265 / 0.4)
+    );
+    background-size: 300% 100%;
+}

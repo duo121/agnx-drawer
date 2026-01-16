@@ -448,14 +448,38 @@ export function useChatInput({
     const isLoading = (status === "streaming" || status === "submitted") && !error
     const isToolbarDisabled = isLoading
 
-    // 自动调整高度
+    // 自动调整高度并检测是否需要多行模式
+    // 这个函数会在所有输入变化时调用（包括 handleChange、历史导航、示例按钮等）
     const adjustTextareaHeight = useCallback(() => {
         const textarea = textareaRef.current
-        if (textarea) {
+        if (!textarea) return
+        
+        // 调整高度
+        textarea.style.height = "auto"
+        textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`
+        
+        // 检测是否需要切换到多行模式
+        // 条件：单行模式 + 有内容 + 内容超出单行高度
+        if (!isMultiLineMode && textarea.value.length > 0) {
+            // 临时移除高度限制来测量真实内容高度
+            const originalStyle = textarea.style.cssText
+            textarea.style.height = 'auto'
+            textarea.style.maxHeight = 'none'
+            textarea.style.overflow = 'hidden'
+            
+            const needsMultiLine = textarea.scrollHeight > 40
+            
+            // 恢复原样式
+            textarea.style.cssText = originalStyle
+            // 重新设置正确的高度
             textarea.style.height = "auto"
             textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`
+            
+            if (needsMultiLine) {
+                setIsMultiLineMode(true)
+            }
         }
-    }, [])
+    }, [isMultiLineMode])
 
     useEffect(() => {
         adjustTextareaHeight()
@@ -538,10 +562,10 @@ export function useChatInput({
     // 输入变化处理
     const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
         onChange(e)
-        adjustTextareaHeight()
+        // adjustTextareaHeight 会在 useEffect 中通过 input 变化自动触发
+        // 它会同时处理高度调整和多行模式检测
 
         const value = e.target.value
-        const textarea = e.target
         
         // 斜杠命令模式：输入内容不同步到搜索框，而是用于模糊匹配
         // 搜索框内容由 Toolbox 组件自己管理
@@ -558,25 +582,8 @@ export function useChatInput({
                 textareaRef.current?.focus()
             })
         }
-        
-        // 单行模式下，内容超出宽度时自动切换到多行模式
-        if (!isMultiLineMode && value.length > 0) {
-            // 临时移除高度限制来测量真实内容高度
-            const originalStyle = textarea.style.cssText
-            textarea.style.height = 'auto'
-            textarea.style.maxHeight = 'none'
-            textarea.style.overflow = 'hidden'
-            
-            const needsMultiLine = textarea.scrollHeight > 40
-            
-            // 恢复原样式
-            textarea.style.cssText = originalStyle
-            
-            if (needsMultiLine) {
-                setIsMultiLineMode(true)
-            }
-        }
-    }, [onChange, adjustTextareaHeight, files.length, isMultiLineMode])
+        // 多行模式检测已移至 adjustTextareaHeight，会在 useEffect 中自动触发
+    }, [onChange, files.length])
 
     // 键盘事件处理
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {

@@ -288,9 +288,10 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
         >
-            {/* 输入框容器 */}
+            {/* 输入框容器 - 流光边框包装 */}
+            <div className="input-glow-wrapper">
             <div className={cn(
-                "relative rounded-2xl bg-muted transition-all duration-200",
+                "relative rounded-2xl bg-muted transition-all duration-200 input-glow-inner",
             )}>
                 {/* 工具箱 */}
                 {isToolboxOpen && modelConfig && (
@@ -768,6 +769,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
                         )}
                     </div>
                 )}
+            </div>
             </div>
 
             {/* 图片预览弹窗 */}
