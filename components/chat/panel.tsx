@@ -1423,7 +1423,7 @@ export default function ChatPanel({
                         <div 
                             className="absolute inset-0 shimmer-overlay pointer-events-none"
                             style={{
-                                background: 'linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.15) 50%, transparent 100%)',
+                                background: 'linear-gradient(90deg, transparent 0%, rgba(239, 68, 68, 0.2) 50%, transparent 100%)',
                                 backgroundSize: '200% 100%',
                             }}
                         />
@@ -1502,14 +1502,17 @@ export default function ChatPanel({
             <style jsx>{`
                 @keyframes shimmer-slide {
                     0% {
-                        background-position: -200% 0;
+                        background-position: -100% 0;
+                    }
+                    50% {
+                        background-position: 100% 0;
                     }
                     100% {
-                        background-position: 200% 0;
+                        background-position: -100% 0;
                     }
                 }
                 .shimmer-overlay {
-                    animation: shimmer-slide 5s linear infinite;
+                    animation: shimmer-slide 6s linear infinite;
                 }
             `}</style>
 
