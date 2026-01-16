@@ -6,6 +6,7 @@ export type ProviderName =
     | "google"
     | "azure"
     | "bedrock"
+    | "ollama"
     | "openrouter"
     | "deepseek"
     | "siliconflow"
@@ -74,6 +75,10 @@ export const PROVIDER_INFO: Record<
     { label: string; defaultBaseUrl?: string }
 > = {
     openai: { label: "OpenAI" },
+    ollama: {
+        label: "Ollama",
+        defaultBaseUrl: "http://localhost:11434",
+    },
     anthropic: {
         label: "Anthropic",
         defaultBaseUrl: "https://api.anthropic.com/v1",
@@ -125,6 +130,17 @@ export const PROVIDER_INFO: Record<
 
 // Suggested models per provider for quick add
 export const SUGGESTED_MODELS: Record<ProviderName, string[]> = {
+    ollama: [
+        "llama3.3:70b",
+        "llama3.2:3b",
+        "qwen2.5:72b",
+        "qwen2.5:32b",
+        "qwen2.5-coder:32b",
+        "deepseek-r1:70b",
+        "deepseek-r1:32b",
+        "mistral:7b",
+        "gemma2:27b",
+    ],
     openai: [
         "gpt-5.2-pro",
         "gpt-5.2-chat-latest",

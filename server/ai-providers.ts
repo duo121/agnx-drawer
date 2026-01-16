@@ -8,29 +8,11 @@ import { createOpenAI, openai } from "@ai-sdk/openai"
 import { fromNodeProviderChain } from "@aws-sdk/credential-providers"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import { createOllama, ollama } from "ollama-ai-provider-v2"
+import type { ProviderName } from "@/shared/types/model-config"
 
-export type ProviderName =
-    | "bedrock"
-    | "openai"
-    | "anthropic"
-    | "google"
-    | "azure"
-    | "ollama"
-    | "openrouter"
-    | "deepseek"
-    | "siliconflow"
-    | "sglang"
-    | "gateway"
-    | "edgeone"
-    | "doubao"
-    | "modelscope"
-    | "dashscope"
-    | "moonshot"
-    | "zhipu"
-    | "minimax"
-    | "nvidia"
+export type { ProviderName }
 
-interface ModelConfig {
+interface AIModelConfig {
     model: any
     providerOptions?: any
     headers?: Record<string, string>
@@ -490,7 +472,7 @@ function validateProviderCredentials(provider: ProviderName): void {
  * - MODELSCOPE_API_KEY: ModelScope API key
  * - MODELSCOPE_BASE_URL: ModelScope endpoint (optional)
  */
-export function getAIModel(overrides?: ClientOverrides): ModelConfig {
+export function getAIModel(overrides?: ClientOverrides): AIModelConfig {
     // SECURITY: Prevent SSRF attacks (GHSA-9qf7-mprq-9qgm)
     // If a custom baseUrl is provided, an API key MUST also be provided.
     // This prevents attackers from redirecting server API keys to malicious endpoints.
