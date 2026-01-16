@@ -1577,6 +1577,12 @@ export default function ChatPanel({
                         console.log('[Panel] showModelConfigDialog:', showModelConfigDialog)
                         return showModelConfigDialog
                     })()}
+                    // 历史会话
+                    sessions={sessionManager.sessions}
+                    currentSessionId={sessionManager.currentSessionId}
+                    onSessionSwitch={handleSelectSession}
+                    onSessionDelete={handleDeleteSession}
+                    onSessionCreate={handleNewChat}
                     onEngineSwitch={async () => {
                         // 防止重复点击或在引擎切换过程中再次点击
                         if (engineSwitchInProgressRef.current) return

@@ -8,6 +8,8 @@ interface DeleteConfirmDialogProps {
     onClose: () => void
     onConfirm: () => void
     portalTarget?: HTMLElement | null
+    title?: string
+    description?: string
 }
 
 export function DeleteConfirmDialog({
@@ -15,6 +17,8 @@ export function DeleteConfirmDialog({
     onClose,
     onConfirm,
     portalTarget,
+    title = "删除历史版本",
+    description = "确定要删除这个历史版本吗？此操作无法撤销。",
 }: DeleteConfirmDialogProps) {
     // 如果对话框未打开，不渲染任何内容
     if (!isOpen) return null
@@ -34,9 +38,9 @@ export function DeleteConfirmDialog({
             <div className="relative w-full max-w-md mx-4 p-6 bg-background border rounded-lg shadow-lg animate-in fade-in-0 zoom-in-95 pointer-events-auto">
                 <div className="flex flex-col gap-4">
                     <div className="flex flex-col gap-2">
-                        <h2 className="text-lg font-semibold">删除历史版本</h2>
+                        <h2 className="text-lg font-semibold">{title}</h2>
                         <p className="text-sm text-muted-foreground">
-                            确定要删除这个历史版本吗？此操作无法撤销。
+                            {description}
                         </p>
                     </div>
                     <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

@@ -1,80 +1,22 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
+import { useToolboxSession, ZOOM_LEVELS, MIN_HEIGHT, MAX_HEIGHT_VH } from "./use-toolbox-session"
+
+// 重新导出常量供外部使用
+export { ZOOM_LEVELS, MIN_HEIGHT, MAX_HEIGHT_VH }
 
 type ToolboxView = "main" | "history" | "export" | "url" | "config"
 
-// 高度配置
-const HEIGHT_STORAGE_KEY = "toolbox-height"
-const DEFAULT_HEIGHT = 400
-export const MIN_HEIGHT = 200
-
-// 缩放级别配置
-export const ZOOM_LEVELS = [6, 4, 3, 2, 1]
-const DEFAULT_ZOOM = 0 // 默认最小（6列）
-const ZOOM_STORAGE_KEY = "toolbox-zoom"
-
-// 读取保存的高度
-function loadSavedHeight(): number {
-    if (typeof window === "undefined") return DEFAULT_HEIGHT
-    try {
-        const saved = localStorage.getItem(HEIGHT_STORAGE_KEY)
-        if (saved) {
-            const height = parseInt(saved, 10)
-            if (!isNaN(height) && height >= MIN_HEIGHT) {
-                return height
-            }
-        }
-    } catch (e) {
-        // ignore
-    }
-    return DEFAULT_HEIGHT
-}
-
-// 读取保存的缩放级别
-function loadSavedZoom(): number {
-    if (typeof window === "undefined") return DEFAULT_ZOOM
-    try {
-        const saved = localStorage.getItem(ZOOM_STORAGE_KEY)
-        if (saved) {
-            const zoom = parseInt(saved, 10)
-            if (!isNaN(zoom) && zoom >= 0 && zoom < ZOOM_LEVELS.length) {
-                return zoom
-            }
-        }
-    } catch (e) {
-        // ignore
-    }
-    return DEFAULT_ZOOM
-}
-
-// 保存高度
-export function saveHeight(height: number) {
-    try {
-        localStorage.setItem(HEIGHT_STORAGE_KEY, String(height))
-    } catch (e) {
-        // ignore
-    }
-}
-
-// 保存缩放级别
-export function saveZoom(zoom: number) {
-    try {
-        localStorage.setItem(ZOOM_STORAGE_KEY, String(zoom))
-    } catch (e) {
-        // ignore
-    }
-}
-
 export function useToolboxState() {
-    // ============ 视图和高度 ============
+    // ============ Session 存储（持久化） ============
+    const { session, updateSession, saveNow } = useToolboxSession()
+
+    // ============ 视图状态（非持久化） ============
     const [currentView, setCurrentView] = useState<ToolboxView>("main")
-    const [height, setHeight] = useState(loadSavedHeight)
-    const [zoomLevel, setZoomLevel] = useState(loadSavedZoom)
 
     // ============ 导出视图 ============
     const [saveFilename, setSaveFilename] = useState(
         `diagram-${new Date().toISOString().slice(0, 10)}`
     )
-    const [saveFormat, setSaveFormat] = useState<"png" | "svg" | "drawio" | "excalidraw">("png")
 
     // ============ URL 提取 ============
     const [urlInput, setUrlInput] = useState("")
@@ -99,17 +41,50 @@ export function useToolboxState() {
     // ============ 工具栏 tooltip 位置 ============
     const [tooltipPosition, setTooltipPosition] = useState<{ left: number } | null>(null)
 
-    // ============ 高度变化时保存 ============
-    useEffect(() => {
-        if (!isDragging && height !== loadSavedHeight()) {
-            saveHeight(height)
-        }
-    }, [height, isDragging])
+    // ============ 高度管理 ============
+    const setHeight = useCallback((height: number) => {
+        updateSession("height", height)
+    }, [updateSession])
 
-    // ============ 缩放级别变化时保存 ============
+    // ============ 版本缩放级别管理 ============
+    const setVersionZoomLevel = useCallback((zoomLevel: number) => {
+        updateSession("versionZoomLevel", zoomLevel)
+    }, [updateSession])
+
+    // ============ 历史会话缩放级别管理 ============
+    const setSessionZoomLevel = useCallback((zoomLevel: number) => {
+        updateSession("sessionZoomLevel", zoomLevel)
+    }, [updateSession])
+
+    // ============ 导出格式管理 ============
+    const setSaveFormat = useCallback((format: "png" | "svg" | "drawio" | "excalidraw") => {
+        updateSession("exportFormat", format)
+    }, [updateSession])
+
+    // ============ 历史版本布局管理 ============
+    const setHistoryLayout = useCallback((layout: "grid" | "scroll") => {
+        updateSession("historyLayout", layout)
+    }, [updateSession])
+
+    const toggleHistoryLayout = useCallback(() => {
+        updateSession("historyLayout", session.historyLayout === "grid" ? "scroll" : "grid")
+    }, [updateSession, session.historyLayout])
+
+    // ============ 历史会话布局管理 ============
+    const setSessionLayout = useCallback((layout: "grid" | "scroll") => {
+        updateSession("sessionLayout", layout)
+    }, [updateSession])
+
+    const toggleSessionLayout = useCallback(() => {
+        updateSession("sessionLayout", session.sessionLayout === "grid" ? "scroll" : "grid")
+    }, [updateSession, session.sessionLayout])
+
+    // ============ 拖拽结束时立即保存 ============
     useEffect(() => {
-        saveZoom(zoomLevel)
-    }, [zoomLevel])
+        if (!isDragging) {
+            saveNow()
+        }
+    }, [isDragging, saveNow])
 
     // ============ 清理验证超时 ============
     useEffect(() => {
@@ -135,19 +110,29 @@ export function useToolboxState() {
     }
 
     return {
-        // 视图和高度
+        // 视图
         currentView,
         setCurrentView,
-        height,
+        
+        // 持久化状态（从 session）
+        height: session.height,
         setHeight,
-        zoomLevel,
-        setZoomLevel,
+        versionZoomLevel: session.versionZoomLevel,
+        setVersionZoomLevel,
+        sessionZoomLevel: session.sessionZoomLevel,
+        setSessionZoomLevel,
+        saveFormat: session.exportFormat,
+        setSaveFormat,
+        historyLayout: session.historyLayout,
+        setHistoryLayout,
+        toggleHistoryLayout,
+        sessionLayout: session.sessionLayout,
+        setSessionLayout,
+        toggleSessionLayout,
 
         // 导出视图
         saveFilename,
         setSaveFilename,
-        saveFormat,
-        setSaveFormat,
 
         // URL 提取
         urlInput,
@@ -188,4 +173,10 @@ export function useToolboxState() {
         resetValidationState,
         resetConfigState,
     }
+}
+
+// 兼容性导出：保留旧的 saveHeight 函数供外部使用
+export function saveHeight(height: number) {
+    // 这个函数现在是空操作，因为保存由 useToolboxSession 内部处理
+    // 保留是为了兼容性，避免破坏现有代码
 }

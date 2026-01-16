@@ -63,6 +63,18 @@ interface ChatInputProps extends UseChatInputOptions {
     isEngineSwitching?: boolean
     // Dialog state (to disable click outside when dialog is open)
     isDialogOpen?: boolean
+    // Session management
+    sessions?: Array<{
+        id: string
+        title: string
+        updatedAt: number
+        thumbnailDataUrl?: string
+        engineId?: string
+    }>
+    currentSessionId?: string | null
+    onSessionSwitch?: (id: string) => void
+    onSessionDelete?: (id: string) => void
+    onSessionCreate?: () => void
 }
 
 export interface ChatInputRef {
@@ -96,6 +108,12 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
     onEngineSwitch = () => {},
     isEngineSwitching = false,
     isDialogOpen = false,
+    // Session management
+    sessions = [],
+    currentSessionId,
+    onSessionSwitch,
+    onSessionDelete,
+    onSessionCreate,
 }, ref) {
     const chatInput = useChatInput({
         input,
@@ -485,6 +503,12 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
                             console.log('[ChatInput] isDialogOpen:', isDialogOpen)
                             return isDialogOpen
                         })()}
+                        // 历史会话
+                        sessions={sessions}
+                        currentSessionId={currentSessionId}
+                        onSessionSwitch={onSessionSwitch}
+                        onSessionDelete={onSessionDelete}
+                        onSessionCreate={onSessionCreate}
                     />
                 )}
 

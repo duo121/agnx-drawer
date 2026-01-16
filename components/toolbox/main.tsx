@@ -3,6 +3,8 @@
 import {
     AlertTriangle,
     Check,
+    ChevronDown,
+    ChevronUp,
     CornerDownLeft,
     Download,
     GripHorizontal,
@@ -10,7 +12,7 @@ import {
     Loader2,
     Minus,
     Plus,
-    Save
+    X
 } from "lucide-react"
 import {
     forwardRef,
@@ -30,7 +32,7 @@ import { SubviewHeader, SearchInput, SearchInputContainer } from "@/components/u
 import { Switch } from "@/components/ui/switch"
 import { useEngine } from "@/hooks/engines/engine-context"
 import { useDictionary } from "@/hooks/use-dictionary"
-import { useToolboxState, ZOOM_LEVELS, MIN_HEIGHT, saveHeight } from "@/hooks/use-toolbox-state"
+import { useToolboxState, ZOOM_LEVELS, MIN_HEIGHT, MAX_HEIGHT_VH } from "@/hooks/use-toolbox-state"
 import { ToolboxHeader } from "./header"
 import { ToolboxConfigView } from "./config-view"
 import { RestoreConfirmDialog } from "@/components/history/restore-confirm-dialog"
@@ -102,9 +104,6 @@ const PROVIDER_LOGO_MAP: Record<string, string> = {
     modelscope: "modelscope",
     zhipu: "zhipu",
 }
-
-// MAX_HEIGHT_VH 配置
-const MAX_HEIGHT_VH = 0.9 // 90vh
 
 // 按钮组配置（按照渲染顺序）
 const TOOLBAR_BUTTONS: ToolbarButtonConfig[] = [
@@ -210,6 +209,19 @@ export interface ToolboxProps {
     onFocusBack?: () => void
     // 是否禁用点击外部关闭（当有 Dialog 打开时）
     disableClickOutside?: boolean
+
+    // 历史会话
+    sessions?: Array<{
+        id: string
+        title: string
+        updatedAt: number
+        thumbnailDataUrl?: string
+        engineId?: string
+    }>
+    currentSessionId?: string | null
+    onSessionSwitch?: (id: string) => void
+    onSessionDelete?: (id: string) => void
+    onSessionCreate?: () => void
 }
 
 export interface ToolboxRef {
@@ -248,6 +260,12 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             onClose,
             onFocusBack,
             disableClickOutside = false,
+            // 历史会话
+            sessions = [],
+            currentSessionId: currentSessionIdProp,
+            onSessionSwitch,
+            onSessionDelete,
+            onSessionCreate,
         } = props
 
         const dict = useDictionary()
@@ -288,8 +306,14 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             setCurrentView,
             height,
             setHeight,
-            zoomLevel,
-            setZoomLevel,
+            versionZoomLevel,
+            setVersionZoomLevel,
+            sessionZoomLevel,
+            setSessionZoomLevel,
+            historyLayout,
+            toggleHistoryLayout,
+            sessionLayout,
+            toggleSessionLayout,
             saveFilename,
             setSaveFilename,
             saveFormat,
@@ -341,10 +365,35 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             versionIndex: -1,
         })
 
+        // 会话删除确认对话框状态
+        const [sessionDeleteDialog, setSessionDeleteDialog] = useState<{
+            isOpen: boolean
+            sessionId: string | null
+            sessionTitle: string
+        }>({
+            isOpen: false,
+            sessionId: null,
+            sessionTitle: "",
+        })
+
+        // 动态计算工具箱可用的最大高度
+        const [maxAvailableHeight, setMaxAvailableHeight] = useState<number | null>(null)
+
         // ============ 计算值 ============
 
         const historyItems = isExcalidraw ? excalidrawHistory : diagramHistory
-        const itemsPerRow = ZOOM_LEVELS[zoomLevel]
+        const itemsPerRow = ZOOM_LEVELS[versionZoomLevel]
+
+        // 过滤会话列表（支持搜索）
+        const filteredSessions = useMemo(() => {
+            if (!searchQuery) return sessions
+            const q = searchQuery.toLowerCase()
+            // 支持斜杠命令搜索
+            if (q === '/' || q === '/session' || q === '/sessions' || q.startsWith('/s')) {
+                return sessions
+            }
+            return sessions.filter(s => s.title.toLowerCase().includes(q))
+        }, [sessions, searchQuery])
 
         // 计算每个 section 的起始索引（用于高亮映射）
         const commandsStartIndex = 0
@@ -457,7 +506,8 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             if (!isDragging) return
 
             const handleMouseMove = (e: MouseEvent) => {
-                const maxHeight = window.innerHeight * MAX_HEIGHT_VH
+                // 使用动态计算的最大可用高度，如果没有则使用视口高度的 90%
+                const maxHeight = maxAvailableHeight || window.innerHeight * MAX_HEIGHT_VH
                 const delta = dragStartY.current - e.clientY
                 const newHeight = Math.min(
                     maxHeight,
@@ -468,7 +518,7 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
 
             const handleMouseUp = () => {
                 setIsDragging(false)
-                saveHeight(height)
+                // 高度保存由 useToolboxSession 在 isDragging 变化时自动处理
             }
 
             document.addEventListener("mousemove", handleMouseMove)
@@ -478,7 +528,7 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                 document.removeEventListener("mousemove", handleMouseMove)
                 document.removeEventListener("mouseup", handleMouseUp)
             }
-        }, [isDragging, height])
+        }, [isDragging, height, maxAvailableHeight])
 
         // ============ 历史版本操作 ============
 
@@ -631,6 +681,49 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
         const handleCancelDelete = useCallback(() => {
             setDeleteConfirmDialog({ isOpen: false, versionIndex: -1 })
         }, [])
+
+        // ============ 会话操作 ============
+
+        // 点击会话删除按钮
+        const handleSessionDeleteClick = useCallback((e: React.MouseEvent, sessionId: string, sessionTitle: string) => {
+            e.stopPropagation()
+            setSessionDeleteDialog({
+                isOpen: true,
+                sessionId,
+                sessionTitle,
+            })
+        }, [])
+
+        // 确认删除会话
+        const handleConfirmSessionDelete = useCallback(() => {
+            const { sessionId } = sessionDeleteDialog
+            setSessionDeleteDialog({ isOpen: false, sessionId: null, sessionTitle: "" })
+            if (sessionId && onSessionDelete) {
+                onSessionDelete(sessionId)
+                toast.success("已删除会话")
+            }
+        }, [sessionDeleteDialog, onSessionDelete])
+
+        // 取消删除会话
+        const handleCancelSessionDelete = useCallback(() => {
+            setSessionDeleteDialog({ isOpen: false, sessionId: null, sessionTitle: "" })
+        }, [])
+
+        // 点击会话切换
+        const handleSessionClick = useCallback((sessionId: string) => {
+            if (sessionId !== currentSessionIdProp && onSessionSwitch) {
+                onSessionSwitch(sessionId)
+                onClose()
+            }
+        }, [currentSessionIdProp, onSessionSwitch, onClose])
+
+        // 新建会话
+        const handleCreateSession = useCallback(() => {
+            if (onSessionCreate) {
+                onSessionCreate()
+                onClose()
+            }
+        }, [onSessionCreate, onClose])
 
         // ============ 保存图表 ============
 
@@ -1004,6 +1097,97 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             )
         }
 
+        // 会话缩略图
+        const renderSessionThumbnail = (
+            session: { id: string; title: string; updatedAt: number; thumbnailDataUrl?: string; engineId?: string },
+        ) => {
+            const isCurrentSession = session.id === currentSessionIdProp
+
+            return (
+                <div
+                    key={session.id}
+                    onClick={() => handleSessionClick(session.id)}
+                    className={cn(
+                        "relative group cursor-pointer rounded-lg transition-all",
+                        isCurrentSession && "ring-2 ring-primary ring-offset-1 ring-offset-muted"
+                    )}
+                    style={{ aspectRatio: '1 / 1' }}
+                    title={session.title || "New Chat"}
+                >
+                    <div className="w-full h-full border border-border/50 rounded-lg overflow-hidden bg-background flex flex-col hover:border-primary/50 transition-colors">
+                        {/* 标题 */}
+                        <div className="px-2 py-1.5 bg-muted/50 border-b border-border/30">
+                            <span className="text-sm text-foreground truncate block font-medium text-center">
+                                {session.title || "New Chat"}
+                            </span>
+                        </div>
+                        {/* 缩略图 */}
+                        <div className="flex-1 flex items-center justify-center p-0.5">
+                            {session.thumbnailDataUrl ? (
+                                <img
+                                    src={session.thumbnailDataUrl}
+                                    alt={session.title}
+                                    className="object-contain w-full h-full"
+                                />
+                            ) : (
+                                <span className="text-[10px] text-muted-foreground">
+                                    无预览
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* 引擎图标徽章 - 左上角 */}
+                    <div className={cn(
+                        "absolute -top-1.5 -left-1.5 rounded-full w-5 h-5 flex items-center justify-center shadow-sm z-10",
+                        session.engineId === 'excalidraw' 
+                            ? "bg-purple-500 text-white" 
+                            : "bg-blue-500 text-white"
+                    )}>
+                        {session.engineId === 'excalidraw' ? (
+                            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 17.5l5-5 4 4 6-6"/>
+                                <polyline points="16,12 18,10 22,6"/>
+                                <circle cx="6" cy="20" r="2"/>
+                                <path d="M20 4l-4 4"/>
+                                <path d="M4 4h7v7"/>
+                            </svg>
+                        ) : (
+                            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                <rect x="14" y="14" width="7" height="7" rx="1"/>
+                                <line x1="10" y1="6.5" x2="14" y2="6.5"/>
+                                <line x1="10" y1="17.5" x2="14" y2="17.5"/>
+                                <line x1="6.5" y1="10" x2="6.5" y2="14"/>
+                                <line x1="17.5" y1="10" x2="17.5" y2="14"/>
+                            </svg>
+                        )}
+                    </div>
+
+                    {/* 时间标签 - 底部内部半透明遮罩 */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 rounded-b-lg">
+                        <span className="text-[9px] text-white block text-center py-0.5">
+                            {formatRelativeTime(session.updatedAt)}
+                        </span>
+                    </div>
+
+                    {/* 删除按钮 - 不能删除当前会话 */}
+                    {!isCurrentSession && (
+                        <button
+                            type="button"
+                            onClick={(e) => handleSessionDeleteClick(e, session.id, session.title)}
+                            className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm w-5 h-5 flex items-center justify-center z-10"
+                            title="删除会话"
+                        >
+                            <X className="h-2.5 w-2.5" />
+                        </button>
+                    )}
+                </div>
+            )
+        }
+
         // 模型列表项
         const renderModelItem = (model: FlattenedModel) => (
             <button
@@ -1027,7 +1211,7 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                 />
 
                 <span className="text-sm flex-1 truncate">
-                    {model.provider} / {model.modelId}
+                    {model.providerLabel} / {model.modelId}
                 </span>
 
                 {model.validated !== true && (
@@ -1060,28 +1244,70 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             }
         }, [isExcalidraw])
 
+        // 监听父元素大小变化，动态计算可用高度
+        useEffect(() => {
+            const updateMaxHeight = () => {
+                if (!containerRef.current) return
+                
+                // 获取工具箱容器的父元素（输入框容器）
+                const parent = containerRef.current.parentElement
+                if (!parent) return
+                
+                // 获取父元素相对于视口的位置
+                const parentRect = parent.getBoundingClientRect()
+                
+                // 顶部预留空间（标题栏高度 + 安全边距）
+                const topReserved = 70
+                
+                // 可用高度 = 父元素顶部位置 - 顶部预留 - 工具箱与输入框的间距(10px)
+                const available = parentRect.top - topReserved - 10
+                
+                setMaxAvailableHeight(Math.max(200, available)) // 最小 200px
+            }
+            
+            updateMaxHeight()
+            
+            // 监听窗口大小变化
+            window.addEventListener('resize', updateMaxHeight)
+            
+            // 使用 ResizeObserver 监听父元素大小变化（输入框高度变化）
+            const parent = containerRef.current?.parentElement
+            let resizeObserver: ResizeObserver | null = null
+            if (parent) {
+                resizeObserver = new ResizeObserver(updateMaxHeight)
+                resizeObserver.observe(parent)
+            }
+            
+            return () => {
+                window.removeEventListener('resize', updateMaxHeight)
+                resizeObserver?.disconnect()
+            }
+        }, [])
+
         // 计算实际高度：根据视图类型决定
         const computedStyle = useMemo(() => {
+            const maxH = maxAvailableHeight ? `${maxAvailableHeight}px` : 'calc(90vh - 80px)'
+            
             if (currentView === "export" || currentView === "url") {
                 // 导出图表和URL提取视图：自适应高度
                 return {
                     height: "auto",
-                    maxHeight: "calc(90vh - 20px)",
+                    maxHeight: maxH,
                 }
             } else if (currentView === "config") {
-                // 配置视图：固定高度
+                // 配置视图：固定高度，但不超过可用空间
                 return {
                     height: "500px",
-                    maxHeight: "calc(85vh - 40px)",
+                    maxHeight: maxH,
                 }
             } else {
-                // 主视图：使用手动调整的高度
+                // 主视图：使用手动调整的高度，但不超过可用空间
                 return {
-                    height: `${height}px`,
-                    maxHeight: "calc(90vh - 20px)",
+                    height: `${Math.min(height, maxAvailableHeight || height)}px`,
+                    maxHeight: maxH,
                 }
             }
-        }, [currentView, height])
+        }, [currentView, height, maxAvailableHeight])
 
         return (
             <>
@@ -1247,15 +1473,25 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                             {!searchQuery && toolboxOpenMode === 'button' && (
                                 <div className="mb-1">
                                     <div className="flex items-center justify-between px-3 py-1 select-none">
-                                        <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">
-                                            History
-                                        </span>
+                                        {/* 标题区域 - 可点击切换布局 */}
+                                        <button
+                                            type="button"
+                                            onClick={toggleHistoryLayout}
+                                            className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70 hover:text-muted-foreground transition-colors"
+                                        >
+                                            {historyLayout === "grid" ? (
+                                                <ChevronUp className="h-3 w-3" />
+                                            ) : (
+                                                <ChevronDown className="h-3 w-3" />
+                                            )}
+                                            <span>History Versions</span>
+                                        </button>
                                         <div className="flex items-center gap-1">
                                             <ButtonWithTooltip
                                                 variant="ghost"
                                                 size="icon"
-                                                onClick={() => setZoomLevel(Math.max(0, zoomLevel - 1))}
-                                                disabled={zoomLevel === 0}
+                                                onClick={() => setVersionZoomLevel(Math.max(0, versionZoomLevel - 1))}
+                                                disabled={versionZoomLevel === 0}
                                                 tooltipContent="缩小"
                                                 className="h-5 w-5 p-0"
                                             >
@@ -1265,16 +1501,16 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                                                 type="range"
                                                 min={0}
                                                 max={ZOOM_LEVELS.length - 1}
-                                                value={zoomLevel}
-                                                onChange={(e) => setZoomLevel(Number(e.target.value))}
+                                                value={versionZoomLevel}
+                                                onChange={(e) => setVersionZoomLevel(Number(e.target.value))}
                                                 className="w-12 h-1 accent-primary cursor-pointer"
                                                 title="调整大小"
                                             />
                                             <ButtonWithTooltip
                                                 variant="ghost"
                                                 size="icon"
-                                                onClick={() => setZoomLevel(Math.min(ZOOM_LEVELS.length - 1, zoomLevel + 1))}
-                                                disabled={zoomLevel === ZOOM_LEVELS.length - 1}
+                                                onClick={() => setVersionZoomLevel(Math.min(ZOOM_LEVELS.length - 1, versionZoomLevel + 1))}
+                                                disabled={versionZoomLevel === ZOOM_LEVELS.length - 1}
                                                 tooltipContent="放大"
                                                 className="h-5 w-5 p-0"
                                             >
@@ -1282,26 +1518,112 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                                             </ButtonWithTooltip>
                                         </div>
                                     </div>
-                                    {historyItems.length > 0 ? (
-                                        <div className="grid gap-2 py-1 px-2" style={{ gridTemplateColumns: `repeat(${ZOOM_LEVELS[zoomLevel]}, 1fr)` }}>
-                                            {historyItems.map((item, idx) =>
-                                                renderVersionThumbnail(item, idx)
+                                    {/* 历史版本列表 - 统一使用 grid，scroll 模式一行显示所有项目 */}
+                                    <div 
+                                        className={cn(
+                                            "grid gap-2 py-1 px-2",
+                                            historyLayout === "scroll" && "overflow-x-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent"
+                                        )}
+                                        style={{ 
+                                            // grid 模式：使用 auto-fill 让列宽固定；scroll 模式：一行显示所有
+                                            gridTemplateColumns: historyLayout === "grid" 
+                                                ? `repeat(auto-fill, minmax(calc((100% - ${(ZOOM_LEVELS[versionZoomLevel] - 1) * 8}px) / ${ZOOM_LEVELS[versionZoomLevel]}), 1fr))`
+                                                : `repeat(${historyItems.length + 1}, calc(${100 / ZOOM_LEVELS[versionZoomLevel]}% - ${8 * (ZOOM_LEVELS[versionZoomLevel] - 1) / ZOOM_LEVELS[versionZoomLevel]}px))`,
+                                        }}
+                                    >
+                                        {/* + 保存按钮在最前面 */}
+                                        <div
+                                            onClick={handleSaveVersion}
+                                            className="relative group cursor-pointer rounded-lg border-2 border-dashed border-muted-foreground/30 hover:border-primary flex items-center justify-center hover:bg-primary/5 transition-all"
+                                            style={{ aspectRatio: '1 / 1' }}
+                                            title="保存当前版本"
+                                        >
+                                            <Plus className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                                        </div>
+                                        {/* 历史版本：最新在前 */}
+                                        {historyItems.map((item, idx) =>
+                                            renderVersionThumbnail(item, idx)
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* HISTORY SESSIONS - 在按钮模式或搜索匹配时显示 */}
+                            {((toolboxOpenMode === 'button' && !searchQuery) || filteredSessions.length > 0) && sessions.length > 0 && (
+                                <div className="mb-1">
+                                    <div className="flex items-center justify-between px-3 py-1 select-none">
+                                        {/* 标题区域 - 可点击切换布局 */}
+                                        <button
+                                            type="button"
+                                            onClick={toggleSessionLayout}
+                                            className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70 hover:text-muted-foreground transition-colors"
+                                        >
+                                            {sessionLayout === "grid" ? (
+                                                <ChevronUp className="h-3 w-3" />
+                                            ) : (
+                                                <ChevronDown className="h-3 w-3" />
                                             )}
-                                            {/* + 保存按钮 */}
-                                            <div
-                                                onClick={handleSaveVersion}
-                                                className="relative group cursor-pointer rounded-lg border-2 border-dashed border-muted-foreground/30 hover:border-primary flex items-center justify-center hover:bg-primary/5 transition-all"
-                                                style={{ aspectRatio: '1 / 1' }}
-                                                title="保存当前版本"
+                                            <span>History Sessions</span>
+                                        </button>
+                                        <div className="flex items-center gap-1">
+                                            <ButtonWithTooltip
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => setSessionZoomLevel(Math.max(0, sessionZoomLevel - 1))}
+                                                disabled={sessionZoomLevel === 0}
+                                                tooltipContent="缩小"
+                                                className="h-5 w-5 p-0"
                                             >
-                                                <Plus className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                                            </div>
+                                                <Minus className="h-3 w-3 text-muted-foreground" />
+                                            </ButtonWithTooltip>
+                                            <input
+                                                type="range"
+                                                min={0}
+                                                max={ZOOM_LEVELS.length - 1}
+                                                value={sessionZoomLevel}
+                                                onChange={(e) => setSessionZoomLevel(Number(e.target.value))}
+                                                className="w-12 h-1 accent-primary cursor-pointer"
+                                                title="调整大小"
+                                            />
+                                            <ButtonWithTooltip
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => setSessionZoomLevel(Math.min(ZOOM_LEVELS.length - 1, sessionZoomLevel + 1))}
+                                                disabled={sessionZoomLevel === ZOOM_LEVELS.length - 1}
+                                                tooltipContent="放大"
+                                                className="h-5 w-5 p-0"
+                                            >
+                                                <Plus className="h-3 w-3 text-muted-foreground" />
+                                            </ButtonWithTooltip>
                                         </div>
-                                    ) : (
-                                        <div className="text-xs text-muted-foreground px-3 py-2 text-center">
-                                            暂无历史版本
+                                    </div>
+                                    {/* 会话列表 - 统一使用 grid，scroll 模式一行显示所有项目 */}
+                                    <div 
+                                        className={cn(
+                                            "grid gap-2 py-1 px-2",
+                                            sessionLayout === "scroll" && "overflow-x-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent"
+                                        )}
+                                        style={{ 
+                                            // grid 模式：使用 auto-fill 让列宽固定；scroll 模式：一行显示所有
+                                            gridTemplateColumns: sessionLayout === "grid" 
+                                                ? `repeat(auto-fill, minmax(calc((100% - ${(ZOOM_LEVELS[sessionZoomLevel] - 1) * 8}px) / ${ZOOM_LEVELS[sessionZoomLevel]}), 1fr))`
+                                                : `repeat(${filteredSessions.length + 1}, calc(${100 / ZOOM_LEVELS[sessionZoomLevel]}% - ${8 * (ZOOM_LEVELS[sessionZoomLevel] - 1) / ZOOM_LEVELS[sessionZoomLevel]}px))`
+                                        }}
+                                    >
+                                        {/* + 新建会话按钮 */}
+                                        <div
+                                            onClick={handleCreateSession}
+                                            className="relative group cursor-pointer rounded-lg border-2 border-dashed border-muted-foreground/30 hover:border-primary flex items-center justify-center hover:bg-primary/5 transition-all"
+                                            style={{ aspectRatio: '1 / 1' }}
+                                            title="新建会话"
+                                        >
+                                            <Plus className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                                         </div>
-                                    )}
+                                        {/* 会话列表：最新在前 */}
+                                        {filteredSessions.map((session) =>
+                                            renderSessionThumbnail(session)
+                                        )}
+                                    </div>
                                 </div>
                             )}
 
@@ -1339,7 +1661,7 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                                                     />
 
                                                     <span className="text-sm flex-1 truncate">
-                                                        {model.provider} / {model.modelId}
+                                                        {model.providerLabel} / {model.modelId}
                                                     </span>
 
                                                     {model.validated !== true && (
@@ -1465,6 +1787,15 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                 onClose={handleCancelDelete}
                 onConfirm={handleConfirmDelete}
                 portalTarget={containerRef.current}
+            />
+            {/* 会话删除确认对话框 */}
+            <DeleteConfirmDialog
+                isOpen={sessionDeleteDialog.isOpen}
+                onClose={handleCancelSessionDelete}
+                onConfirm={handleConfirmSessionDelete}
+                portalTarget={containerRef.current}
+                title="删除会话"
+                description={`确定要删除会话 "${sessionDeleteDialog.sessionTitle}" 吗？此操作无法撤销。`}
             />
         </>
         )
