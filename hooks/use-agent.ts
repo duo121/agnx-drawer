@@ -71,48 +71,6 @@ export interface SendMessageOptions {
     headers?: Record<string, string>
 }
 
-/**
- * 快照管理接口
- * 
- * 用途：管理每条用户消息发送时的画布状态快照，支持消息操作（regenerate/edit/delete）时恢复画布。
- * 
- * 重要区分：
- * - SnapshotManager：用于消息操作的画布状态回滚（内存中，按消息索引存储）
- * - 历史版本（Version History）：用户可视化的版本管理（持久化到 IndexedDB）
- * 
- * 工作原理：
- * 1. 用户发送消息前，当前画布状态（XML 字符串）被保存到 snapshot[messageIndex]
- * 2. 当用户点击「重新生成」或「编辑消息」时，从对应 snapshot 恢复画布
- * 3. 支持 DrawIO（XML）和 Excalidraw（通过 getCurrentState/restoreState 回调）
- * 
- * @example
- * ```
- * 消息 0 (user)  -> snapshot[0] = 空画布状态
- * 消息 1 (assistant)
- * 消息 2 (user)  -> snapshot[2] = 画布状态 A
- * 消息 3 (assistant)
- * 
- * 用户点击「重新生成消息 3」：
- * 1. 从 snapshot[2] 恢复画布到状态 A
- * 2. 截断消息到索引 2
- * 3. 重新发送用户问题
- * ```
- */
-export interface SnapshotManager {
-    /** 获取指定消息索引的快照 */
-    get: (messageIndex: number) => string | undefined
-    /** 设置指定消息索引的快照 */
-    set: (messageIndex: number, snapshot: string) => void
-    /** 删除指定消息索引的快照 */
-    delete: (messageIndex: number) => void
-    /** 获取所有快照的键 */
-    keys: () => IterableIterator<number>
-    /** 清理指定索引之后的所有快照 */
-    cleanupAfter: (messageIndex: number) => void
-    /** 重新索引快照（删除消息后调用） */
-    reindex: (startIndex: number, removedCount: number) => void
-}
-
 /** 重试限制上下文 */
 export interface RetryLimitContext {
     /** 重试类型 */
@@ -151,14 +109,10 @@ export interface UseAgentOptions {
     /** 外部传入的 partialXmlRef（截断续传用） */
     partialXmlRef?: MutableRefObject<string>
     
-    // === 快照管理 ===
+    // === 画布状态回调（用于 regenerate/edit 时获取当前状态） ===
     
-    /** 快照管理器（用于 regenerate/edit/delete 操作） */
-    snapshotManager?: SnapshotManager
     /** 获取当前画布状态的回调 */
     getCurrentState?: () => Promise<string>
-    /** 恢复画布状态的回调 */
-    restoreState?: (state: string) => void
     
     // === 扩展回调 ===
     
@@ -208,64 +162,6 @@ export interface UseAgentReturn {
 }
 
 // ============ 工具函数 ============
-
-/**
- * 创建快照管理器
- * 
- * 将 Map<number, string> ref 封装为 SnapshotManager 接口。
- * 
- * 注意：
- * - 快照内容由调用方决定（通常是 DrawIO 的 XML 字符串）
- * - 对于 Excalidraw，需要通过 getCurrentState/restoreState 回调处理
- * - 快照仅存储在内存中，不会触发历史版本保存
- * 
- * @param mapRef - 存储快照的 Map ref，键为消息索引，值为画布状态字符串
- * 
- * @example
- * ```typescript
- * // 在 chat-panel.tsx 中使用
- * const xmlSnapshotsRef = useRef<Map<number, string>>(new Map())
- * const snapshotManager = useMemo(
- *   () => createSnapshotManager(xmlSnapshotsRef),
- *   []
- * )
- * 
- * // 传入 useAgent
- * useAgent({
- *   snapshotManager,
- *   getCurrentState: async () => await onFetchChart(),  // 获取当前画布
- *   restoreState: (xml) => onDisplayChart(xml),          // 恢复画布
- * })
- * ```
- */
-export function createSnapshotManager(
-    mapRef: MutableRefObject<Map<number, string>>
-): SnapshotManager {
-    return {
-        get: (messageIndex: number) => mapRef.current.get(messageIndex),
-        set: (messageIndex: number, snapshot: string) => mapRef.current.set(messageIndex, snapshot),
-        delete: (messageIndex: number) => mapRef.current.delete(messageIndex),
-        keys: () => mapRef.current.keys(),
-        cleanupAfter: (messageIndex: number) => {
-            for (const key of mapRef.current.keys()) {
-                if (key > messageIndex) {
-                    mapRef.current.delete(key)
-                }
-            }
-        },
-        reindex: (startIndex: number, removedCount: number) => {
-            const updatedSnapshots = new Map<number, string>()
-            for (const [key, value] of mapRef.current.entries()) {
-                if (key < startIndex) {
-                    updatedSnapshots.set(key, value)
-                } else if (key >= startIndex + removedCount) {
-                    updatedSnapshots.set(key - removedCount, value)
-                }
-            }
-            mapRef.current = updatedSnapshots
-        },
-    }
-}
 
 /**
  * 解析错误类型
@@ -340,10 +236,8 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
         onExternalError,
         // 外部 Refs
         partialXmlRef: externalPartialXmlRef,
-        // 快照管理
-        snapshotManager,
+        // 画布状态回调
         getCurrentState,
-        restoreState,
         // 扩展回调
         onRetryLimitReached,
     } = options
@@ -689,17 +583,6 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
         )
     }, [chatSendMessage, sessionId, engineId, minimalStyle, getCanvasTheme, hooks, partialXmlRef])
 
-    // === 获取指定索引之前的快照 ===
-    const getPreviousSnapshot = useCallback((beforeIndex: number): string => {
-        if (!snapshotManager) return ''
-        
-        const keys = Array.from(snapshotManager.keys())
-            .filter((k) => k < beforeIndex)
-            .sort((a, b) => b - a)
-        
-        return keys.length > 0 ? (snapshotManager.get(keys[0]) || '') : ''
-    }, [snapshotManager])
-
     // === 重新生成 ===
     const regenerate = useCallback(async (assistantMessageIndex: number) => {
         if (isProcessing) return
@@ -722,25 +605,15 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
         const textPart = userParts?.find((p: any) => p.type === 'text')
         if (!textPart) return
 
-        // 获取保存的快照
-        let savedState = snapshotManager?.get(userMessageIndex)
-        if (!savedState && getCurrentState) {
+        // 获取当前画布状态
+        let currentState = ''
+        if (getCurrentState) {
             try {
-                savedState = await getCurrentState()
+                currentState = await getCurrentState()
             } catch (error) {
                 console.warn('[useAgent] Failed to get current state for regenerate:', error)
-                savedState = ''
             }
         }
-
-        // 获取之前的状态并恢复画布
-        const previousState = getPreviousSnapshot(userMessageIndex)
-        if (savedState && restoreState) {
-            restoreState(savedState)
-        }
-
-        // 清理后续快照
-        snapshotManager?.cleanupAfter(userMessageIndex)
 
         // 截断消息并发送
         const newMessages = currentMessages.slice(0, userMessageIndex)
@@ -748,8 +621,8 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
             setMessages(newMessages)
         })
 
-        await sendChatMessageInternal(userParts, savedState || '', previousState)
-    }, [isProcessing, snapshotManager, getCurrentState, restoreState, getPreviousSnapshot, setMessages, sendChatMessageInternal])
+        await sendChatMessageInternal(userParts, currentState, '')
+    }, [isProcessing, getCurrentState, setMessages, sendChatMessageInternal])
 
     // === 编辑消息 ===
     const editMessage = useCallback(async (userMessageIndex: number, newText: string) => {
@@ -759,25 +632,15 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
         const message = currentMessages[userMessageIndex]
         if (!message || message.role !== 'user') return
 
-        // 获取保存的快照
-        let savedState = snapshotManager?.get(userMessageIndex)
-        if (!savedState && getCurrentState) {
+        // 获取当前画布状态
+        let currentState = ''
+        if (getCurrentState) {
             try {
-                savedState = await getCurrentState()
+                currentState = await getCurrentState()
             } catch (error) {
                 console.warn('[useAgent] Failed to get current state for edit:', error)
-                savedState = ''
             }
         }
-
-        // 获取之前的状态并恢复画布
-        const previousState = getPreviousSnapshot(userMessageIndex)
-        if (savedState && restoreState) {
-            restoreState(savedState)
-        }
-
-        // 清理后续快照
-        snapshotManager?.cleanupAfter(userMessageIndex)
 
         // 创建新的 parts
         const newParts = message.parts?.map((part: any) => {
@@ -793,8 +656,8 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
             setMessages(newMessages)
         })
 
-        await sendChatMessageInternal(newParts, savedState || '', previousState)
-    }, [isProcessing, snapshotManager, getCurrentState, restoreState, getPreviousSnapshot, setMessages, sendChatMessageInternal])
+        await sendChatMessageInternal(newParts, currentState, '')
+    }, [isProcessing, getCurrentState, setMessages, sendChatMessageInternal])
 
     // === 删除消息 ===
     const deleteMessage = useCallback((messageIndex: number) => {
@@ -822,21 +685,8 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
             ...currentMessages.slice(endIndex)
         ]
 
-        // 清理删除消息的快照
-        if (snapshotManager) {
-            for (let i = startIndex; i < currentMessages.length; i++) {
-                snapshotManager.delete(i)
-            }
-
-            // 重新索引剩余快照
-            if (endIndex < currentMessages.length) {
-                const removedCount = endIndex - startIndex
-                snapshotManager.reindex(startIndex, removedCount)
-            }
-        }
-
         setMessages(newMessages)
-    }, [isProcessing, snapshotManager, setMessages])
+    }, [isProcessing, setMessages])
 
     return {
         // 状态

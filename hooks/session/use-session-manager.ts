@@ -18,7 +18,6 @@ import {
 
 export interface SessionData {
     messages: StoredMessage[]
-    xmlSnapshots: [number, string][]
     diagramXml: string
     excalidrawScene?: any
     thumbnailDataUrl?: string
@@ -212,7 +211,6 @@ export function useSessionManager(
 
             return {
                 messages: session.messages,
-                xmlSnapshots: session.xmlSnapshots,
                 diagramXml: session.diagramXml,
                 thumbnailDataUrl: session.thumbnailDataUrl,
                 diagramHistory: session.diagramHistory,
@@ -283,7 +281,6 @@ export function useSessionManager(
                 const newSession: ChatSession = {
                     ...createEmptySession(),
                     messages: data.messages,
-                    xmlSnapshots: data.xmlSnapshots,
                     diagramXml: data.diagramXml,
                     excalidrawScene: data.excalidrawScene,
                     excalidrawHistory: data.excalidrawHistory,
@@ -304,7 +301,6 @@ export function useSessionManager(
             const updatedSession: ChatSession = {
                 ...currentSession,
                 messages: data.messages,
-                xmlSnapshots: data.xmlSnapshots,
                 diagramXml: data.diagramXml,
                 excalidrawScene: data.excalidrawScene ?? currentSession.excalidrawScene,
                 excalidrawHistory: data.excalidrawHistory ?? currentSession.excalidrawHistory,

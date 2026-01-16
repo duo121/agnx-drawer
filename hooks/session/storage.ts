@@ -16,7 +16,6 @@ export interface ChatSession {
     createdAt: number
     updatedAt: number
     messages: StoredMessage[]
-    xmlSnapshots: [number, string][]
     diagramXml: string
     excalidrawScene?: ExcalidrawScene // Excalidraw scene (elements/appState/files)
     excalidrawHistory?: ExcalidrawHistoryEntry[] // Excalidraw version history
@@ -298,7 +297,6 @@ export function createEmptySession(): ChatSession {
         createdAt: Date.now(),
         updatedAt: Date.now(),
         messages: [],
-        xmlSnapshots: [],
         diagramXml: "",
         excalidrawScene: {
             elements: [],
@@ -393,9 +391,6 @@ export async function migrateFromLocalStorage(): Promise<string | null> {
                     createdAt: Date.now(),
                     updatedAt: Date.now(),
                     messages: sanitized,
-                    xmlSnapshots: savedSnapshots
-                        ? JSON.parse(savedSnapshots)
-                        : [],
                     diagramXml: savedXml || "",
                 }
                 const saved = await saveSession(session)

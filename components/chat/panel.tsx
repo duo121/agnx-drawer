@@ -31,7 +31,7 @@ import { useEngine, type ExcalidrawScene, EMPTY_EXCALIDRAW_SCENE } from "@/hooks
 import { useDiagramToolHandlers } from "@/hooks/use-diagram-tool-handlers"
 import { useDictionary } from "@/hooks/use-dictionary"
 import { useModelConfig } from "@/hooks/use-model-config"
-import { useAgent, createSnapshotManager, type AgentErrorType } from "@/hooks/use-agent"
+import { useAgent, type AgentErrorType } from "@/hooks/use-agent"
 import { useSessionManager } from "@/hooks/session"
 import { getApiEndpoint } from "@/shared/base-path"
 import { findCachedResponse } from "@/server/cached-responses"
@@ -288,12 +288,6 @@ export default function ChatPanel({
         return `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
     })
 
-    // 消息快照管理：存储每条用户消息发送时的画布状态
-    // 用途：支持消息操作（regenerate/edit/delete）时恢复画布到发送消息前的状态
-    // 注意：这不是「历史版本」功能，历史版本存储在 excalidrawHistory/diagramHistory 中
-    // 详见 use-agent.ts 中 SnapshotManager 的文档
-    const xmlSnapshotsRef = useRef<Map<number, string>>(new Map())
-
     // Flag to track if we've restored from localStorage
     const hasRestoredRef = useRef(false)
     const [isRestored, setIsRestored] = useState(false)
@@ -331,13 +325,6 @@ export default function ChatPanel({
 
     // Persist processed tool call IDs so collapsing the chat doesn't replay old tool outputs
     const processedToolCallsRef = useRef<Set<string>>(new Set())
-
-    // 快照管理器：封装 xmlSnapshotsRef，用于 useAgent 的消息操作
-    // 当用户点击「重新生成」或「编辑消息」时，从对应快照恢复画布
-    const snapshotManager = useMemo(
-        () => createSnapshotManager(xmlSnapshotsRef),
-        []
-    )
 
     // Store original XML for edit_drawio streaming - shared between streaming preview and tool handler
     // Key: toolCallId, Value: original XML before any operations applied
@@ -486,12 +473,6 @@ export default function ChatPanel({
         }
     }, [onFetchChart, chartXMLRef])
 
-    // Restore canvas state for regenerate/edit operations
-    const restoreStateForAgent = useCallback((savedXml: string) => {
-        onDisplayChart(savedXml, true) // Skip validation for trusted snapshots
-        chartXMLRef.current = savedXml
-    }, [onDisplayChart, chartXMLRef])
-
     // useAgent - the main AI agent hook
     const {
         messages,
@@ -509,9 +490,7 @@ export default function ChatPanel({
         engineId: activeEngine,
         sessionId,
         partialXmlRef,
-        snapshotManager,
         getCurrentState: getCurrentStateForAgent,
-        restoreState: restoreStateForAgent,
         minimalStyle,
         getCanvasTheme: () => getExcalidrawScene?.()?.appState?.theme || "dark",
         onToolCall: async (toolCall, addToolOutputFn) => {
@@ -551,7 +530,6 @@ export default function ChatPanel({
         (
             data: {
                 messages: unknown[]
-                xmlSnapshots: [number, string][]
                 diagramXml: string
                 diagramHistory?: { svg: string; xml: string }[]
                 excalidrawScene?: ExcalidrawScene
@@ -576,7 +554,6 @@ export default function ChatPanel({
                 )
                 loadedMessageIdsRef.current = new Set(messageIds)
                 setMessages(data.messages as any)
-                xmlSnapshotsRef.current = new Map(data.xmlSnapshots)
                 if (hasRealDiagram) {
                     onDisplayChart(data.diagramXml, true)
                     chartXMLRef.current = data.diagramXml
@@ -593,7 +570,6 @@ export default function ChatPanel({
             } else {
                 loadedMessageIdsRef.current = new Set()
                 setMessages([])
-                xmlSnapshotsRef.current.clear()
                 clearDiagram()
                 // Clear refs to prevent stale data from being saved
                 chartXMLRef.current = ""
@@ -648,7 +624,6 @@ export default function ChatPanel({
             }
         return {
             messages: sanitizeMessages(messagesRef.current),
-            xmlSnapshots: Array.from(xmlSnapshotsRef.current.entries()),
             diagramXml: currentDiagramXml,
             excalidrawScene: currentExcalidraw,
             thumbnailDataUrl,
@@ -988,23 +963,10 @@ export default function ChatPanel({
                 // Add the combined text as the first part
                 parts.unshift({ type: "text", text: userText })
 
-                // Get previous XML from the last snapshot (before this message)
-                const snapshotKeys = Array.from(
-                    xmlSnapshotsRef.current.keys(),
-                ).sort((a, b) => b - a)
-                const previousXml =
-                    snapshotKeys.length > 0
-                        ? xmlSnapshotsRef.current.get(snapshotKeys[0]) || ""
-                        : ""
-
-                // Save XML snapshot for this message (will be at index = current messages.length)
-                const messageIndex = messages.length
-                xmlSnapshotsRef.current.set(messageIndex, chartXml)
-
                 sendChatMessage(
                     parts,
                     chartXml,
-                    previousXml,
+                    "",  // previousXml no longer needed
                     sessionId,
                     activeEngine,
                 )
@@ -1189,7 +1151,6 @@ export default function ChatPanel({
             .toString(36)
             .slice(2, 9)}`
         setSessionId(newSessionId)
-        xmlSnapshotsRef.current.clear()
         sessionStorage.removeItem(SESSION_STORAGE_INPUT_KEY)
         // toast.success(dict.dialogs.clearSuccess)
         debugLog("newChat created", newSessionId)
@@ -1301,7 +1262,6 @@ export default function ChatPanel({
                     .toString(36)
                     .slice(2, 9)}`
                 setSessionId(newSessionId)
-                xmlSnapshotsRef.current.clear()
                 sessionStorage.removeItem(SESSION_STORAGE_INPUT_KEY)
 
                 // 清除 URL
