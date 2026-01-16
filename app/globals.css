@@ -503,3 +503,47 @@
     );
     background-size: 300% 100%;
 }
+
+
+/* ============================================
+   PLACEHOLDER CAROUSEL ANIMATIONS
+   ============================================ */
+
+/* Horizontal scrolling animation for long placeholder text */
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    /* Pause at start */
+    10% {
+        transform: translateX(0);
+    }
+    /* Scroll to end */
+    80% {
+        transform: translateX(calc(-100% + 200px));
+    }
+    /* Pause at end */
+    90% {
+        transform: translateX(calc(-100% + 200px));
+    }
+    /* Quick reset */
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.animate-marquee {
+    animation: marquee 6s linear infinite;
+}
+
+/* Pause marquee animation on hover */
+.animate-marquee:hover {
+    animation-play-state: paused;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .animate-marquee {
+        animation: none;
+    }
+}

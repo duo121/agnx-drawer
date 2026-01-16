@@ -301,5 +301,15 @@
         "showUnvalidatedModels": "显示未验证的模型",
         "allModelsShown": "显示所有模型（包括未验证的）",
         "unvalidatedModelWarning": "此模型尚未验证"
+    },
+    "placeholderTips": {
+        "tips": [
+            "⌨️ 输入 / 打开工具箱",
+            "📄 将论文总结为图表",
+            "⚡ 带动画的 Transformer 架构",
+            "☁️ 绘制 AWS 架构图",
+            "🔀 复制流程图",
+            "🐱 画一只猫"
+        ]
     }
 }

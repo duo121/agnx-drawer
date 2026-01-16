@@ -906,8 +906,6 @@ export function ChatMessageDisplay({
                     sessions={sessions}
                     onSelectSession={onSelectSession || (() => {})}
                     onDeleteSession={onDeleteSession}
-                    setInput={setInput}
-                    setFiles={setFiles}
                     currentEngine={currentEngine}
                     dict={dict}
                 />

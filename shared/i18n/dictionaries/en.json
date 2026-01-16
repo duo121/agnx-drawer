@@ -301,5 +301,15 @@
         "showUnvalidatedModels": "Show unvalidated models",
         "allModelsShown": "All models are shown (including unvalidated)",
         "unvalidatedModelWarning": "This model has not been validated"
+    },
+    "placeholderTips": {
+        "tips": [
+            "⌨️ Type / to open toolbox",
+            "📄 Summarize paper as diagram",
+            "⚡ Transformer with animations",
+            "☁️ Draw AWS architecture",
+            "🔀 Replicate flowchart",
+            "🐱 Draw a cat"
+        ]
     }
 }

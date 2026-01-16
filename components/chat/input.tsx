@@ -18,17 +18,24 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import type React from "react"
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
 import { ButtonWithTooltip } from "@/components/button-with-tooltip"
+import { PlaceholderCarousel } from "@/components/chat/placeholder-carousel"
 import { Toolbox, type ToolboxRef } from "@/components/toolbox"
 
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useChatInput, type UseChatInputOptions } from "@/hooks/use-chat-input"
 import type { UseModelConfigReturn } from "@/hooks/use-model-config"
+import {
+    type TipItem,
+    type ExampleTip,
+    isExampleTip,
+} from "@/hooks/use-placeholder-carousel"
 import { isPdfFile, isTextFile, type UrlData } from "@/shared/extract-content"
 import type { FlattenedModel } from "@/shared/types/model-config"
 import { cn } from "@/shared/utils"
+import { getAssetUrl } from "@/shared/base-path"
 import { IMAGE_STYLES, type ImageStyleId } from "../file-preview-list"
 
 interface ChatInputProps extends UseChatInputOptions {
@@ -132,6 +139,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
         // 状态设置
         setToolboxSearchQuery,
         setFocusArea,
+        setIsToolboxOpen,
         toolboxKeyHandlerRef,
         // 事件处理
         handleChange,
@@ -182,6 +190,16 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
 
     // 发送按钮悬浮状态（用于加载时显示停止按钮）
     const [isSendButtonHovered, setIsSendButtonHovered] = useState(false)
+
+    // 输入框悬浮状态（用于控制轮播暂停）
+    const [isInputHovered, setIsInputHovered] = useState(false)
+    
+    // 输入框聚焦状态（用于控制轮播暂停）
+    const [isInputFocused, setIsInputFocused] = useState(false)
+
+    // 输入框容器 ref（用于获取宽度）
+    const inputContainerRef = useRef<HTMLDivElement>(null)
+    const [inputContainerWidth, setInputContainerWidth] = useState(0)
 
     // 图片预览弹窗
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
@@ -242,6 +260,144 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
             setImageStyle("original")
         }
     }, [hasImages])
+
+    // 监听输入框容器宽度变化
+    useEffect(() => {
+        const container = inputContainerRef.current
+        if (!container) return
+
+        const updateWidth = () => {
+            setInputContainerWidth(container.clientWidth)
+        }
+
+        updateWidth()
+        const resizeObserver = new ResizeObserver(updateWidth)
+        resizeObserver.observe(container)
+
+        return () => resizeObserver.disconnect()
+    }, [])
+
+    // 构建提示语列表（从 i18n 字典获取内容）
+    // Requirements: 7.1, 7.2, 7.3, 7.4
+    const tipItems: TipItem[] = useMemo(() => {
+        const tipsArray = dict.placeholderTips?.tips as string[] | undefined
+        if (!tipsArray || tipsArray.length === 0) return []
+
+        // 文件加载函数
+        const loadArchitectureImage = async (): Promise<File[]> => {
+            const response = await fetch(getAssetUrl("/architecture.png"))
+            const blob = await response.blob()
+            return [new File([blob], "architecture.png", { type: "image/png" })]
+        }
+
+        const loadFlowchartImage = async (): Promise<File[]> => {
+            const response = await fetch(getAssetUrl("/example.png"))
+            const blob = await response.blob()
+            return [new File([blob], "example.png", { type: "image/png" })]
+        }
+
+        const loadPaperFile = async (): Promise<File[]> => {
+            const response = await fetch(getAssetUrl("/chain-of-thought.txt"))
+            const blob = await response.blob()
+            return [new File([blob], "chain-of-thought.txt", { type: "text/plain" })]
+        }
+
+        // 提示语配置：displayText 从字典获取，fillText 和 files 在这里定义
+        const tipConfigs: Array<{ fillText: string; files?: () => Promise<File[]> }> = [
+            { fillText: '/' },  // 输入 / 打开工具箱
+            { fillText: 'Summarize this paper as a diagram', files: loadPaperFile },  // 论文转图表
+            { fillText: "Give me a **animated connector** diagram of transformer's architecture" },  // 动画图表
+            { fillText: 'Replicate this in aws style', files: loadArchitectureImage },  // AWS 架构
+            { fillText: 'Replicate this flowchart.', files: loadFlowchartImage },  // 复制流程图
+            { fillText: 'Draw a cat for me' },  // 画猫
+        ]
+
+        return tipsArray.map((displayText, index) => ({
+            id: `tip-${index}`,
+            type: 'example' as const,
+            displayText,
+            fillText: tipConfigs[index]?.fillText || displayText,
+            files: tipConfigs[index]?.files,
+        })).filter(tip => tip.displayText)
+    }, [dict.placeholderTips])
+
+    // 计算轮播可见性条件
+    // Requirements: 6.1, 6.2, 6.3, 6.4
+    const isCarouselVisible = useMemo(() => {
+        // 输入框有内容时不显示
+        if (input && input.trim().length > 0) return false
+        // 加载状态时不显示
+        if (status === 'streaming' || status === 'submitted') return false
+        // 有文件时不显示
+        if (hasFiles) return false
+        // 工具箱打开时不显示
+        if (isToolboxOpen) return false
+        // 多行模式时不显示
+        if (isMultiLineMode) return false
+        return true
+    }, [input, status, hasFiles, isToolboxOpen, isMultiLineMode])
+
+    // Tab 填充回调
+    // Requirements: 9.1, 9.2, 9.3, 9.4
+    const handleTabFill = useCallback(async (tip: TipItem) => {
+        const fillText = tip.fillText
+        
+        // 特殊处理：如果填充的是 /，触发工具箱
+        if (fillText === '/') {
+            // 设置输入内容
+            const syntheticEvent = {
+                target: { value: '/' },
+            } as React.ChangeEvent<HTMLTextAreaElement>
+            handleChange(syntheticEvent)
+            
+            // 打开工具箱
+            setIsToolboxOpen(true)
+            setToolboxSearchQuery('')
+            
+            // 聚焦输入框
+            requestAnimationFrame(() => {
+                if (textareaRef.current) {
+                    textareaRef.current.focus()
+                    textareaRef.current.selectionStart = 1
+                    textareaRef.current.selectionEnd = 1
+                }
+            })
+            return
+        }
+        
+        // 设置输入内容
+        const syntheticEvent = {
+            target: { value: fillText },
+        } as React.ChangeEvent<HTMLTextAreaElement>
+        handleChange(syntheticEvent)
+
+        // 检测是否需要切换到多行模式
+        // Requirements: 9.1, 9.2, 9.3
+        const needsMultiLine = fillText.includes('\n') || fillText.length > 50
+
+        // 如果有关联文件，加载文件并切换到多行模式
+        // Requirements: 9.4
+        if (tip.files) {
+            try {
+                const loadedFiles = await tip.files()
+                if (loadedFiles.length > 0) {
+                    onFileChange([...files, ...loadedFiles])
+                }
+            } catch (error) {
+                console.warn('Failed to load associated files:', error)
+            }
+        }
+
+        // 聚焦输入框
+        requestAnimationFrame(() => {
+            if (textareaRef.current) {
+                textareaRef.current.focus()
+                const len = fillText.length
+                textareaRef.current.selectionStart = len
+                textareaRef.current.selectionEnd = len
+            }
+        })
+    }, [handleChange, files, onFileChange, textareaRef, setIsToolboxOpen, setToolboxSearchQuery])
 
     // 格式化字数
     const formatCharCount = (count: number): string => {
@@ -695,7 +851,11 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
                     </>
                 ) : (
                     /* 单行模式：[+] [输入框] [↑] */
-                    <div className="flex items-center px-2 py-1.5">
+                    <div 
+                        className="flex items-center px-2 py-1.5"
+                        onMouseEnter={() => setIsInputHovered(true)}
+                        onMouseLeave={() => setIsInputHovered(false)}
+                    >
                         <ButtonWithTooltip
                             type="button"
                             variant="ghost"
@@ -716,18 +876,36 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
 
                         {HiddenFileInput}
 
-                        <Textarea
-                            ref={textareaRef}
-                            value={input || ""}
-                            onChange={handleChange}
-                            onKeyDown={handleKeyDown}
-                            onPaste={handlePaste}
-                            placeholder={dict.chat.placeholder}
-                            aria-label="Chat input"
-                            rows={1}
-                            style={{ height: '40px', minHeight: '40px', maxHeight: '40px' }}
-                            className="flex-1 resize-none border-0 border-none! bg-transparent py-2 px-2 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-none placeholder:text-muted-foreground/60 overflow-hidden min-h-0!"
-                        />
+                        {/* 输入框容器 - 包含 Textarea 和 PlaceholderCarousel */}
+                        <div 
+                            ref={inputContainerRef}
+                            className="flex-1 relative"
+                        >
+                            <Textarea
+                                ref={textareaRef}
+                                value={input || ""}
+                                onChange={handleChange}
+                                onKeyDown={handleKeyDown}
+                                onPaste={handlePaste}
+                                onFocus={() => setIsInputFocused(true)}
+                                onBlur={() => setIsInputFocused(false)}
+                                placeholder={isCarouselVisible ? "" : dict.chat.placeholder}
+                                aria-label="Chat input"
+                                rows={1}
+                                style={{ height: '40px', minHeight: '40px', maxHeight: '40px' }}
+                                className="w-full resize-none border-0 border-none! bg-transparent py-2 px-2 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-none placeholder:text-muted-foreground/60 overflow-hidden min-h-0!"
+                            />
+                            
+                            {/* 占位符轮播 */}
+                            <PlaceholderCarousel
+                                tips={tipItems}
+                                isVisible={isCarouselVisible}
+                                isPaused={isInputHovered || isInputFocused}
+                                containerWidth={inputContainerWidth}
+                                onTabFill={handleTabFill}
+                                className="px-2"
+                            />
+                        </div>
 
                         {/* 发送/停止按钮 */}
                         {isLoading ? (

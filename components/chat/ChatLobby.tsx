@@ -2,8 +2,6 @@
 
 import {
     Check,
-    ChevronDown,
-    ChevronUp,
     MessageSquare,
     Search,
     Trash2,
@@ -11,7 +9,6 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
-import ExamplePanel from "./example-panel"
 
 interface SessionMetadata {
     id: string
@@ -26,8 +23,6 @@ interface ChatLobbyProps {
     sessions: SessionMetadata[]
     onSelectSession: (id: string) => void
     onDeleteSession?: (id: string) => void
-    setInput: (input: string) => void
-    setFiles: (files: File[]) => void
     currentEngine?: string
     dict: {
         sessionHistory?: {
@@ -37,9 +32,6 @@ interface ChatLobbyProps {
             justNow?: string
             deleteTitle?: string
             deleteDescription?: string
-        }
-        examples?: {
-            quickExamples?: string
         }
         common: {
             delete: string
@@ -73,13 +65,9 @@ export function ChatLobby({
     sessions,
     onSelectSession,
     onDeleteSession,
-    setInput,
-    setFiles,
     currentEngine = "drawio",
     dict,
 }: ChatLobbyProps) {
-    // Track whether examples section is expanded (collapsed by default when there's history)
-    const [examplesExpanded, setExamplesExpanded] = useState(false)
     // Track which session is in delete confirmation state
     const [sessionToDelete, setSessionToDelete] = useState<string | null>(null)
     // Search filter for history
@@ -104,8 +92,8 @@ export function ChatLobby({
     }, [sessionToDelete])
 
     if (!hasHistory) {
-        // Show full examples when no history
-        return <ExamplePanel setInput={setInput} setFiles={setFiles} />
+        // No history - return null, let parent show input with placeholder carousel
+        return null
     }
 
     // Show history + collapsible examples when there are sessions
@@ -315,34 +303,6 @@ export function ChatLobby({
                         )}
                 </div>
             </div>
-
-            {/* Collapsible Examples Section */}
-            <div className="border-t border-border/50 pt-4">
-                <button
-                    type="button"
-                    onClick={() => setExamplesExpanded(!examplesExpanded)}
-                    className="w-full flex items-center justify-between px-1 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors"
-                >
-                    <span>
-                        {dict.examples?.quickExamples || "Quick Examples"}
-                    </span>
-                    {examplesExpanded ? (
-                        <ChevronUp className="w-4 h-4" />
-                    ) : (
-                        <ChevronDown className="w-4 h-4" />
-                    )}
-                </button>
-                {examplesExpanded && (
-                    <div className="mt-2">
-                        <ExamplePanel
-                            setInput={setInput}
-                            setFiles={setFiles}
-                            minimal
-                        />
-                    </div>
-                )}
-            </div>
-
         </div>
     )
 }
