@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Background gradient circle -->
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="sparkle-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffed4e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bg-gradient)"/>
+  
+  <!-- Canvas/Board elements (white) -->
+  <g stroke="#ffffff" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="100" y="100" width="140" height="140" rx="16"/>
+    <rect x="260" y="100" width="152" height="100" rx="16"/>
+    <rect x="100" y="260" width="100" height="152" rx="16"/>
+    <rect x="220" y="200" width="192" height="192" rx="16"/>
+  </g>
+  
+  <!-- AI Sparkles -->
+  <g fill="url(#sparkle-gradient)" stroke="none">
+    <!-- Large sparkle top-left -->
+    <path d="M 120 60 L 130 90 L 160 100 L 130 110 L 120 140 L 110 110 L 80 100 L 110 90 Z"/>
+    <!-- Medium sparkle top-right -->
+    <path d="M 400 180 L 406 198 L 424 204 L 406 210 L 400 228 L 394 210 L 376 204 L 394 198 Z"/>
+    <!-- Medium sparkle bottom-left -->
+    <path d="M 180 420 L 186 438 L 204 444 L 186 450 L 180 468 L 174 450 L 156 444 L 174 438 Z"/>
+    <!-- Small sparkle bottom-right -->
+    <path d="M 440 360 L 444 372 L 456 376 L 444 380 L 440 392 L 436 380 L 424 376 L 436 372 Z"/>
+  </g>
+</svg>

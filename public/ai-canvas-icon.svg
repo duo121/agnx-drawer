@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Canvas/Board elements -->
+  <rect x="3" y="3" width="8" height="8" rx="1.5"/>
+  <rect x="13" y="3" width="8" height="5" rx="1.5"/>
+  <rect x="3" y="13" width="5" height="8" rx="1.5"/>
+  <rect x="10" y="10.5" width="11" height="10.5" rx="1.5"/>
+  
+  <!-- AI Sparkles -->
+  <path d="M6 2 L6.5 3.5 L8 4 L6.5 4.5 L6 6 L5.5 4.5 L4 4 L5.5 3.5 Z" fill="currentColor" stroke="none"/>
+  <path d="M20 9 L20.3 9.7 L21 10 L20.3 10.3 L20 11 L19.7 10.3 L19 10 L19.7 9.7 Z" fill="currentColor" stroke="none"/>
+  <path d="M9 20 L9.3 20.7 L10 21 L9.3 21.3 L9 22 L8.7 21.3 L8 21 L8.7 20.7 Z" fill="currentColor" stroke="none"/>
+</svg>

@@ -1,0 +1,88 @@
+# ===== 临时 =====
+/docs
+/electron
+/resources
+
+# ===== 文档 =====
+docs/legacy
+docs/bugs
+docs/features
+docs/features-legacy
+docs/guides
+docs/vibe
+
+# ===== 依赖 =====
+node_modules/
+packages/
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ===== 构建产物 =====
+# Next.js
+/.next/
+/out/
+/build/
+.open-next/
+
+# Electron
+/dist-electron/
+/release/
+/electron-standalone/
+*.dmg
+*.exe
+*.AppImage
+*.deb
+*.rpm
+*.snap
+/dist
+
+# Tauri
+/src-tauri/target/
+
+# ===== 环境变量 =====
+.env
+.env.*
+.env*.local
+.dev.vars
+
+# ===== 缓存和临时文件 =====
+.wrangler/
+.vercel/
+.edgeone/
+*.tsbuildinfo
+/ref
+
+# ===== 非 Vercel 部署配置（暂时忽略）=====
+edgeone.json
+wrangler.jsonc
+open-next.config.ts
+edge-functions/
+
+# ===== 调试日志 =====
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ===== 系统文件 =====
+.DS_Store
+*.pem
+
+# ===== IDE 和工具 =====
+.claude/
+.kiro/
+.vscode/
+.spec-workflow
+CLAUDE.md
+
+# ===== 自动生成 =====
+next-env.d.ts
+
+# ===== 自定义脚本 =====
+push-via-ec2.sh
+

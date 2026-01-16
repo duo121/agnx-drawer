@@ -1,0 +1,208 @@
+/**
+ * Unified Drawing Agent - System Prompt Builder
+ *
+ * 构建统一智能体的系统提示词，包含：
+ * 1. 角色定义（固定）
+ * 2. 场景感知与意图识别（固定）
+ * 3. 共享工具说明（固定）
+ * 4. 引擎专用提示词（根据 engineId 动态加载）
+ * 5. 工作流程示例（固定）
+ */
+
+import * as fs from "fs"
+import * as path from "path"
+import type { CanvasType, UserIntent } from "../skills/intent-parser"
+
+// ============================================================================
+// Part 1: Role Definition (~100 tokens, fixed)
+// ============================================================================
+const ROLE_DEFINITION = `You are a professional diagram creation assistant, an AI agent specialized in creating visual diagrams through precise specifications.
+You can see images that users upload, and you can read the text content extracted from PDF documents they upload.
+You have access to multiple diagram engines and can switch between them based on user needs.`
+
+// ============================================================================
+// Part 2: Context Awareness & Intent Recognition (~200 tokens, fixed)
+// ============================================================================
+const CONTEXT_AWARENESS = `## App Context
+You are inside a web-based diagram editor. The interface has:
+- **Left panel**: Diagram canvas where diagrams are rendered
+- **Right panel**: Chat interface where you communicate with the user
+
+## Intent Recognition
+Before creating or editing diagrams, analyze the user's request to determine:
+
+1. **Canvas preference**: Does the user explicitly request a specific engine?
+   - Draw.io keywords: "draw.io", "drawio", "professional", "icons"
+   - Excalidraw keywords: "excalidraw", "hand-drawn", "sketch", "whiteboard", "手绘", "草图"
+
+2. **DSL preference**: Is the user providing DSL code?
+   - PlantUML: @startuml/@enduml, /plantuml → requires Draw.io
+   - Mermaid: flowchart TD, sequenceDiagram, /mermaid → requires Excalidraw
+
+3. **Icon requirements**: Does the diagram need specific icon libraries?
+   - Cloud: AWS, Azure, GCP keywords
+   - Infrastructure: Kubernetes, network, Cisco keywords
+
+If the current canvas doesn't match the requirement, use switch_canvas tool first.`
+
+// ============================================================================
+// Part 3: Shared Tools (~150 tokens, fixed)
+// ============================================================================
+const SHARED_TOOLS_SECTION = `## Shared Tools (available on all engines)
+
+### switch_canvas
+Switch to a different diagram engine when needed.
+- Use when: User requests specific engine, DSL requires specific engine, or diagram type is better suited for another engine
+- Parameters: { target: "drawio" | "excalidraw", reason: string }
+- After calling: Wait for canvas switch before generating content
+
+### list_icon_libraries
+List available icon libraries for the current engine.
+- Use when: User asks about available icons or diagram types
+
+### read_skill_file
+Read skill documentation to learn specific diagram techniques.
+- Use when: Need syntax reference for DSL, icon usage, or diagram patterns
+- First read 'skills/_index.md' to discover available skills
+- Common paths:
+  - _dsl/plantuml/SKILL.md - PlantUML syntax
+  - _dsl/mermaid/SKILL.md - Mermaid syntax
+  - icons/aws/SKILL.md - AWS icons
+  - flowchart/SKILL.md - Flowchart patterns`
+
+// ============================================================================
+// Part 4: Engine Section (dynamically loaded based on engineId)
+// ============================================================================
+// This is loaded from skills/_engines/{engineId}/SKILL.md
+
+// ============================================================================
+// Part 5: Workflow Examples (~100 tokens, fixed)
+// ============================================================================
+const WORKFLOW_EXAMPLES = `## Workflow Examples
+
+### Example 1: User requests AWS architecture diagram (on Excalidraw)
+1. Recognize "AWS" keyword → need Draw.io for icons
+2. Call switch_canvas(target="drawio", reason="AWS icons require Draw.io")
+3. Wait for switch, then use display_drawio to create diagram
+
+### Example 2: User provides Mermaid code (on Draw.io)
+1. Recognize Mermaid syntax → need Excalidraw
+2. Call switch_canvas(target="excalidraw", reason="Mermaid requires Excalidraw")
+3. Wait for switch, then use convert_mermaid_to_excalidraw
+
+### Example 3: User asks to create a flowchart (current engine is fine)
+1. No switch needed
+2. Read flowchart skill if needed: read_skill_file("flowchart/SKILL.md")
+3. Generate diagram using current engine's tools`
+
+// ============================================================================
+// System Prompt Builder
+// ============================================================================
+
+interface BuildOptions {
+    engineId: CanvasType
+    modelId?: string
+    minimalStyle?: boolean
+    canvasTheme?: string
+    userIntent?: UserIntent
+}
+
+/**
+ * Load engine-specific SKILL.md content
+ */
+function loadEngineSkill(engineId: CanvasType): string {
+    const skillsDir = path.join(process.cwd(), "skills")
+    const skillPath = path.join(skillsDir, "_engines", engineId, "SKILL.md")
+
+    try {
+        const content = fs.readFileSync(skillPath, "utf-8")
+        // Strip frontmatter
+        const stripped = content.replace(/^---[\s\S]*?---\s*/, "")
+        return stripped.trim()
+    } catch (error) {
+        console.warn(`[UnifiedAgent] Failed to load engine skill: ${skillPath}`)
+        return ""
+    }
+}
+
+/**
+ * Build the unified agent system prompt
+ */
+export function buildUnifiedSystemPrompt(options: BuildOptions): string {
+    const { engineId, modelId, minimalStyle, canvasTheme, userIntent } = options
+
+    const parts: string[] = []
+
+    // Part 1: Role Definition
+    parts.push(ROLE_DEFINITION)
+
+    // Part 2: Context Awareness
+    parts.push(CONTEXT_AWARENESS)
+
+    // Part 3: Shared Tools
+    parts.push(SHARED_TOOLS_SECTION)
+
+    // Part 4: Engine-specific section
+    const engineSkill = loadEngineSkill(engineId)
+    if (engineSkill) {
+        parts.push(`## Current Engine: ${engineId === "drawio" ? "Draw.io" : "Excalidraw"}\n\n${engineSkill}`)
+    }
+
+    // Part 5: Workflow Examples
+    parts.push(WORKFLOW_EXAMPLES)
+
+    // Add intent context if available
+    if (userIntent) {
+        const intentHints: string[] = []
+        if (userIntent.dslPreference !== "none") {
+            intentHints.push(`User is using ${userIntent.dslPreference.toUpperCase()} DSL`)
+        }
+        if (userIntent.requiredIconLibraries.length > 0) {
+            intentHints.push(`Detected icon requirements: ${userIntent.requiredIconLibraries.join(", ")}`)
+        }
+        if (intentHints.length > 0) {
+            parts.push(`## Current Request Context\n${intentHints.join("\n")}`)
+        }
+    }
+
+    // Add minimal style instruction if enabled
+    if (minimalStyle) {
+        parts.unshift(`## ⚠️ MINIMAL STYLE MODE ACTIVE
+- NO colors, NO fills - use only black/white
+- Focus on layout and structure
+- Skip styling attributes`)
+    }
+
+    // Join all parts
+    let prompt = parts.join("\n\n")
+
+    // Replace placeholders
+    prompt = prompt.replace(/{{MODEL_NAME}}/g, modelId || "AI")
+
+    // Handle Excalidraw text color based on theme
+    if (engineId === "excalidraw" && canvasTheme) {
+        const isDarkTheme = canvasTheme === "dark"
+        const recommendedTextColor = isDarkTheme ? "#1e293b" : "#e2e8f0"
+        prompt = prompt.replace(/{{TEXT_COLOR}}/g, recommendedTextColor)
+
+        const textColorInstruction = isDarkTheme
+            ? "For text elements, RECOMMENDED strokeColor is #1e293b (dark gray). Due to Excalidraw's color inversion in dark mode, this will render as light text."
+            : "For text elements, RECOMMENDED strokeColor is #e2e8f0 (light gray) for readability on light canvas."
+        prompt = prompt.replace(/{{TEXT_COLOR_INSTRUCTION}}/g, textColorInstruction)
+    }
+
+    return prompt
+}
+
+/**
+ * Get the estimated token count for a prompt
+ * (rough estimate: ~4 chars per token for English, ~2 chars for Chinese)
+ */
+export function estimateTokenCount(prompt: string): number {
+    // Count ASCII and non-ASCII characters separately
+    const asciiChars = prompt.replace(/[^\x00-\x7F]/g, "").length
+    const nonAsciiChars = prompt.length - asciiChars
+
+    // Rough estimation
+    return Math.ceil(asciiChars / 4 + nonAsciiChars / 2)
+}

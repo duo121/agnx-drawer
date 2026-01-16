@@ -1,0 +1,869 @@
+import type { MutableRefObject } from "react"
+import { isMxCellXmlComplete, wrapWithMxFile } from "@/shared/utils"
+import {
+    convertPlantUMLToDrawio,
+    encodePlantUML,
+} from "@/shared/script-convertor"
+
+const DEBUG = process.env.NODE_ENV === "development"
+
+interface ToolCall {
+    toolCallId: string
+    toolName: string
+    input: unknown
+}
+
+type AddToolOutputSuccess = {
+    tool: string
+    toolCallId: string
+    state?: "output-available"
+    output: any
+    errorText?: undefined
+}
+
+type AddToolOutputError = {
+    tool: string
+    toolCallId: string
+    state: "output-error"
+    output?: undefined
+    errorText: string
+}
+
+type AddToolOutputParams = AddToolOutputSuccess | AddToolOutputError
+
+type AddToolOutputFn = (params: AddToolOutputParams) => void
+
+interface DiagramOperation {
+    operation: "update" | "add" | "delete"
+    cell_id: string
+    new_xml?: string
+}
+
+interface UseDiagramToolHandlersParams {
+    partialXmlRef: MutableRefObject<string>
+    editDiagramOriginalXmlRef: MutableRefObject<Map<string, string>>
+    chartXMLRef: MutableRefObject<string>
+    onDisplayChart: (xml: string, skipValidation?: boolean) => string | null
+    onFetchChart: (saveToHistory?: boolean) => Promise<string>
+    onExport: () => void
+    onSelectCells?: (ids?: string[]) => void
+    getExcalidrawScene?: () => any
+    setExcalidrawScene?: (scene: any) => Promise<void>
+    appendExcalidrawElements?: (
+        elements: any[],
+        options?: { selectIds?: string[] },
+    ) => Promise<{ newIds: string[] }>
+    editExcalidrawByOperations?: (
+        operations: any[],
+    ) => Promise<{ newIds: string[] }>
+    selectExcalidrawElements?: (ids?: string[]) => void
+    // Excalidraw 历史记录
+    pushExcalidrawHistory?: (label?: string) => Promise<void>
+    // 画板切换
+    onSwitchCanvas?: (targetEngine: "drawio" | "excalidraw", reason?: string) => void
+}
+
+const ensureExcalidrawElements = (elements: any[] = []) => {
+    const toNumber = (val: any, fallback: number) =>
+        typeof val === "number" && Number.isFinite(val) ? val : fallback
+    return elements
+        .filter((el) => el && typeof el === "object")
+        .map((el) => {
+            const width = toNumber(el.width, 100)
+            const height = toNumber(el.height, 60)
+            return {
+                version: el?.version ?? 1,
+                versionNonce:
+                    el?.versionNonce ??
+                    Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
+                updated: el?.updated ?? Date.now(),
+                ...el,
+                x: toNumber(el?.x, 0),
+                y: toNumber(el?.y, 0),
+                width,
+                height,
+                angle: toNumber(el?.angle, 0),
+                strokeWidth: toNumber(el?.strokeWidth, 2),
+                roughness: toNumber(el?.roughness, 0),
+                opacity: toNumber(el?.opacity, 100),
+                // 确保 groupIds 是数组
+                groupIds: Array.isArray(el?.groupIds) ? el.groupIds : [],
+                // 确保 boundElements 是数组
+                boundElements: Array.isArray(el?.boundElements) ? el.boundElements : [],
+            }
+        })
+}
+
+/**
+ * Hook that creates the onToolCall handler for diagram-related tools.
+ * Handles display_drawio, edit_drawio, append_drawio, and Excalidraw tools.
+ *
+ * Note: addToolOutput is passed at call time (not hook init) because
+ * it comes from useChat which creates a circular dependency.
+ */
+export function useDiagramToolHandlers({
+    partialXmlRef,
+    editDiagramOriginalXmlRef,
+    chartXMLRef,
+    onDisplayChart,
+    onFetchChart,
+    onExport,
+    onSelectCells,
+    getExcalidrawScene,
+    setExcalidrawScene,
+    appendExcalidrawElements,
+    editExcalidrawByOperations,
+    selectExcalidrawElements,
+    pushExcalidrawHistory,
+    onSwitchCanvas,
+}: UseDiagramToolHandlersParams) {
+    const handleToolCall = async (
+        { toolCall }: { toolCall: ToolCall },
+        addToolOutput: AddToolOutputFn,
+    ) => {
+        console.log(
+            `[onToolCall] 收到工具调用: ${toolCall.toolName}, CallId: ${toolCall.toolCallId}`,
+        )
+        console.log(`[onToolCall] Tool call 完整数据:`, JSON.stringify(toolCall, null, 2))
+
+        // DrawIO tools
+        if (toolCall.toolName === "display_drawio") {
+            await handleDisplayDrawio(toolCall, addToolOutput)
+        } else if (toolCall.toolName === "edit_drawio") {
+            await handleEditDrawio(toolCall, addToolOutput)
+        } else if (toolCall.toolName === "append_drawio") {
+            handleAppendDrawio(toolCall, addToolOutput)
+        } else if (toolCall.toolName === "convert_plantuml_to_drawio") {
+            await handlePlantUML(toolCall, addToolOutput)
+        } else if (toolCall.toolName === "display_excalidraw") {
+            await handleDisplayExcalidraw(toolCall, addToolOutput)
+        } else if (toolCall.toolName === "append_excalidraw") {
+            await handleAppendExcalidraw(toolCall, addToolOutput)
+        } else if (toolCall.toolName === "edit_excalidraw") {
+            await handleEditExcalidraw(toolCall, addToolOutput)
+        } else if (toolCall.toolName === "convert_mermaid_to_excalidraw") {
+            console.log(`[onToolCall] 开始执行 handleMermaid`)
+            await handleMermaid(toolCall, addToolOutput)
+        // Shared tools
+        } else if (toolCall.toolName === "switch_canvas") {
+            handleSwitchCanvas(toolCall, addToolOutput)
+        } else {
+            console.warn(`[onToolCall] 未知的工具名称: ${toolCall.toolName}`)
+        }
+    }
+
+    const handleSwitchCanvas = (
+        toolCall: ToolCall,
+        addToolOutput: AddToolOutputFn,
+    ) => {
+        const { target, reason } = toolCall.input as { target: "drawio" | "excalidraw"; reason?: string }
+
+        if (!onSwitchCanvas) {
+            addToolOutput({
+                tool: "switch_canvas",
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText: "Canvas switching is not available in this context.",
+            })
+            return
+        }
+
+        try {
+            onSwitchCanvas(target, reason)
+            addToolOutput({
+                tool: "switch_canvas",
+                toolCallId: toolCall.toolCallId,
+                output: {
+                    success: true,
+                    targetEngine: target,
+                    message: `Switched to ${target === "drawio" ? "Draw.io" : "Excalidraw"} canvas.${reason ? ` Reason: ${reason}` : ""}`,
+                },
+            })
+        } catch (error) {
+            console.error("[switch_canvas] Failed:", error)
+            addToolOutput({
+                tool: "switch_canvas",
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText: `Failed to switch canvas: ${error instanceof Error ? error.message : String(error)}`,
+            })
+        }
+    }
+
+    const handleDisplayDrawio = async (
+        toolCall: ToolCall,
+        addToolOutput: AddToolOutputFn,
+    ) => {
+        const { xml } = toolCall.input as { xml: string }
+
+        // DEBUG: Log raw input to diagnose false truncation detection
+        if (DEBUG) {
+            console.log(
+                "[display_drawio] XML ending (last 100 chars):",
+                xml.slice(-100),
+            )
+            console.log("[display_drawio] XML length:", xml.length)
+        }
+
+        // Check if XML is truncated (incomplete mxCell indicates truncated output)
+        const isTruncated = !isMxCellXmlComplete(xml)
+        if (DEBUG) {
+            console.log("[display_drawio] isTruncated:", isTruncated)
+        }
+
+        if (isTruncated) {
+            // Store the partial XML for continuation via append_drawio
+            partialXmlRef.current = xml
+
+            // Tell LLM to use append_drawio to continue
+            const partialEnding = partialXmlRef.current.slice(-500)
+            addToolOutput({
+                tool: "display_drawio",
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText: `Output was truncated due to length limits. Use the append_drawio tool to continue.
+
+Your output ended with:
+\`\`\`
+${partialEnding}
+\`\`\`
+
+NEXT STEP: Call append_drawio with the continuation XML.
+- Do NOT include wrapper tags or root cells (id="0", id="1")
+- Start from EXACTLY where you stopped
+- Complete all remaining mxCell elements`,
+            })
+            return
+        }
+
+        // Complete XML received - use it directly
+        // (continuation is now handled via append_drawio tool)
+        const finalXml = xml
+        partialXmlRef.current = "" // Reset any partial from previous truncation
+
+        // Wrap raw XML with full mxfile structure for draw.io
+        const fullXml = wrapWithMxFile(finalXml)
+
+        // loadDiagram validates and returns error if invalid
+        const validationError = onDisplayChart(fullXml)
+
+        if (validationError) {
+            console.warn("[display_drawio] Validation error:", validationError)
+            // Return error to model - sendAutomaticallyWhen will trigger retry
+            if (DEBUG) {
+                console.log(
+                    "[display_drawio] Adding tool output with state: output-error",
+                )
+            }
+            addToolOutput({
+                tool: "display_drawio",
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText: `${validationError}
+
+Please fix the XML issues and call display_drawio again with corrected XML.
+
+Your failed XML:
+\`\`\`xml
+${finalXml}
+\`\`\``,
+            })
+        } else {
+            // Success - diagram will be rendered by chat-message-display
+            if (DEBUG) {
+                console.log(
+                    "[display_drawio] Success! Adding tool output with state: output-available",
+                )
+            }
+            addToolOutput({
+                tool: "display_drawio",
+                toolCallId: toolCall.toolCallId,
+                output: "Successfully displayed the diagram.",
+            })
+            
+            // 自动触发导出以保存到历史记录
+            // 使用 setTimeout 确保图表已完全加载到 DrawIO
+            setTimeout(() => {
+                console.log('[display_drawio] Auto-exporting for history save', {
+                    timestamp: Date.now(),
+                    toolCallId: toolCall.toolCallId
+                })
+                onExport()
+            }, 100)
+            
+            if (DEBUG) {
+                console.log(
+                    "[display_drawio] Tool output added. Diagram should be visible now.",
+                )
+            }
+        }
+    }
+
+    const handleMermaid = async (
+        toolCall: ToolCall,
+        addToolOutput: AddToolOutputFn,
+    ) => {
+        console.log("[handleMermaid] === 开始执行 ===")
+        console.log("[handleMermaid] appendExcalidrawElements:", !!appendExcalidrawElements)
+        
+        // 优先使用服务端返回的结果
+        const result = (toolCall as any).result || {}
+        let elements = result.elements
+        let files = result.files
+        let pngUrl = result.pngUrl as string | undefined
+        let svgUrl = result.svgUrl as string | undefined
+        const code = result.code || (toolCall.input as any)?.code
+        // Get autoInsert from result (server) or input (client fallback), default to true
+        const autoInsert = result.autoInsert ?? (toolCall.input as any)?.autoInsert ?? true
+        
+        if (DEBUG) {
+            console.log("[handleMermaid] Tool call data:", {
+                hasResult: !!result,
+                resultKeys: Object.keys(result),
+                elementsCount: Array.isArray(elements) ? elements.length : 0,
+                hasFiles: !!files,
+                hasPngUrl: !!pngUrl,
+                hasSvgUrl: !!svgUrl,
+                hasCode: !!code,
+                autoInsert,
+            })
+        }
+        
+        if (!code) {
+            addToolOutput({
+                tool: "convert_mermaid_to_excalidraw",
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText: "No Mermaid code provided",
+            })
+            return
+        }
+
+        try {
+            // 如果服务端没有返回结果,则在客户端转换
+            if (!elements || !Array.isArray(elements) || elements.length === 0) {
+                if (DEBUG) {
+                    console.log("[handleMermaid] Server result missing, converting on client")
+                }
+                const { convertMermaidToExcalidraw, buildMermaidImgUrl } = await import(
+                    "@/shared/script-convertor"
+                )
+                
+                const conversionResult = await convertMermaidToExcalidraw(code, {
+                    isDark: false, // TODO: 从主题中获取
+                })
+                
+                elements = conversionResult.elements || []
+                files = conversionResult.files
+                
+                // 生成下载链接
+                if (!pngUrl) {
+                    pngUrl = await buildMermaidImgUrl(code, { format: "png" })
+                }
+                if (!svgUrl) {
+                    svgUrl = await buildMermaidImgUrl(code, { format: "svg" })
+                }
+            }
+            
+            if (!Array.isArray(elements) || elements.length === 0) {
+                addToolOutput({
+                    tool: "convert_mermaid_to_excalidraw",
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText:
+                        "Failed to convert Mermaid: No elements generated. Please check the Mermaid syntax.",
+                })
+                return
+            }
+            
+            if (DEBUG) {
+                console.log("[handleMermaid] URLs:", { pngUrl, svgUrl })
+            }
+
+            // 验证和清理元素
+            const safeElements = ensureExcalidrawElements(elements)
+
+            // If autoInsert is false, return elements without inserting
+            if (!autoInsert) {
+                if (DEBUG) {
+                    console.log("[handleMermaid] autoInsert=false, returning elements without inserting")
+                }
+                addToolOutput({
+                    tool: "convert_mermaid_to_excalidraw",
+                    toolCallId: toolCall.toolCallId,
+                    output: {
+                        code,
+                        elements: safeElements,
+                        files,
+                        pngUrl,
+                        svgUrl,
+                        autoInsert: false,
+                        message: "Conversion complete. Review the elements and call edit_excalidraw to insert with modifications.",
+                    },
+                })
+                return
+            }
+
+            // autoInsert=true: insert into canvas
+            if (!appendExcalidrawElements) {
+                console.error("[handleMermaid] Excalidraw renderer 不可用")
+                addToolOutput({
+                    tool: "convert_mermaid_to_excalidraw",
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText:
+                        "Excalidraw renderer is not ready. Please try again later.",
+                })
+                return
+            }
+
+            // 追加元素到画布并选中（会自动生成新ID并选中）
+            const appendResult = await appendExcalidrawElements(safeElements)
+
+            if (DEBUG) {
+                console.log(
+                    `[handleMermaid] Appended ${appendResult.newIds?.length || safeElements.length} elements`,
+                )
+            }
+
+            // 保存简单对象（不含大数组），支持重新插入
+            const outputData = {
+                code,  // Mermaid 代码，用于重新转换
+                elementsCount: safeElements.length,
+                autoInsert: true,
+                message: `Successfully converted and inserted Mermaid diagram with ${safeElements.length} element(s).`,
+            }
+            
+            console.log("[handleMermaid] 调用 addToolOutput:", {
+                elementsCount: safeElements.length,
+                hasCode: !!code,
+            })
+            
+            addToolOutput({
+                tool: "convert_mermaid_to_excalidraw",
+                toolCallId: toolCall.toolCallId,
+                output: outputData,
+            })
+        } catch (error) {
+            console.error("[handleMermaid] Failed to convert Mermaid:", error)
+            addToolOutput({
+                tool: "convert_mermaid_to_excalidraw",
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText: `Failed to convert Mermaid: ${error instanceof Error ? error.message : String(error)}`,
+            })
+        }
+    }
+
+    const handlePlantUML = async (
+        toolCall: ToolCall,
+        addToolOutput: AddToolOutputFn,
+    ) => {
+        // Server-side execute may return result; fallback to client conversion if missing
+        const result = (toolCall as any).result || {}
+        let xml = result.xml || (toolCall.input as any)?.xml
+        let pngUrl = result.pngUrl as string | undefined
+        let svgUrl = result.svgUrl as string | undefined
+        const code =
+            (result.code as string | undefined) ||
+            (toolCall.input as any)?.code ||
+            (toolCall.input as any)?.text
+        // Get autoInsert from result (server) or input (client fallback), default to true
+        const autoInsert = result.autoInsert ?? (toolCall.input as any)?.autoInsert ?? true
+
+        // If server did not return xml or download URLs, compute client-side
+        if ((!xml || !pngUrl || !svgUrl) && code) {
+            try {
+                if (!xml) {
+                    xml = await convertPlantUMLToDrawio(code)
+                }
+                if (!pngUrl) {
+                    pngUrl = await encodePlantUML(code, { format: "png" })
+                }
+                if (!svgUrl) {
+                    svgUrl = await encodePlantUML(code, { format: "svg" })
+                }
+            } catch (err) {
+                console.warn("[convert_plantuml_to_drawio] client fallback failed:", err)
+            }
+        }
+
+        if (!xml) {
+            addToolOutput({
+                tool: "convert_plantuml_to_drawio",
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText: "No XML returned from PlantUML conversion",
+            })
+            return
+        }
+
+        // If autoInsert is false, return XML without inserting
+        if (!autoInsert) {
+            if (DEBUG) {
+                console.log("[convert_plantuml_to_drawio] autoInsert=false, returning XML without inserting")
+            }
+            addToolOutput({
+                tool: "convert_plantuml_to_drawio",
+                toolCallId: toolCall.toolCallId,
+                output: {
+                    code,
+                    pngUrl,
+                    svgUrl,
+                    xml,
+                    autoInsert: false,
+                    message: "Conversion complete. Review the XML and call edit_drawio to insert with modifications.",
+                },
+            })
+            return
+        }
+
+        // autoInsert=true: insert into canvas
+        const validationError = onDisplayChart(xml, true)
+        if (validationError) {
+            addToolOutput({
+                tool: "convert_plantuml_to_drawio",
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText: validationError,
+            })
+            return
+        }
+        const insertedIds = result.insertedIds as string[] | undefined
+        onSelectCells?.(insertedIds ?? [])
+        addToolOutput({
+            tool: "convert_plantuml_to_drawio",
+            toolCallId: toolCall.toolCallId,
+            output: {
+                code,
+                pngUrl,
+                svgUrl,
+                xml,
+                autoInsert: true,
+                message: "Inserted PlantUML diagram.",
+            },
+        })
+    }
+
+    const handleEditDrawio = async (
+        toolCall: ToolCall,
+        addToolOutput: AddToolOutputFn,
+    ) => {
+        const { operations } = toolCall.input as {
+            operations: DiagramOperation[]
+        }
+
+        let currentXml = ""
+        try {
+            // Use the original XML captured during streaming (shared with chat-message-display)
+            // This ensures we apply operations to the same base XML that streaming used
+            const originalXml = editDiagramOriginalXmlRef.current.get(
+                toolCall.toolCallId,
+            )
+            if (originalXml) {
+                currentXml = originalXml
+            } else {
+                // Fallback: use chartXML from ref if streaming didn't capture original
+                const cachedXML = chartXMLRef.current
+                if (cachedXML) {
+                    currentXml = cachedXML
+                } else {
+                    // Last resort: export from iframe
+                    currentXml = await onFetchChart(false)
+                }
+            }
+
+            const { applyDiagramOperations } = await import("@/shared/utils")
+            const { result: editedXml, errors } = applyDiagramOperations(
+                currentXml,
+                operations,
+            )
+
+            // Check for operation errors
+            if (errors.length > 0) {
+                const errorMessages = errors
+                    .map(
+                        (e) =>
+                            `- ${e.type} on cell_id="${e.cellId}": ${e.message}`,
+                    )
+                    .join("\n")
+
+                addToolOutput({
+                    tool: "edit_drawio",
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText: `Some operations failed:\n${errorMessages}
+
+Current diagram XML:
+\`\`\`xml
+${currentXml}
+\`\`\`
+
+Please check the cell IDs and retry.`,
+                })
+                // Clean up the shared original XML ref
+                editDiagramOriginalXmlRef.current.delete(toolCall.toolCallId)
+                return
+            }
+
+            // loadDiagram validates and returns error if invalid
+            const validationError = onDisplayChart(editedXml)
+            if (validationError) {
+                console.warn(
+                    "[edit_drawio] Validation error:",
+                    validationError,
+                )
+                addToolOutput({
+                    tool: "edit_drawio",
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText: `Edit produced invalid XML: ${validationError}
+
+Current diagram XML:
+\`\`\`xml
+${currentXml}
+\`\`\`
+
+Please fix the operations to avoid structural issues.`,
+                })
+                // Clean up the shared original XML ref
+                editDiagramOriginalXmlRef.current.delete(toolCall.toolCallId)
+                return
+            }
+            onExport()
+            addToolOutput({
+                tool: "edit_drawio",
+                toolCallId: toolCall.toolCallId,
+                output: `Successfully applied ${operations.length} operation(s) to the diagram.`,
+            })
+            // Clean up the shared original XML ref
+            editDiagramOriginalXmlRef.current.delete(toolCall.toolCallId)
+        } catch (error) {
+            console.error("[edit_drawio] Failed:", error)
+
+            const errorMessage =
+                error instanceof Error ? error.message : String(error)
+
+            addToolOutput({
+                tool: "edit_drawio",
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText: `Edit failed: ${errorMessage}
+
+Current diagram XML:
+\`\`\`xml
+${currentXml || "No XML available"}
+\`\`\`
+
+Please check cell IDs and retry, or use display_drawio to regenerate.`,
+            })
+            // Clean up the shared original XML ref even on error
+            editDiagramOriginalXmlRef.current.delete(toolCall.toolCallId)
+        }
+    }
+
+    const handleDisplayExcalidraw = async (
+        toolCall: ToolCall,
+        addToolOutput: AddToolOutputFn,
+    ) => {
+        if (!setExcalidrawScene) {
+            addToolOutput({
+                tool: toolCall.toolName,
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText:
+                    "Excalidraw renderer is not ready. Please try again later.",
+            })
+            return
+        }
+
+        const { elements = [], appState, files } = toolCall.input as any
+        const safeElements = ensureExcalidrawElements(elements || [])
+        await setExcalidrawScene({
+            elements: safeElements,
+            appState,
+            files: safeElements.length === 0 ? {} : files,
+        })
+        if (selectExcalidrawElements) {
+            const ids =
+                Array.isArray(safeElements) && safeElements.length > 0
+                    ? safeElements
+                          .map((el: any) => el?.id)
+                          .filter((id: any) => typeof id === "string")
+                    : []
+            selectExcalidrawElements(ids)
+        }
+
+        // 工具调用成功后保存历史版本
+        if (pushExcalidrawHistory && safeElements.length > 0) {
+            await pushExcalidrawHistory("AI 生成")
+        }
+
+        addToolOutput({
+            tool: toolCall.toolName,
+            toolCallId: toolCall.toolCallId,
+            output: "Excalidraw scene displayed",
+        })
+    }
+
+    const handleAppendExcalidraw = async (
+        toolCall: ToolCall,
+        addToolOutput: AddToolOutputFn,
+    ) => {
+        if (!appendExcalidrawElements) {
+            addToolOutput({
+                tool: toolCall.toolName,
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText:
+                    "Excalidraw renderer is not ready. Please try again later.",
+            })
+            return
+        }
+        const { elements = [] } = toolCall.input as any
+        const safeElements = ensureExcalidrawElements(elements || [])
+        // 直接追加元素，会自动生成新ID并选中
+        const res = await appendExcalidrawElements(safeElements)
+        addToolOutput({
+            tool: toolCall.toolName,
+            toolCallId: toolCall.toolCallId,
+            output: { newIds: res?.newIds || [] },
+        })
+    }
+
+    const handleEditExcalidraw = async (
+        toolCall: ToolCall,
+        addToolOutput: AddToolOutputFn,
+    ) => {
+        if (!editExcalidrawByOperations) {
+            addToolOutput({
+                tool: toolCall.toolName,
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText:
+                    "Excalidraw renderer is not ready. Please try again later.",
+            })
+            return
+        }
+        const operations = (toolCall.input as any)?.operations
+        if (!Array.isArray(operations) || operations.length === 0) {
+            addToolOutput({
+                tool: toolCall.toolName,
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText: "Missing operations for edit_excalidraw",
+            })
+            return
+        }
+
+        const res = await editExcalidrawByOperations(operations)
+
+        // 工具调用成功后保存历史版本
+        if (pushExcalidrawHistory) {
+            await pushExcalidrawHistory("AI 编辑")
+        }
+
+        addToolOutput({
+            tool: toolCall.toolName,
+            toolCallId: toolCall.toolCallId,
+            output: { updatedIds: res?.newIds || [] },
+        })
+    }
+
+    const handleAppendDrawio = (
+        toolCall: ToolCall,
+        addToolOutput: AddToolOutputFn,
+    ) => {
+        const { xml } = toolCall.input as { xml: string }
+
+        // Detect if LLM incorrectly started fresh instead of continuing
+        // LLM should only output bare mxCells now, so wrapper tags indicate error
+        const trimmed = xml.trim()
+        const isFreshStart =
+            trimmed.startsWith("<mxGraphModel") ||
+            trimmed.startsWith("<root") ||
+            trimmed.startsWith("<mxfile") ||
+            trimmed.startsWith('<mxCell id="0"') ||
+            trimmed.startsWith('<mxCell id="1"')
+
+        if (isFreshStart) {
+            addToolOutput({
+                tool: "append_drawio",
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText: `ERROR: You started fresh with wrapper tags. Do NOT include wrapper tags or root cells (id="0", id="1").
+
+Continue from EXACTLY where the partial ended:
+\`\`\`
+${partialXmlRef.current.slice(-500)}
+\`\`\`
+
+Start your continuation with the NEXT character after where it stopped.`,
+            })
+            return
+        }
+
+        // Append to accumulated XML
+        partialXmlRef.current += xml
+
+        // Check if XML is now complete (last mxCell is complete)
+        const isComplete = isMxCellXmlComplete(partialXmlRef.current)
+
+        if (isComplete) {
+            // Wrap and display the complete diagram
+            const finalXml = partialXmlRef.current
+            partialXmlRef.current = "" // Reset
+
+            const fullXml = wrapWithMxFile(finalXml)
+            const validationError = onDisplayChart(fullXml)
+
+            if (validationError) {
+                addToolOutput({
+                    tool: "append_drawio",
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText: `Validation error after assembly: ${validationError}
+
+Assembled XML:
+\`\`\`xml
+${finalXml.substring(0, 2000)}...
+\`\`\`
+
+Please use display_drawio with corrected XML.`,
+                })
+            } else {
+                addToolOutput({
+                    tool: "append_drawio",
+                    toolCallId: toolCall.toolCallId,
+                    output: "Diagram assembly complete and displayed successfully.",
+                })
+                
+                // 自动触发导出以保存到历史记录
+                setTimeout(() => {
+                    console.log('[append_drawio] Auto-exporting for history save', {
+                        timestamp: Date.now(),
+                        toolCallId: toolCall.toolCallId
+                    })
+                    onExport()
+                }, 100)
+            }
+        } else {
+            // Still incomplete - signal to continue
+            addToolOutput({
+                tool: "append_drawio",
+                toolCallId: toolCall.toolCallId,
+                state: "output-error",
+                errorText: `XML still incomplete (mxCell not closed). Call append_drawio again to continue.
+
+Current ending:
+\`\`\`
+${partialXmlRef.current.slice(-500)}
+\`\`\`
+
+Continue from EXACTLY where you stopped.`,
+            })
+        }
+    }
+
+    return { handleToolCall }
+}
