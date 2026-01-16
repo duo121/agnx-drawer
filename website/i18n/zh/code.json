@@ -1,0 +1,77 @@
+{
+  "homepage.tagline": {
+    "message": "AI 驱动的图表创建工具"
+  },
+  "homepage.description": {
+    "message": "通过自然语言创建专业图表。描述你想要的，AI 立即生成。"
+  },
+  "homepage.getStarted": {
+    "message": "快速开始"
+  },
+  "homepage.tryDemo": {
+    "message": "在线演示"
+  },
+  "homepage.features": {
+    "message": "功能特性"
+  },
+  "homepage.prompt": {
+    "message": "\"创建一个包含 EC2、RDS 和 S3 的 AWS 架构图\""
+  },
+  "homepage.ack.title": {
+    "message": "致谢"
+  },
+  "homepage.ack.text": {
+    "message": "本项目基于 @DayuanJiang 的 next-ai-draw-io 构建。我们衷心感谢原作者的开源贡献。"
+  },
+  "homepage.ack.link": {
+    "message": "查看原项目"
+  },
+  "feature.ai.title": {
+    "message": "AI 驱动"
+  },
+  "feature.ai.desc": {
+    "message": "自然语言生成图表，描述即可。"
+  },
+  "feature.engine.title": {
+    "message": "双引擎"
+  },
+  "feature.engine.desc": {
+    "message": "Draw.io 专业图表，Excalidraw 手绘草图。"
+  },
+  "feature.cloud.title": {
+    "message": "云架构"
+  },
+  "feature.cloud.desc": {
+    "message": "内置 AWS、GCP、Azure 图标。"
+  },
+  "feature.provider.title": {
+    "message": "10+ 提供商"
+  },
+  "feature.provider.desc": {
+    "message": "OpenAI、Claude、Gemini、DeepSeek..."
+  },
+  "feature.platform.title": {
+    "message": "跨平台"
+  },
+  "feature.platform.desc": {
+    "message": "Web、桌面应用、MCP 集成。"
+  },
+  "feature.deploy.title": {
+    "message": "易部署"
+  },
+  "feature.deploy.desc": {
+    "message": "Vercel、Cloudflare、Docker 一键部署。"
+  },
+  "theme.common.skipToMainContent": {
+    "message": "跳到主要内容"
+  },
+  "theme.NotFound.title": {
+    "message": "页面未找到"
+  },
+  "theme.NotFound.p1": {
+    "message": "我们找不到您要找的页面。"
+  },
+  "theme.NotFound.p2": {
+    "message": "请联系将您链接到原始 URL 的网站所有者，让他们知道链接已损坏。"
+  }
+}

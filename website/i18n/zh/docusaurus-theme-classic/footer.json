@@ -1,0 +1,42 @@
+{
+  "link.title.Docs": {
+    "message": "文档",
+    "description": "The title of the footer links column with title=Docs in the footer"
+  },
+  "link.title.Community": {
+    "message": "社区",
+    "description": "The title of the footer links column with title=Community in the footer"
+  },
+  "link.title.Credits": {
+    "message": "致谢",
+    "description": "The title of the footer links column with title=Credits in the footer"
+  },
+  "link.item.label.Getting Started": {
+    "message": "快速开始",
+    "description": "The label of footer link with label=Getting Started"
+  },
+  "link.item.label.Configuration": {
+    "message": "配置",
+    "description": "The label of footer link with label=Configuration"
+  },
+  "link.item.label.Deployment": {
+    "message": "部署",
+    "description": "The label of footer link with label=Deployment"
+  },
+  "link.item.label.GitHub": {
+    "message": "GitHub",
+    "description": "The label of footer link with label=GitHub"
+  },
+  "link.item.label.Issues": {
+    "message": "问题反馈",
+    "description": "The label of footer link with label=Issues"
+  },
+  "link.item.label.Original Project by @DayuanJiang": {
+    "message": "原项目作者 @DayuanJiang",
+    "description": "The label of footer link with label=Original Project by @DayuanJiang"
+  },
+  "copyright": {
+    "message": "Copyright © 2025 AGNX Drawer. 基于 Docusaurus 构建。",
+    "description": "The footer copyright"
+  }
+}
