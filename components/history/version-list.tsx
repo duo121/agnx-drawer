@@ -7,7 +7,6 @@ import { toast } from "sonner"
 import { useEngine } from "@/hooks/engines/engine-context"
 import { ButtonWithTooltip } from "@/components/button-with-tooltip"
 import { RestoreConfirmDialog } from "./restore-confirm-dialog"
-import { DeleteConfirmDialog } from "./delete-confirm-dialog"
 
 interface VersionHistoryListProps {
     onClose: () => void
@@ -71,15 +70,6 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
 
     // 恢复确认对话框状态
     const [restoreDialog, setRestoreDialog] = useState<{
-        isOpen: boolean
-        versionIndex: number
-    }>({
-        isOpen: false,
-        versionIndex: -1,
-    })
-
-    // 删除确认对话框状态
-    const [deleteDialog, setDeleteDialog] = useState<{
         isOpen: boolean
         versionIndex: number
     }>({
@@ -271,19 +261,10 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
         setRestoreDialog({ isOpen: false, versionIndex: -1 })
     }, [])
 
-    // 点击删除按钮 - 打开删除确认对话框
-    const handleDeleteClick = useCallback((e: React.MouseEvent, index: number) => {
-        e.stopPropagation()
-        setDeleteDialog({
-            isOpen: true,
-            versionIndex: index,
-        })
-    }, [])
-
-    // 删除确认对话框 - 确认删除
+    // 删除版本
     const handleConfirmDelete = useCallback(() => {
-        const { versionIndex } = deleteDialog
-        setDeleteDialog({ isOpen: false, versionIndex: -1 })
+        const { versionIndex } = restoreDialog
+        setRestoreDialog({ isOpen: false, versionIndex: -1 })
         
         if (isExcalidraw) {
             deleteExcalidrawVersion(versionIndex)
@@ -291,12 +272,7 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
             deleteDrawioHistory(versionIndex)
         }
         toast.success("已删除版本")
-    }, [deleteDialog, isExcalidraw, deleteExcalidrawVersion, deleteDrawioHistory])
-
-    // 删除确认对话框 - 取消
-    const handleCancelDelete = useCallback(() => {
-        setDeleteDialog({ isOpen: false, versionIndex: -1 })
-    }, [])
+    }, [restoreDialog, isExcalidraw, deleteExcalidrawVersion, deleteDrawioHistory])
 
     const historyItems = isExcalidraw ? excalidrawHistory : diagramHistory
     const hasItems = historyItems.length > 0
@@ -396,7 +372,6 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
                                 isManual={item.isManual}
                                 style={itemStyle}
                                 onClick={() => handleVersionClick(index)}
-                                onDelete={(e) => handleDeleteClick(e, index)}
                             />
                         ))
                     ) : (
@@ -409,7 +384,6 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
                                 isManual={item.isManual}
                                 style={itemStyle}
                                 onClick={() => handleVersionClick(index)}
-                                onDelete={(e) => handleDeleteClick(e, index)}
                             />
                         ))
                     )}
@@ -452,13 +426,7 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
                     onDirectRestore={handleDirectRestore}
                     onSaveAndRestore={handleSaveAndRestore}
                     onInsertAndSelect={isExcalidraw ? handleInsertAndSelect : undefined}
-                    portalTarget={portalTarget}
-                />
-                {/* 删除确认对话框 */}
-                <DeleteConfirmDialog
-                    isOpen={deleteDialog.isOpen}
-                    onClose={handleCancelDelete}
-                    onConfirm={handleConfirmDelete}
+                    onDelete={handleConfirmDelete}
                     portalTarget={portalTarget}
                 />
             </>
@@ -482,12 +450,7 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
                 onDirectRestore={handleDirectRestore}
                 onSaveAndRestore={handleSaveAndRestore}
                 onInsertAndSelect={isExcalidraw ? handleInsertAndSelect : undefined}
-            />
-            {/* 删除确认对话框 */}
-            <DeleteConfirmDialog
-                isOpen={deleteDialog.isOpen}
-                onClose={handleCancelDelete}
-                onConfirm={handleConfirmDelete}
+                onDelete={handleConfirmDelete}
             />
         </>
     )
@@ -519,10 +482,9 @@ interface VersionItemProps {
     isManual?: boolean
     style: React.CSSProperties
     onClick: () => void
-    onDelete?: (e: React.MouseEvent) => void
 }
 
-function VersionItem({ thumbnailUrl, label, isManual, style, onClick, onDelete }: VersionItemProps) {
+function VersionItem({ thumbnailUrl, label, isManual, style, onClick }: VersionItemProps) {
     return (
         <div
             className={`relative group shrink-0 cursor-pointer rounded-xl transition-all ${
@@ -545,18 +507,6 @@ function VersionItem({ thumbnailUrl, label, isManual, style, onClick, onDelete }
             <div className="absolute -bottom-5 left-0 right-0 text-center">
                 <span className="text-[10px] text-muted-foreground whitespace-nowrap">{label}</span>
             </div>
-
-            {/* 删除按钮 */}
-            {onDelete && (
-                <button
-                    type="button"
-                    onClick={onDelete}
-                    className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm w-4 h-4 flex items-center justify-center"
-                    title="删除版本"
-                >
-                    <X className="h-3 w-3" />
-                </button>
-            )}
         </div>
     )
 }

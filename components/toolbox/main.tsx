@@ -655,6 +655,19 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             setRestoreConfirmDialog({ isOpen: false, versionIndex: -1 })
         }, [])
 
+        // 确认对话框 - 删除版本
+        const handleRestoreDialogDelete = useCallback(() => {
+            const { versionIndex } = restoreConfirmDialog
+            setRestoreConfirmDialog({ isOpen: false, versionIndex: -1 })
+            
+            if (isExcalidraw) {
+                deleteExcalidrawVersion(versionIndex)
+            } else {
+                deleteDrawioHistory(versionIndex)
+            }
+            toast.success("已删除版本")
+        }, [restoreConfirmDialog, isExcalidraw, deleteExcalidrawVersion, deleteDrawioHistory])
+
         // 删除版本 - 打开删除确认对话框
         const handleDeleteVersion = (e: React.MouseEvent, index: number) => {
             e.stopPropagation()
@@ -1751,6 +1764,7 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                 onDirectRestore={handleDirectRestore}
                 onSaveAndRestore={handleSaveAndRestore}
                 onInsertAndSelect={isExcalidraw ? handleInsertAndSelect : undefined}
+                onDelete={handleRestoreDialogDelete}
                 portalTarget={containerRef.current}
             />
             {/* 删除确认对话框 */}
