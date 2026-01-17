@@ -1394,7 +1394,7 @@ export default function ChatPanel({
         <div
             id="chat-panel-container"
             className={cn(
-                "h-full flex flex-col bg-card shadow-soft rounded-xl border border-border/30 relative overflow-hidden",
+                "h-full bg-card shadow-soft rounded-xl border border-border/30 relative overflow-hidden",
                 shouldAnimatePanel && "animate-slide-in-right",
             )}
         >
@@ -1409,9 +1409,13 @@ export default function ChatPanel({
                     duration: 2000,
                 }}
             />
-            {/* Header */}
+            {/* Header - 浮动在顶部 */}
             <header
-                className={`${isMobile ? "px-3 py-2" : "px-5 py-4"} flex justify-center`}
+                className={cn(
+                    "absolute top-0 left-0 right-0 z-20 flex justify-center",
+                    "bg-card/80 backdrop-blur-xs",
+                    isMobile ? "px-3 py-2" : "px-5 py-4"
+                )}
             >
                 <div className="input-glow-wrapper">
                 <div 
@@ -1529,8 +1533,14 @@ export default function ChatPanel({
                 }
             `}</style>
 
-            {/* Messages */}
-            <main className="flex-1 w-full overflow-hidden">
+            {/* Messages - 全屏滚动区域，留出 header 和 footer 空间 */}
+            <main 
+                className="absolute inset-0 overflow-y-auto"
+                style={{ 
+                    paddingTop: isMobile ? '56px' : '72px',
+                    paddingBottom: isMobile ? '80px' : '96px'
+                }}
+            >
                 <ChatMessageDisplay
                     messages={messages}
                     setInput={setInput}
@@ -1557,9 +1567,13 @@ export default function ChatPanel({
                 />
             </main>
 
-            {/* Input */}
+            {/* Input - 浮动在底部 */}
             <footer
-                className={`${isMobile ? "p-2" : "p-4"} bg-card/50`}
+                className={cn(
+                    "absolute bottom-0 left-0 right-0 z-20",
+                    "bg-card/80 backdrop-blur-xs",
+                    isMobile ? "p-2" : "p-4"
+                )}
             >
                 <ChatInput
                     ref={chatInputRef}

@@ -24,7 +24,6 @@ import {
 import { ChatLobby } from "./ChatLobby"
 import { ToolCallCard } from "./ToolCallCard"
 import type { DiagramOperation, ToolPartLike } from "./types"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { useDictionary } from "@/hooks/use-dictionary"
 import { getApiEndpoint } from "@/shared/base-path"
 import {
@@ -899,7 +898,7 @@ export function ChatMessageDisplay({
     }, [messages, handleDisplayChart, chartXML])
 
     return (
-        <ScrollArea className="h-full w-full scrollbar-thin">
+        <div className="h-full w-full">
             <div ref={scrollTopRef} />
             {messages.length === 0 && isRestored ? (
                 <ChatLobby
@@ -1393,6 +1392,6 @@ export function ChatMessageDisplay({
                 </div>
             )}
             <div ref={messagesEndRef} />
-        </ScrollArea>
+        </div>
     )
 }
