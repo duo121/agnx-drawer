@@ -219,14 +219,6 @@ export function SessionDetailDialog({
                             </>
                         )}
                     </div>
-                    {/* 关闭按钮 */}
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="absolute top-3 right-3 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center transition-colors"
-                    >
-                        <X className="h-4 w-4" />
-                    </button>
                 </div>
 
                 {/* 内容区域 */}
