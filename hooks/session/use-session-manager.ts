@@ -36,6 +36,7 @@ export interface UseSessionManagerReturn {
     // Actions
     switchSession: (id: string) => Promise<SessionData | null>
     deleteSession: (id: string) => Promise<{ wasCurrentSession: boolean }>
+    renameSession: (id: string, newTitle: string) => Promise<void>
     // forSessionId: optional session ID to verify save targets correct session (prevents stale debounce writes)
     saveCurrentSession: (
         data: SessionData,
@@ -369,6 +370,48 @@ export function useSessionManager(
         skipNextUrlSyncRef.current = true
     }, [])
 
+    // 重命名会话
+    const renameSession = useCallback(
+        async (id: string, newTitle: string): Promise<void> => {
+            if (!isIndexedDBAvailable()) return
+
+            try {
+                // 获取会话
+                const session = await getSession(id)
+                if (!session) {
+                    console.error("Session not found:", id)
+                    return
+                }
+
+                // 更新标题
+                const updatedSession: ChatSession = {
+                    ...session,
+                    title: newTitle,
+                    updatedAt: Date.now(),
+                }
+
+                await saveSession(updatedSession)
+
+                // 如果是当前会话，更新当前会话状态
+                if (id === currentSessionId) {
+                    setCurrentSession(updatedSession)
+                }
+
+                // 更新 sessions 列表
+                setSessions((prev) =>
+                    prev.map((s) =>
+                        s.id === id
+                            ? { ...s, title: newTitle, updatedAt: updatedSession.updatedAt }
+                            : s
+                    )
+                )
+            } catch (error) {
+                console.error("Failed to rename session:", error)
+            }
+        },
+        [currentSessionId]
+    )
+
     return {
         sessions,
         currentSessionId,
@@ -377,6 +420,7 @@ export function useSessionManager(
         isAvailable,
         switchSession,
         deleteSession,
+        renameSession,
         saveCurrentSession,
         refreshSessions,
         clearCurrentSession,

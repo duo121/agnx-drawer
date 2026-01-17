@@ -37,6 +37,7 @@ import { ToolboxHeader } from "./header"
 import { ToolboxConfigView } from "./config-view"
 import { RestoreConfirmDialog } from "@/components/history/restore-confirm-dialog"
 import { DeleteConfirmDialog } from "@/components/history/delete-confirm-dialog"
+import { SessionDetailDialog } from "@/components/history/session-detail-dialog"
 import type { UseModelConfigReturn } from "@/hooks/use-model-config"
 import type { FlattenedModel, ProviderConfig, ProviderName } from "@/shared/types/model-config"
 import { cn } from "@/shared/utils"
@@ -217,6 +218,7 @@ export interface ToolboxProps {
         updatedAt: number
         thumbnailDataUrl?: string
         engineId?: string
+        messageCount?: number
     }>
     // 过滤后的历史会话（由统一的 useToolboxFilter 计算）
     filteredSessions?: Array<{
@@ -225,11 +227,13 @@ export interface ToolboxProps {
         updatedAt: number
         thumbnailDataUrl?: string
         engineId?: string
+        messageCount?: number
     }>
     currentSessionId?: string | null
     onSessionSwitch?: (id: string) => void
     onSessionDelete?: (id: string) => void
     onSessionCreate?: () => void
+    onSessionRename?: (id: string, newTitle: string) => void
 }
 
 export interface ToolboxRef {
@@ -275,6 +279,7 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             onSessionSwitch,
             onSessionDelete,
             onSessionCreate,
+            onSessionRename,
         } = props
 
         // 使用传入的 filteredSessions，如果没有则退回 sessions
@@ -386,6 +391,22 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             isOpen: false,
             sessionId: null,
             sessionTitle: "",
+        })
+
+        // 会话详情弹框状态
+        const [sessionDetailDialog, setSessionDetailDialog] = useState<{
+            isOpen: boolean
+            session: {
+                id: string
+                title: string
+                updatedAt: number
+                thumbnailDataUrl?: string
+                engineId?: string
+                messageCount?: number
+            } | null
+        }>({
+            isOpen: false,
+            session: null,
         })
 
         // 动态计算工具箱可用的最大高度
@@ -710,13 +731,58 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             setSessionDeleteDialog({ isOpen: false, sessionId: null, sessionTitle: "" })
         }, [])
 
-        // 点击会话切换
-        const handleSessionClick = useCallback((sessionId: string) => {
-            if (sessionId !== currentSessionIdProp && onSessionSwitch) {
-                onSessionSwitch(sessionId)
+        // 点击会话 - 打开详情弹框
+        const handleSessionClick = useCallback((session: {
+            id: string
+            title: string
+            updatedAt: number
+            thumbnailDataUrl?: string
+            engineId?: string
+            messageCount?: number
+        }) => {
+            setSessionDetailDialog({
+                isOpen: true,
+                session,
+            })
+        }, [])
+
+        // 会话详情弹框 - 关闭
+        const handleCloseSessionDetail = useCallback(() => {
+            setSessionDetailDialog({ isOpen: false, session: null })
+        }, [])
+
+        // 会话详情弹框 - 切换会话
+        const handleSessionDetailSwitch = useCallback(() => {
+            const session = sessionDetailDialog.session
+            if (session && session.id !== currentSessionIdProp && onSessionSwitch) {
+                onSessionSwitch(session.id)
+                setSessionDetailDialog({ isOpen: false, session: null })
                 onClose()
             }
-        }, [currentSessionIdProp, onSessionSwitch, onClose])
+        }, [sessionDetailDialog.session, currentSessionIdProp, onSessionSwitch, onClose])
+
+        // 会话详情弹框 - 删除会话
+        const handleSessionDetailDelete = useCallback(() => {
+            const session = sessionDetailDialog.session
+            if (session && onSessionDelete) {
+                onSessionDelete(session.id)
+                toast.success("已删除会话")
+            }
+        }, [sessionDetailDialog.session, onSessionDelete])
+
+        // 会话详情弹框 - 重命名会话
+        const handleSessionDetailRename = useCallback((newTitle: string) => {
+            const session = sessionDetailDialog.session
+            if (session && onSessionRename) {
+                onSessionRename(session.id, newTitle)
+                // 更新弹框中的会话标题
+                setSessionDetailDialog(prev => ({
+                    ...prev,
+                    session: prev.session ? { ...prev.session, title: newTitle } : null,
+                }))
+                toast.success("已更新会话标题")
+            }
+        }, [sessionDetailDialog.session, onSessionRename])
 
         // 新建会话
         const handleCreateSession = useCallback(() => {
@@ -1100,14 +1166,14 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
 
         // 会话缩略图
         const renderSessionThumbnail = (
-            session: { id: string; title: string; updatedAt: number; thumbnailDataUrl?: string; engineId?: string },
+            session: { id: string; title: string; updatedAt: number; thumbnailDataUrl?: string; engineId?: string; messageCount?: number },
         ) => {
             const isCurrentSession = session.id === currentSessionIdProp
 
             return (
                 <div
                     key={session.id}
-                    onClick={() => handleSessionClick(session.id)}
+                    onClick={() => handleSessionClick(session)}
                     className={cn(
                         "relative group cursor-pointer rounded-lg transition-all",
                         isCurrentSession && "ring-2 ring-primary ring-offset-1 ring-offset-muted"
@@ -1541,10 +1607,12 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                                         >
                                             <Plus className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                                         </div>
-                                        {/* 历史版本：最新在前 */}
-                                        {historyItems.map((item, idx) =>
-                                            renderVersionThumbnail(item, idx)
-                                        )}
+                                        {/* 历史版本：最新在前（反转数组，但保持原始索引用于操作） */}
+                                        {[...historyItems].reverse().map((item, displayIdx) => {
+                                            // 计算原始索引：反转后的 displayIdx=0 对应原始的 length-1
+                                            const originalIdx = historyItems.length - 1 - displayIdx
+                                            return renderVersionThumbnail(item, originalIdx)
+                                        })}
                                     </div>
                                 </div>
                             )}
@@ -1797,6 +1865,17 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                 portalTarget={containerRef.current}
                 title="删除会话"
                 description={`确定要删除会话 "${sessionDeleteDialog.sessionTitle}" 吗？此操作无法撤销。`}
+            />
+            {/* 会话详情弹框 */}
+            <SessionDetailDialog
+                isOpen={sessionDetailDialog.isOpen}
+                session={sessionDetailDialog.session}
+                isCurrentSession={sessionDetailDialog.session?.id === currentSessionIdProp}
+                onClose={handleCloseSessionDetail}
+                onSwitch={handleSessionDetailSwitch}
+                onDelete={handleSessionDetailDelete}
+                onRename={handleSessionDetailRename}
+                portalTarget={containerRef.current}
             />
         </>
         )

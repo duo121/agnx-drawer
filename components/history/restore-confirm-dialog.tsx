@@ -35,7 +35,7 @@ export function RestoreConfirmDialog({
                 onClick={onClose}
             />
             {/* 对话框内容 */}
-            <div className="relative w-full max-w-md mx-4 p-6 bg-background border rounded-lg shadow-lg animate-in fade-in-0 zoom-in-95 pointer-events-auto">
+            <div className="relative w-full max-w-md mx-4 p-6 bg-muted border-2 border-border rounded-lg shadow-lg animate-in fade-in-0 zoom-in-95 pointer-events-auto">
                 <div className="flex flex-col gap-4">
                     <div className="flex flex-col gap-2">
                         <h2 className="text-lg font-semibold">恢复历史版本</h2>

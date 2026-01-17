@@ -70,19 +70,17 @@ export function ToolboxHeader({
             return
         }
 
-        // 延迟一帧以确保 ref 已挂载
-        requestAnimationFrame(() => {
-            const buttonElement = toolbarButtonRefs.current[focusArea.index]
-            const containerElement = containerRef.current
+        // 同步计算位置，避免闪烁
+        const buttonElement = toolbarButtonRefs.current[focusArea.index]
+        const containerElement = containerRef.current
 
-            if (!buttonElement || !containerElement) return
+        if (!buttonElement || !containerElement) return
 
-            const buttonRect = buttonElement.getBoundingClientRect()
-            const containerRect = containerElement.getBoundingClientRect()
-            const leftOffset = buttonRect.left - containerRect.left + buttonRect.width / 2
+        const buttonRect = buttonElement.getBoundingClientRect()
+        const containerRect = containerElement.getBoundingClientRect()
+        const leftOffset = buttonRect.left - containerRect.left + buttonRect.width / 2
 
-            setTooltipPosition({ left: leftOffset })
-        })
+        setTooltipPosition({ left: leftOffset })
     }, [focusArea, toolbarButtonRefs, containerRef, setTooltipPosition])
 
     const isSearchFocused = focusArea.type === "search"

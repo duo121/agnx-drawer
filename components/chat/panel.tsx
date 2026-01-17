@@ -9,6 +9,8 @@ import {
     Languages,
     Palette,
     Github,
+    Zap,
+    Sparkles,
 } from "lucide-react"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -1465,6 +1467,17 @@ export default function ChatPanel({
                         </HeaderActionButton>
 
                         <HeaderActionButton
+                            onClick={() => setMinimalStyle(!minimalStyle)}
+                            tooltip={minimalStyle ? dict.chat.minimalTooltip : dict.chat.styledMode}
+                        >
+                            {minimalStyle ? (
+                                <Zap className="h-5 w-5 text-foreground" />
+                            ) : (
+                                <Sparkles className="h-5 w-5 text-foreground" />
+                            )}
+                        </HeaderActionButton>
+
+                        <HeaderActionButton
                             onClick={onToggleDrawioUi}
                             tooltip={`${dict.settings.drawioStyle}: ${drawioUi === "min" ? dict.settings.minimal : dict.settings.sketch}`}
                         >
@@ -1583,6 +1596,7 @@ export default function ChatPanel({
                     onSessionSwitch={handleSelectSession}
                     onSessionDelete={handleDeleteSession}
                     onSessionCreate={handleNewChat}
+                    onSessionRename={sessionManager.renameSession}
                     onEngineSwitch={async () => {
                         // 防止重复点击或在引擎切换过程中再次点击
                         if (engineSwitchInProgressRef.current) return

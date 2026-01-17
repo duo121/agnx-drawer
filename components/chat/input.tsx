@@ -71,11 +71,13 @@ interface ChatInputProps extends UseChatInputOptions {
         updatedAt: number
         thumbnailDataUrl?: string
         engineId?: string
+        messageCount?: number
     }>
     currentSessionId?: string | null
     onSessionSwitch?: (id: string) => void
     onSessionDelete?: (id: string) => void
     onSessionCreate?: () => void
+    onSessionRename?: (id: string, newTitle: string) => void
 }
 
 export interface ChatInputRef {
@@ -115,6 +117,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
     onSessionSwitch,
     onSessionDelete,
     onSessionCreate,
+    onSessionRename,
 }, ref) {
     const chatInput = useChatInput({
         input,
@@ -529,6 +532,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
                         onSessionSwitch={onSessionSwitch}
                         onSessionDelete={onSessionDelete}
                         onSessionCreate={onSessionCreate}
+                        onSessionRename={onSessionRename}
                     />
                 )}
 
@@ -770,23 +774,6 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
                                         <path d="M20 4l-4 4"/>
                                         <path d="M4 4h7v7"/>
                                     </svg>
-                                )}
-                            </ButtonWithTooltip>
-
-                            {/* 图表样式切换按钮 */}
-                            <ButtonWithTooltip
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => onMinimalStyleChange?.(!minimalStyle)}
-                                disabled={isToolbarDisabled}
-                                tooltipContent={minimalStyle ? "简约模式（快速生成）" : "精致模式（带颜色）"}
-                                className="h-8 w-8 rounded-full border transition-all text-muted-foreground border-border hover:text-foreground hover:bg-muted/80"
-                            >
-                                {minimalStyle ? (
-                                    <Zap className="h-4 w-4" />
-                                ) : (
-                                    <Sparkles className="h-4 w-4" />
                                 )}
                             </ButtonWithTooltip>
 
