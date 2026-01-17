@@ -169,6 +169,8 @@ export interface UseChatInputOptions {
     showUnvalidatedModels?: boolean
     onModelSelect?: (modelId: string | undefined) => void
     onSkillSelect?: (skillId: string) => void
+    // SKILL 选择状态
+    selectedSkillIds?: Set<string>
 }
 
 export function useChatInput({
@@ -187,6 +189,7 @@ export function useChatInput({
     showUnvalidatedModels = false,
     onModelSelect,
     onSkillSelect,
+    selectedSkillIds = new Set(),
 }: UseChatInputOptions) {
     const dict = useDictionary()
 
@@ -238,21 +241,21 @@ export function useChatInput({
         },
     ]
 
-    // Skills 定义
+    // Skills 定义 - 使用 selectedSkillIds 判断 isCurrent
     const skills: Skill[] = [
         {
             id: "drawio",
             type: "skill",
             label: "Draw.io",
             desc: "专业流程图、架构图绘制",
-            isCurrent: engineId === "drawio",
+            isCurrent: selectedSkillIds.has("drawio"),
         },
         {
             id: "excalidraw",
             type: "skill",
             label: "Excalidraw",
             desc: "手绘风格白板绘图",
-            isCurrent: engineId === "excalidraw",
+            isCurrent: selectedSkillIds.has("excalidraw"),
         },
     ]
 

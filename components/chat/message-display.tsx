@@ -121,15 +121,6 @@ const getUserOriginalText = (message: UIMessage): string => {
     return fullText.replace(filePattern, "").trim()
 }
 
-interface SessionMetadata {
-    id: string
-    title: string
-    updatedAt: number
-    thumbnailDataUrl?: string
-    engineId?: string
-    messageCount?: number
-}
-
 interface ChatMessageDisplayProps {
     messages: UIMessage[]
     setInput: (input: string) => void
@@ -143,11 +134,7 @@ interface ChatMessageDisplayProps {
     onFocusInput?: () => void
     status?: "streaming" | "submitted" | "idle" | "error" | "ready"
     isRestored?: boolean
-    sessions?: SessionMetadata[]
-    onSelectSession?: (id: string) => void
-    onDeleteSession?: (id: string) => void
     loadedMessageIdsRef?: MutableRefObject<Set<string>>
-    currentEngine?: string
     onStop?: () => void
 }
 
@@ -164,11 +151,7 @@ export function ChatMessageDisplay({
     onFocusInput,
     status = "idle",
     isRestored = false,
-    sessions = [],
-    onSelectSession,
-    onDeleteSession,
     loadedMessageIdsRef,
-    currentEngine,
     onStop,
 }: ChatMessageDisplayProps) {
     const dict = useDictionary()
@@ -897,17 +880,17 @@ export function ChatMessageDisplay({
         // Let the timeouts complete naturally - they're harmless if component unmounts.
     }, [messages, handleDisplayChart, chartXML])
 
+    // Handle prompt click from AnimatedDemo
+    const handlePromptClick = (prompt: string) => {
+        setInput(prompt)
+        onFocusInput?.()
+    }
+
     return (
         <div className="h-full w-full">
             <div ref={scrollTopRef} />
             {messages.length === 0 && isRestored ? (
-                <ChatLobby
-                    sessions={sessions}
-                    onSelectSession={onSelectSession || (() => {})}
-                    onDeleteSession={onDeleteSession}
-                    currentEngine={currentEngine}
-                    dict={dict}
-                />
+                <ChatLobby onPromptClick={handlePromptClick} />
             ) : messages.length === 0 ? null : (
                 <div className="py-4 px-4 space-y-4">
                     {messages.map((message, messageIndex) => {

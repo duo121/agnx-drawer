@@ -110,8 +110,12 @@ async function handleChatRequest(req: Request): Promise<Response> {
     const engineId = requestEngineId || "drawio"
     const engine = getEngine(engineId)
 
-    // Read skill disabled preference from header (user clicked X on engine badge)
+    // Read skill selection from headers
     const isSkillDisabled = req.headers.get("x-skill-disabled") === "true"
+    const selectedSkillsHeader = req.headers.get("x-selected-skills")
+    const selectedSkillIds = selectedSkillsHeader 
+        ? selectedSkillsHeader.split(",").map(s => s.trim()).filter(Boolean)
+        : []
 
     // Extract user input text early for skill matching
     const lastUserMessage = [...messages]
@@ -158,30 +162,53 @@ async function handleChatRequest(req: Request): Promise<Response> {
         }
     }
 
-    // Load skills based on intent (auto-detection from keywords)
-    // Skip skill loading if skill is disabled via header (user clicked X on engine badge)
-    const skillsToLoad = isSkillDisabled ? [] : getSkillsToLoad(userIntent, engineId as CanvasType)
-    console.log(`[Skills] Intent-based skills to load:`, skillsToLoad, isSkillDisabled ? '(skill disabled by user)' : '')
-
-    // Load active skills from intent detection
-    let activeSkills = skillsToLoad
-        .map((id: string) => skillLoader.loadSkill(id))
-        .filter((skill): skill is NonNullable<typeof skill> => skill !== null)
-
-    // Log loaded skills
-    activeSkills.forEach(skill => {
-        console.log(`[Skills] Loaded skill "${skill.id}" from intent`)
-    })
-
-    // Fallback: If no skills from intent, try semantic matching (skip if skill disabled)
-    if (!isSkillDisabled && activeSkills.length === 0 && userInputText) {
-        const allSkills = skillLoader.listSkills()
-        const bestMatch = getBestSkillMatch(allSkills, userInputText, engineId as EngineType, 3)
-        if (bestMatch) {
-            const autoSkill = skillLoader.loadSkill(bestMatch.skillId)
-            if (autoSkill) {
-                activeSkills = [autoSkill]
-                console.log(`[Skills] Fallback: Auto-matched skill "${bestMatch.skillId}" (score: ${bestMatch.score}, ${bestMatch.reason})`)
+    // Load skills based on user selection or intent detection
+    // Priority: 1. User-selected skills (from header) 2. Intent-based detection 3. Semantic matching
+    let activeSkills: NonNullable<ReturnType<typeof skillLoader.loadSkill>>[] = []
+    
+    if (isSkillDisabled) {
+        // User explicitly disabled skills
+        console.log(`[Skills] Skill loading disabled by user`)
+    } else if (selectedSkillIds.length > 0) {
+        // Load user-selected skills first
+        activeSkills = selectedSkillIds
+            .map((id: string) => skillLoader.loadSkill(id))
+            .filter((skill): skill is NonNullable<typeof skill> => skill !== null)
+        console.log(`[Skills] Loaded ${activeSkills.length} user-selected skills:`, selectedSkillIds)
+        
+        // Also try to add intent-based skills (for additional context)
+        const intentSkillsToLoad = getSkillsToLoad(userIntent, engineId as CanvasType)
+        const additionalSkills = intentSkillsToLoad
+            .filter((id: string) => !selectedSkillIds.includes(id)) // Avoid duplicates
+            .map((id: string) => skillLoader.loadSkill(id))
+            .filter((skill): skill is NonNullable<typeof skill> => skill !== null)
+        if (additionalSkills.length > 0) {
+            activeSkills.push(...additionalSkills)
+            console.log(`[Skills] Added ${additionalSkills.length} intent-based skills:`, additionalSkills.map(s => s.id))
+        }
+    } else {
+        // No user selection, use intent detection
+        const skillsToLoad = getSkillsToLoad(userIntent, engineId as CanvasType)
+        console.log(`[Skills] Intent-based skills to load:`, skillsToLoad)
+        
+        activeSkills = skillsToLoad
+            .map((id: string) => skillLoader.loadSkill(id))
+            .filter((skill): skill is NonNullable<typeof skill> => skill !== null)
+        
+        activeSkills.forEach(skill => {
+            console.log(`[Skills] Loaded skill "${skill.id}" from intent`)
+        })
+        
+        // Fallback: If no skills from intent, try semantic matching
+        if (activeSkills.length === 0 && userInputText) {
+            const allSkills = skillLoader.listSkills()
+            const bestMatch = getBestSkillMatch(allSkills, userInputText, engineId as EngineType, 3)
+            if (bestMatch) {
+                const autoSkill = skillLoader.loadSkill(bestMatch.skillId)
+                if (autoSkill) {
+                    activeSkills = [autoSkill]
+                    console.log(`[Skills] Fallback: Auto-matched skill "${bestMatch.skillId}" (score: ${bestMatch.score}, ${bestMatch.reason})`)
+                }
             }
         }
     }

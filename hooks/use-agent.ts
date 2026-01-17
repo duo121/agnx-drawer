@@ -97,8 +97,8 @@ export interface UseAgentOptions {
     maxContinuationRetry?: number
     /** 是否使用简洁风格 */
     minimalStyle?: boolean
-    /** 是否启用 Skill/引擎提示词注入 */
-    isSkillEnabled?: boolean
+    /** 选中的 SKILL IDs（支持多选） */
+    selectedSkillIds?: Set<string>
     /** 获取画布主题 */
     getCanvasTheme?: () => string
     /** 工具调用处理器 */
@@ -233,7 +233,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
         maxAutoRetry = DEFAULT_MAX_AUTO_RETRY,
         maxContinuationRetry = DEFAULT_MAX_CONTINUATION_RETRY,
         minimalStyle = false,
-        isSkillEnabled = true,
+        selectedSkillIds = new Set<string>(),
         getCanvasTheme,
         onToolCall,
         onExternalError,
@@ -485,7 +485,11 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
                         ...(config.awsSessionToken && { 'x-aws-session-token': config.awsSessionToken }),
                     }),
                     ...(minimalStyle && { 'x-minimal-style': 'true' }),
-                    ...(!isSkillEnabled && { 'x-skill-disabled': 'true' }),
+                    // SKILL 选择：空集合时禁用，否则发送选中的 skillIds
+                    ...(selectedSkillIds.size === 0 
+                        ? { 'x-skill-disabled': 'true' } 
+                        : { 'x-selected-skills': Array.from(selectedSkillIds).join(',') }
+                    ),
                     ...(engineId === 'excalidraw' && getCanvasTheme && {
                         'x-canvas-theme': getCanvasTheme(),
                     }),
@@ -508,6 +512,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
         sessionId,
         engineId,
         minimalStyle,
+        selectedSkillIds,
         getCanvasTheme,
         hooks,
     ])
@@ -579,14 +584,18 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
                         ...(config.awsSessionToken && { 'x-aws-session-token': config.awsSessionToken }),
                     }),
                     ...(minimalStyle && { 'x-minimal-style': 'true' }),
-                    ...(!isSkillEnabled && { 'x-skill-disabled': 'true' }),
+                    // SKILL 选择：空集合时禁用，否则发送选中的 skillIds
+                    ...(selectedSkillIds.size === 0 
+                        ? { 'x-skill-disabled': 'true' } 
+                        : { 'x-selected-skills': Array.from(selectedSkillIds).join(',') }
+                    ),
                     ...(engineId === 'excalidraw' && getCanvasTheme && {
                         'x-canvas-theme': getCanvasTheme(),
                     }),
                 },
             }
         )
-    }, [chatSendMessage, sessionId, engineId, minimalStyle, isSkillEnabled, getCanvasTheme, hooks, partialXmlRef])
+    }, [chatSendMessage, sessionId, engineId, minimalStyle, selectedSkillIds, getCanvasTheme, hooks, partialXmlRef])
 
     // === 重新生成 ===
     const regenerate = useCallback(async (assistantMessageIndex: number) => {

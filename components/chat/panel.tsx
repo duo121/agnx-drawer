@@ -71,6 +71,8 @@ const ENGINE_DISPLAY_NAME: Record<string, string> = {
     drawio: "Drawio",
     excalidraw: "Excalidraw",
 }
+// 引擎类 SKILL IDs（互斥，只能选一个）
+const ENGINE_SKILL_IDS = ["drawio", "excalidraw"]
 const LANGUAGE_LABELS: Record<Locale, string> = {
     en: "English",
     zh: "中文",
@@ -217,8 +219,8 @@ export default function ChatPanel({
     const [dailyTokenLimit, setDailyTokenLimit] = useState(0)
     const [tpmLimit, setTpmLimit] = useState(0)
     const [minimalStyle, setMinimalStyle] = useState(false)
-    // Skill/Engine prompt injection control
-    const [isSkillEnabled, setIsSkillEnabled] = useState(true)
+    // 选中的 SKILL IDs（支持多选，引擎类 SKILL 互斥）
+    const [selectedSkillIds, setSelectedSkillIds] = useState<Set<string>>(() => new Set([activeEngine]))
 
     // Restore input from sessionStorage on mount
     useEffect(() => {
@@ -236,6 +238,13 @@ export default function ChatPanel({
             debugLog("restore engine", savedEngine)
             setDiagramEngineId(savedEngine)
             prevEngineRef.current = savedEngine
+            // 同步 selectedSkillIds：移除旧引擎，添加新引擎
+            setSelectedSkillIds(prev => {
+                const newSet = new Set(prev)
+                ENGINE_SKILL_IDS.forEach(id => newSet.delete(id))
+                newSet.add(savedEngine)
+                return newSet
+            })
         }
     }, [])
 
@@ -263,7 +272,8 @@ export default function ChatPanel({
             .catch(() => {})
     }, [])
 
-    // 仅在引擎变化时同步 localStorage，清除逻辑移到 onClick 中统一处理
+    // 引擎变化时同步 localStorage 和 selectedSkillIds
+    const prevEngineForSkillSyncRef = useRef(activeEngine)
     useEffect(() => {
         if (prevEngineRef.current === activeEngine) return
         prevEngineRef.current = activeEngine
@@ -273,6 +283,17 @@ export default function ChatPanel({
         }
         // 刷新会话列表以显示对应引擎的会话
         sessionManager.refreshSessions()
+        
+        // 同步 selectedSkillIds：引擎切换时自动更新选中的引擎 SKILL
+        if (prevEngineForSkillSyncRef.current !== activeEngine) {
+            prevEngineForSkillSyncRef.current = activeEngine
+            setSelectedSkillIds(prev => {
+                const newSet = new Set(prev)
+                ENGINE_SKILL_IDS.forEach(id => newSet.delete(id))
+                newSet.add(activeEngine)
+                return newSet
+            })
+        }
     }, [activeEngine, sessionManager])
 
     // Quota management using extracted hook
@@ -496,7 +517,7 @@ export default function ChatPanel({
         partialXmlRef,
         getCurrentState: getCurrentStateForAgent,
         minimalStyle,
-        isSkillEnabled,
+        selectedSkillIds,
         getCanvasTheme: () => getExcalidrawScene?.()?.appState?.theme || "dark",
         onToolCall: async (toolCall, addToolOutputFn) => {
             console.log("[chat-panel] onToolCall received:", toolCall)
@@ -1557,11 +1578,7 @@ export default function ChatPanel({
                     onDeleteMessage={handleDeleteMessage}
                     onFocusInput={() => chatInputRef.current?.focus()}
                     isRestored={isRestored}
-                    sessions={sessionManager.sessions}
-                    onSelectSession={handleSelectSession}
-                    onDeleteSession={handleDeleteSession}
                     loadedMessageIdsRef={loadedMessageIdsRef}
-                    currentEngine={activeEngine}
                     onStop={() => {
                         stop()
                         // 清理截断续传状态
@@ -1603,26 +1620,44 @@ export default function ChatPanel({
                     onMinimalStyleChange={setMinimalStyle}
                     activeEngine={activeEngine}
                     isEngineSwitching={engineSwitchInProgressRef.current}
-                    isSkillEnabled={isSkillEnabled}
-                    onSkillEnabledChange={setIsSkillEnabled}
+                    selectedSkillIds={selectedSkillIds}
                     onSkillSelect={async (skillId) => {
-                        // SKILL 选择后切换引擎（如果需要）
-                        if (skillId !== activeEngine) {
-                            // 保存当前会话
-                            if (sessionManager.isAvailable && messages.length > 0) {
-                                const sessionData = await buildSessionData({ withThumbnail: true })
-                                await sessionManager.saveCurrentSession(sessionData)
+                        // 判断是否是引擎类 SKILL
+                        const isEngineSkill = ENGINE_SKILL_IDS.includes(skillId)
+                        
+                        if (isEngineSkill) {
+                            // 引擎类 SKILL 互斥：先移除另一个引擎，再添加新引擎
+                            const newSet = new Set(selectedSkillIds)
+                            ENGINE_SKILL_IDS.forEach(id => newSet.delete(id))
+                            newSet.add(skillId)
+                            setSelectedSkillIds(newSet)
+                            
+                            // 如果需要切换画板
+                            if (skillId !== activeEngine) {
+                                // 保存当前会话
+                                if (sessionManager.isAvailable && messages.length > 0) {
+                                    const sessionData = await buildSessionData({ withThumbnail: true })
+                                    await sessionManager.saveCurrentSession(sessionData)
+                                }
+                                // 防止 URL 同步 effect 加载旧会话
+                                sessionManager.skipNextUrlSync()
+                                // 重置 DrawIO 就绪状态
+                                resetDrawioReady()
+                                // 切换引擎并标记需要新建会话
+                                setDiagramEngineId(skillId as any)
+                                setStartNewChatAfterEngineSwitch(true)
                             }
-                            // 防止 URL 同步 effect 加载旧会话
-                            sessionManager.skipNextUrlSync()
-                            // 重置 DrawIO 就绪状态
-                            resetDrawioReady()
-                            // 切换引擎并标记需要新建会话
-                            setDiagramEngineId(skillId as any)
-                            setStartNewChatAfterEngineSwitch(true)
+                        } else {
+                            // 非引擎类 SKILL：直接添加到集合
+                            const newSet = new Set(selectedSkillIds)
+                            newSet.add(skillId)
+                            setSelectedSkillIds(newSet)
                         }
-                        // 确保引擎提示词开启
-                        setIsSkillEnabled(true)
+                    }}
+                    onSkillDeselect={(skillId) => {
+                        const newSet = new Set(selectedSkillIds)
+                        newSet.delete(skillId)
+                        setSelectedSkillIds(newSet)
                     }}
                     isDialogOpen={(() => {
                         console.log('[Panel] showModelConfigDialog:', showModelConfigDialog)
