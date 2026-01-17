@@ -349,10 +349,20 @@ export class PlantUMLParser {
 
       if (current.type === "decision") {
         edges.push({from: current.id, to: next.id, label: current.yesBranch || ""});
+        // 查找是否有 else 分支
+        let hasElseBranch = false;
         for (let j = i + 1; j < activities.length; j++) {
           const act = activities[j];
           if ((act.type === "else_marker" || act.type === "elseif_marker") && act.relatedDecision === current.id) {
+            hasElseBranch = true;
             if (j + 1 < activities.length) edges.push({from: current.id, to: activities[j + 1].id, label: act.label});
+          }
+        }
+        // 如果没有 else 分支，添加从 decision 直接到 merge 的边
+        if (!hasElseBranch) {
+          const mergeId = decisionMergeMap.get(current.id);
+          if (mergeId !== undefined) {
+            edges.push({from: current.id, to: mergeId, label: "否"});
           }
         }
         continue;
@@ -1109,8 +1119,10 @@ export class DrawioGenerator {
     const swimlaneWidth = 250;
     const nodeWidth = 140;
     const nodeHeight = 40;
-    const spacing = 70;
+    const spacing = 80;
+    const branchSpacing = 180; // 分支之间的水平间距
     let startY = 40;
+    const baseX = 300; // 主流程的基准 X 坐标
 
     if (hasSwimlanes) {
       let swimlaneX = 20;
@@ -1128,46 +1140,249 @@ export class DrawioGenerator {
       startY += 50;
     }
 
-    const yPositions = new Map<number, number>();
-    let currentY = startY;
-    for (const activity of activities) {
-      if (activity.type === "else_marker" || activity.type === "elseif_marker") continue;
-      yPositions.set(activity.id, currentY);
-      if (activity.type === "start" || activity.type === "end") currentY += 50;
-      else if (activity.type === "decision") currentY += 80;
-      else if (activity.type === "merge" || activity.type === "fork") currentY += 40;
-      else currentY += spacing;
+    // 第一步：分析分支结构，构建分支信息
+    interface BranchInfo {
+      decisionId: number;
+      yesBranch: number[];  // 是分支的节点ID列表
+      noBranch: number[];   // 否分支的节点ID列表
+      mergeId: number | null;
     }
+    const branchMap = new Map<number, BranchInfo>();
+    const nodeToBranch = new Map<number, {decisionId: number; branch: 'yes' | 'no'}>(); // 节点属于哪个分支
+
+    // 找出所有 decision 和对应的 merge
+    const decisionMergeMap = new Map<number, number>();
+    for (const act of activities) {
+      if (act.type === "merge" && act.relatedDecision !== undefined) {
+        decisionMergeMap.set(act.relatedDecision, act.id);
+      }
+    }
+
+    // 分析每个 decision 的分支结构
+    for (let i = 0; i < activities.length; i++) {
+      const act = activities[i];
+      if (act.type === "decision") {
+        const branchInfo: BranchInfo = {
+          decisionId: act.id,
+          yesBranch: [],
+          noBranch: [],
+          mergeId: decisionMergeMap.get(act.id) ?? null
+        };
+
+        // 找到 else_marker 的位置
+        let elseMarkerIndex = -1;
+        for (let j = i + 1; j < activities.length; j++) {
+          const nextAct = activities[j];
+          if ((nextAct.type === "else_marker" || nextAct.type === "elseif_marker") && nextAct.relatedDecision === act.id) {
+            elseMarkerIndex = j;
+            break;
+          }
+          if (nextAct.type === "merge" && nextAct.relatedDecision === act.id) {
+            break;
+          }
+        }
+
+        // 收集 yes 分支的节点（从 decision 之后到 else_marker 之前）
+        if (elseMarkerIndex > 0) {
+          for (let j = i + 1; j < elseMarkerIndex; j++) {
+            const nodeAct = activities[j];
+            if (nodeAct.type !== "else_marker" && nodeAct.type !== "elseif_marker" && nodeAct.type !== "merge") {
+              branchInfo.yesBranch.push(nodeAct.id);
+              nodeToBranch.set(nodeAct.id, {decisionId: act.id, branch: 'yes'});
+            }
+          }
+
+          // 收集 no 分支的节点（从 else_marker 之后到 merge 之前）
+          const mergeIndex = activities.findIndex(a => a.type === "merge" && a.relatedDecision === act.id);
+          if (mergeIndex > elseMarkerIndex) {
+            for (let j = elseMarkerIndex + 1; j < mergeIndex; j++) {
+              const nodeAct = activities[j];
+              if (nodeAct.type !== "else_marker" && nodeAct.type !== "elseif_marker" && nodeAct.type !== "merge") {
+                branchInfo.noBranch.push(nodeAct.id);
+                nodeToBranch.set(nodeAct.id, {decisionId: act.id, branch: 'no'});
+              }
+            }
+          }
+        }
+
+        branchMap.set(act.id, branchInfo);
+      }
+    }
+
+    // 第二步：计算节点位置（分支并行布局）
+    interface NodeLayout {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      centerX: number;
+      centerY: number;
+    }
+    const nodeLayouts = new Map<number, NodeLayout>();
+
+    // 计算节点尺寸的辅助函数
+    const getNodeSize = (act: AnyObject): {width: number; height: number} => {
+      switch (act.type) {
+        case "start":
+        case "end":
+          return {width: 30, height: 30};
+        case "decision":
+          return {width: 100, height: 60};
+        case "merge":
+          return {width: 30, height: 30};
+        case "fork":
+          return {width: 100, height: 10};
+        case "action":
+          return {width: Math.max(nodeWidth, act.label.length * 8 + 20), height: nodeHeight};
+        default:
+          return {width: nodeWidth, height: nodeHeight};
+      }
+    };
+
+    // 计算分支的高度
+    const getBranchHeight = (nodeIds: number[]): number => {
+      let height = 0;
+      for (const id of nodeIds) {
+        const act = activities.find(a => a.id === id);
+        if (act) {
+          const size = getNodeSize(act);
+          height += size.height + 20; // 节点高度 + 间距
+        }
+      }
+      return height;
+    };
+
+    let currentY = startY;
+    const processedInBranch = new Set<number>(); // 已在分支中处理的节点
 
     for (const activity of activities) {
       if (activity.type === "else_marker" || activity.type === "elseif_marker") continue;
-      const id = this.nextId();
-      const y = yPositions.get(activity.id) ?? 0;
-      let x = 150;
+      if (processedInBranch.has(activity.id)) continue; // 跳过已处理的分支节点
+
+      const {width, height} = getNodeSize(activity);
+      let x = baseX - width / 2; // 默认居中
+
+      // 处理泳道
       if (hasSwimlanes && activity.swimlane !== null && swimlanes[activity.swimlane]) {
         const lane = swimlanes[activity.swimlane];
-        x = lane.x + swimlaneWidth / 2 - nodeWidth / 2 + 30;
+        x = lane.x + swimlaneWidth / 2 - width / 2 + 30;
       }
-      this.nodePositions.set(activity.id, {id, x: x + nodeWidth / 2, y: y + nodeHeight / 2});
+
+      // 如果是 decision 节点，需要处理其分支
+      if (activity.type === "decision") {
+        const info = branchMap.get(activity.id);
+        if (info && (info.yesBranch.length > 0 || info.noBranch.length > 0)) {
+          // 先放置 decision 节点
+          nodeLayouts.set(activity.id, {
+            x, y: currentY, width, height,
+            centerX: x + width / 2,
+            centerY: currentY + height / 2
+          });
+          currentY += height + 30; // decision 后的间距
+
+          const branchStartY = currentY;
+          let yesMaxY = branchStartY;
+          let noMaxY = branchStartY;
+
+          // 布局 yes 分支（左边）
+          let yesY = branchStartY;
+          for (const nodeId of info.yesBranch) {
+            const act = activities.find(a => a.id === nodeId);
+            if (!act) continue;
+            const nodeSize = getNodeSize(act);
+            const nodeX = baseX - branchSpacing / 2 - nodeSize.width / 2;
+            nodeLayouts.set(nodeId, {
+              x: nodeX, y: yesY, width: nodeSize.width, height: nodeSize.height,
+              centerX: nodeX + nodeSize.width / 2,
+              centerY: yesY + nodeSize.height / 2
+            });
+            processedInBranch.add(nodeId);
+            yesY += nodeSize.height + 20;
+            yesMaxY = yesY;
+          }
+
+          // 布局 no 分支（右边）
+          let noY = branchStartY;
+          for (const nodeId of info.noBranch) {
+            const act = activities.find(a => a.id === nodeId);
+            if (!act) continue;
+            const nodeSize = getNodeSize(act);
+            const nodeX = baseX + branchSpacing / 2 - nodeSize.width / 2;
+            nodeLayouts.set(nodeId, {
+              x: nodeX, y: noY, width: nodeSize.width, height: nodeSize.height,
+              centerX: nodeX + nodeSize.width / 2,
+              centerY: noY + nodeSize.height / 2
+            });
+            processedInBranch.add(nodeId);
+            noY += nodeSize.height + 20;
+            noMaxY = noY;
+          }
+
+          // 更新 currentY 为两个分支的最大值
+          currentY = Math.max(yesMaxY, noMaxY) + 20;
+          continue;
+        }
+      }
+
+      // 非分支节点或无分支的 decision
+      nodeLayouts.set(activity.id, {
+        x, y: currentY, width, height,
+        centerX: x + width / 2,
+        centerY: currentY + height / 2
+      });
+
+      // 更新 Y 坐标
+      if (activity.type === "start" || activity.type === "end") {
+        currentY += 60;
+      } else if (activity.type === "decision") {
+        currentY += 90;
+      } else if (activity.type === "merge" || activity.type === "fork") {
+        currentY += 50;
+      } else {
+        currentY += spacing;
+      }
+    }
+
+    // 第三步：生成节点 XML
+    for (const activity of activities) {
+      if (activity.type === "else_marker" || activity.type === "elseif_marker") continue;
+
+      const layout = nodeLayouts.get(activity.id);
+      if (!layout) continue;
+
+      const id = this.nextId();
+      const {x, y, width, height, centerX, centerY} = layout;
+
+      // 存储位置信息供边使用
+      this.nodePositions.set(activity.id, {
+        id,
+        x: centerX,
+        y: centerY,
+        width,
+        height,
+        top: y,
+        bottom: y + height,
+        left: x,
+        right: x + width
+      });
 
       switch (activity.type) {
         case "start":
           xml += `        <mxCell id="${id}" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="${x + nodeWidth / 2 - 15}" y="${y}" width="30" height="30" as="geometry"/>
+          <mxGeometry x="${x}" y="${y}" width="${width}" height="${height}" as="geometry"/>
         </mxCell>\n`;
           break;
         case "end":
           xml += `        <mxCell id="${id}" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;strokeWidth=3;" vertex="1" parent="1">
-          <mxGeometry x="${x + nodeWidth / 2 - 15}" y="${y}" width="30" height="30" as="geometry"/>
+          <mxGeometry x="${x}" y="${y}" width="${width}" height="${height}" as="geometry"/>
         </mxCell>\n`;
           xml += `        <mxCell id="${this.nextId()}" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=none;strokeColor=#000000;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="${x + nodeWidth / 2 - 20}" y="${y - 5}" width="40" height="40" as="geometry"/>
+          <mxGeometry x="${x - 5}" y="${y - 5}" width="${width + 10}" height="${height + 10}" as="geometry"/>
         </mxCell>\n`;
           break;
         case "action":
-          const width = Math.max(nodeWidth, activity.label.length * 8 + 20);
           xml += `        <mxCell id="${id}" value="${this.escapeXml(activity.label)}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="${x}" y="${y}" width="${width}" height="${nodeHeight}" as="geometry"/>
+          <mxGeometry x="${x}" y="${y}" width="${width}" height="${height}" as="geometry"/>
         </mxCell>\n`;
           if (activity.note) {
             xml += `        <mxCell id="${this.nextId()}" value="${this.escapeXml(activity.note)}" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#fff2cc;strokeColor=#d6b656;size=14;align=left;spacingLeft=5;fontSize=10;" vertex="1" parent="1">
@@ -1177,30 +1392,71 @@ export class DrawioGenerator {
           break;
         case "decision":
           xml += `        <mxCell id="${id}" value="${this.escapeXml(activity.label)}" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-          <mxGeometry x="${x}" y="${y}" width="100" height="60" as="geometry"/>
+          <mxGeometry x="${x}" y="${y}" width="${width}" height="${height}" as="geometry"/>
         </mxCell>\n`;
           break;
         case "merge":
           xml += `        <mxCell id="${id}" value="" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="${x + nodeWidth / 2 - 15}" y="${y}" width="30" height="30" as="geometry"/>
+          <mxGeometry x="${x}" y="${y}" width="${width}" height="${height}" as="geometry"/>
         </mxCell>\n`;
           break;
         case "fork":
           xml += `        <mxCell id="${id}" value="" style="line;html=1;strokeWidth=4;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="${x}" y="${y}" width="100" height="10" as="geometry"/>
+          <mxGeometry x="${x}" y="${y}" width="${width}" height="${height}" as="geometry"/>
         </mxCell>\n`;
           break;
       }
     }
 
+    // 第四步：生成边 XML，使用智能路径
     for (const rel of relations) {
       const source = this.nodePositions.get(rel.from);
       const target = this.nodePositions.get(rel.to);
-      if (source && target) {
+      if (!source || !target) continue;
+
+      // 计算连接点
+      let sourceX = source.x;
+      let sourceY = source.bottom || (source.y + 15);
+      let targetX = target.x;
+      let targetY = target.top || (target.y - 15);
+
+      // 判断是否需要水平连接（分支情况）
+      const isHorizontalConnection = Math.abs(source.x - target.x) > 50;
+
+      if (isHorizontalConnection) {
+        // 水平分支连接：从源节点侧面出发
+        if (source.x > target.x) {
+          // 目标在左边
+          sourceX = source.left || (source.x - source.width / 2);
+          sourceY = source.y;
+          targetX = target.x;
+          targetY = target.top || (target.y - 15);
+        } else {
+          // 目标在右边
+          sourceX = source.right || (source.x + source.width / 2);
+          sourceY = source.y;
+          targetX = target.x;
+          targetY = target.top || (target.y - 15);
+        }
+
+        // 使用带拐点的边
+        const midY = sourceY + 20;
+        xml += `        <mxCell id="${this.nextId()}" value="${this.escapeXml(rel.label || "")}" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="${sourceX}" y="${sourceY}" as="sourcePoint"/>
+            <mxPoint x="${targetX}" y="${targetY}" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="${sourceX}" y="${midY}"/>
+              <mxPoint x="${targetX}" y="${midY}"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>\n`;
+      } else {
+        // 垂直连接：直接从底部到顶部
         xml += `        <mxCell id="${this.nextId()}" value="${this.escapeXml(rel.label || "")}" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="${source.x}" y="${source.y + 20}" as="sourcePoint"/>
-            <mxPoint x="${target.x}" y="${target.y - 20}" as="targetPoint"/>
+            <mxPoint x="${sourceX}" y="${sourceY}" as="sourcePoint"/>
+            <mxPoint x="${targetX}" y="${targetY}" as="targetPoint"/>
           </mxGeometry>
         </mxCell>\n`;
       }

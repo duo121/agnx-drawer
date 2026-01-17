@@ -462,6 +462,14 @@ ${finalXml}
         // Server-side execute may return result; fallback to client conversion if missing
         const result = (toolCall as any).result || {}
         let xml = result.xml || (toolCall.input as any)?.xml
+        
+        // DEBUG: 追踪 XML 来源
+        console.log('[handlePlantUML] XML source:', {
+            hasResultXml: !!result.xml,
+            hasInputXml: !!(toolCall.input as any)?.xml,
+            xmlLength: xml?.length || 0,
+            xmlPreview: xml?.substring(0, 500) || 'none'
+        })
         let pngUrl = result.pngUrl as string | undefined
         let svgUrl = result.svgUrl as string | undefined
         const code =

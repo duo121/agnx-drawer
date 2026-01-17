@@ -168,6 +168,8 @@ export function useDrawioEngine(): UseDrawioEngineReturn {
         // 加载到 DrawIO - 使用 ref 检查就绪状态（同步访问）
         if (drawioRef.current && isReadyRef.current) {
             console.log('[useDrawioEngine.loadDiagram] Loading to DrawIO (ready)')
+            // DEBUG: 输出实际加载的 XML 前 2000 字符
+            console.log('[useDrawioEngine.loadDiagram] XML preview:', xmlToLoad.substring(0, 2000))
             drawioRef.current.load({ xml: xmlToLoad })
         } else {
             console.log('[useDrawioEngine.loadDiagram] DrawIO not ready, deferring')
