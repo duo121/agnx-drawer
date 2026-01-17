@@ -1,11 +1,12 @@
 "use client"
 
 import type React from "react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { ErrorToast } from "@/components/error-toast"
 import { type FocusArea } from "@/components/toolbox"
 import { useDictionary } from "@/hooks/use-dictionary"
+import { useToolboxFilter } from "@/hooks/use-toolbox-filter"
 import { formatMessage } from "@/shared/i18n/utils"
 import {
     isPdfFile,
@@ -255,89 +256,35 @@ export function useChatInput({
         },
     ]
 
-    // 斜杠命令模式：
-    // 1. 通过按 / 键触发的斜杠模式（input 以 / 开头）
-    // 2. 在工具箱搜索框中输入 / 开头的内容
-    const isSlashMode = (
-        (input.startsWith("/") && isToolboxOpen && toolboxOpenMode === 'slash') ||
-        (toolboxSearchQuery.startsWith("/") && isToolboxOpen)
-    )
-    
-    const filteredCommands = commands.filter((cmd) => {
-        if (!toolboxSearchQuery) return true
-        const q = toolboxSearchQuery.toLowerCase()
-        if (isSlashMode) {
-            // 斜杠模式：仅精准匹配 label
-            return cmd.label.toLowerCase().includes(q)
-        } else {
-            // 搜索框模式：匹配 label + desc
-            return (
-                cmd.id.toLowerCase().includes(q) ||
-                cmd.label.toLowerCase().includes(q) ||
-                cmd.desc.toLowerCase().includes(q)
-            )
-        }
+    // 使用统一的过滤 Hook
+    const {
+        filterQuery,
+        isSlashMode,
+        filteredCommands,
+        filteredSkills,
+        filteredModels,
+        selectableItems,
+    } = useToolboxFilter({
+        input,
+        toolboxSearchQuery,
+        isToolboxOpen,
+        toolboxOpenMode,
+        commands,
+        skills,
+        models,
+        sessions: [], // use-chat-input 不处理 sessions，由 Toolbox 组件通过 props 传入
+        showUnvalidatedModels,
     })
-
-    const filteredSkills = skills.filter((skill) => {
-        if (!toolboxSearchQuery) return true
-        const q = toolboxSearchQuery.toLowerCase()
-        if (isSlashMode) {
-            // 斜杠模式：仅精准匹配 label
-            return skill.label.toLowerCase().includes(q)
-        } else {
-            // 搜索框模式：匙配 label + desc
-            return (
-                skill.id.toLowerCase().includes(q) ||
-                skill.label.toLowerCase().includes(q) ||
-                skill.desc.toLowerCase().includes(q)
-            )
-        }
-    })
-
-    // 过滤模型
-    const filteredModels: ModelItem[] = useMemo(() => {
-        let list = showUnvalidatedModels
-            ? models
-            : models.filter((m) => m.validated === true)
-
-        if (toolboxSearchQuery) {
-            const q = toolboxSearchQuery.toLowerCase()
-            list = list.filter(
-                (m) =>
-                    m.modelId.toLowerCase().includes(q) ||
-                    m.provider.toLowerCase().includes(q) ||
-                    m.providerLabel.toLowerCase().includes(q)
-            )
-        }
-        return list.map((m) => ({
-            id: m.id,
-            type: "model" as const,
-            modelId: m.modelId,
-            provider: m.provider,
-            providerLabel: m.providerLabel,
-            validated: m.validated,
-        }))
-    }, [models, toolboxSearchQuery, showUnvalidatedModels])
-
-    // 统一的可选项列表（Commands + Skills + Models）
-    const selectableItems: ToolboxSelectableItem[] = useMemo(() => {
-        return [
-            ...filteredCommands,
-            ...filteredSkills,
-            ...filteredModels,
-        ]
-    }, [filteredCommands, filteredSkills, filteredModels])
 
     // 工具栏按钮配置（用于斜杠命令匹配）
-    const toolbarButtons = useMemo(() => [
+    const toolbarButtons = [
         { key: 'preview', command: '/preview' },
         { key: 'save', command: '/save' },
         { key: 'export', command: '/export' },
         { key: 'upload', command: '/upload' },
         { key: 'url', command: '/url' },
         { key: 'model', command: '/model' },
-    ], [])
+    ]
 
     // 斜杠命令模糊匹配 - 只匹配英文字母
     const findSlashMatch = useCallback((query: string): FocusArea | null => {
@@ -406,7 +353,15 @@ export function useChatInput({
         // 只有当 input 真正变化时才处理
         if (prevInputRef.current === input) return
         prevInputRef.current = input
-        
+
+        // 斜杠模式下，如果输入变为空，关闭工具箱
+        if (isToolboxOpen && toolboxOpenMode === 'slash' && !input) {
+            setIsToolboxOpen(false)
+            setToolboxSearchQuery("")
+            setFocusArea({ type: 'search' })
+            return
+        }
+
         if (isToolboxOpen && toolboxOpenMode === 'slash' && input.startsWith('/')) {
             const match = findSlashMatch(input)
             if (match) {
@@ -1043,6 +998,7 @@ export function useChatInput({
         setShowUrlDialog,
         setIsToolboxOpen,
         setToolboxSearchQuery,
+        setToolboxOpenMode,
         setSelectedItemIndex,
         setFocusArea,
         toolboxKeyHandlerRef,

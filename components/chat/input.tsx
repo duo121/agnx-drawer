@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useChatInput, type UseChatInputOptions } from "@/hooks/use-chat-input"
 import type { UseModelConfigReturn } from "@/hooks/use-model-config"
+import { useToolboxFilter } from "@/hooks/use-toolbox-filter"
 import {
     type TipItem,
     type ExampleTip,
@@ -156,6 +157,8 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
         selectableItems,
         // 状态设置
         setToolboxSearchQuery,
+        setToolboxOpenMode,
+        setSelectedItemIndex,
         setFocusArea,
         setIsToolboxOpen,
         toolboxKeyHandlerRef,
@@ -189,6 +192,20 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
             toolboxRef.current?.handleKeyDown(e)
         }
     }, [toolboxKeyHandlerRef])
+
+    // 使用统一的过滤 Hook 计算 filteredSessions
+    // 注意：commands/skills/models 的过滤已经在 useChatInput 中完成，这里只需要 sessions
+    const { filteredSessions } = useToolboxFilter({
+        input,
+        toolboxSearchQuery,
+        isToolboxOpen,
+        toolboxOpenMode,
+        commands,
+        skills: [], // 不需要重复计算
+        models: [],  // 不需要重复计算
+        sessions,
+        showUnvalidatedModels: false,
+    })
 
     // 文件分类
     const imageFiles = files.filter(f => f.type.startsWith("image/"))
@@ -367,11 +384,13 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
                 target: { value: '/' },
             } as React.ChangeEvent<HTMLTextAreaElement>
             handleChange(syntheticEvent)
-            
-            // 打开工具箱
+
+            // 打开工具箱，标记为斜杠模式
             setIsToolboxOpen(true)
+            setToolboxOpenMode('slash')
             setToolboxSearchQuery('')
-            
+            setSelectedItemIndex(0)
+
             // 聚焦输入框
             requestAnimationFrame(() => {
                 if (textareaRef.current) {
@@ -505,6 +524,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
                         })()}
                         // 历史会话
                         sessions={sessions}
+                        filteredSessions={filteredSessions}
                         currentSessionId={currentSessionId}
                         onSessionSwitch={onSessionSwitch}
                         onSessionDelete={onSessionDelete}

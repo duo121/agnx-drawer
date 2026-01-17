@@ -218,6 +218,14 @@ export interface ToolboxProps {
         thumbnailDataUrl?: string
         engineId?: string
     }>
+    // 过滤后的历史会话（由统一的 useToolboxFilter 计算）
+    filteredSessions?: Array<{
+        id: string
+        title: string
+        updatedAt: number
+        thumbnailDataUrl?: string
+        engineId?: string
+    }>
     currentSessionId?: string | null
     onSessionSwitch?: (id: string) => void
     onSessionDelete?: (id: string) => void
@@ -262,11 +270,15 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             disableClickOutside = false,
             // 历史会话
             sessions = [],
+            filteredSessions: filteredSessionsProp,
             currentSessionId: currentSessionIdProp,
             onSessionSwitch,
             onSessionDelete,
             onSessionCreate,
         } = props
+
+        // 使用传入的 filteredSessions，如果没有则退回 sessions
+        const filteredSessions = filteredSessionsProp ?? sessions
 
         const dict = useDictionary()
         const searchInputRef = useRef<HTMLInputElement>(null)
@@ -383,17 +395,6 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
 
         const historyItems = isExcalidraw ? excalidrawHistory : diagramHistory
         const itemsPerRow = ZOOM_LEVELS[versionZoomLevel]
-
-        // 过滤会话列表（支持搜索）
-        const filteredSessions = useMemo(() => {
-            if (!searchQuery) return sessions
-            const q = searchQuery.toLowerCase()
-            // 支持斜杠命令搜索
-            if (q === '/' || q === '/session' || q === '/sessions' || q.startsWith('/s')) {
-                return sessions
-            }
-            return sessions.filter(s => s.title.toLowerCase().includes(q))
-        }, [sessions, searchQuery])
 
         // 计算每个 section 的起始索引（用于高亮映射）
         const commandsStartIndex = 0
