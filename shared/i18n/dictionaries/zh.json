@@ -32,7 +32,7 @@
         "modelscope": "ModelScope"
     },
     "chat": {
-        "placeholder": "描述您的图表或上传文件...",
+        "placeholder": "智能体技能、快捷命令、模型切换...",
         "send": "发送",
         "sending": "发送中...",
         "sendMessage": "发送消息",

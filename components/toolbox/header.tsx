@@ -25,6 +25,8 @@ export interface ToolboxHeaderProps {
     visibleToolbarButtons: ToolbarButtonConfig[]
     toolbarActions: Record<string, () => void>
     toolbarButtonRefs: React.MutableRefObject<(HTMLButtonElement | null)[]>
+    // 匹配的工具栏按钮索引（用于高亮显示）
+    matchedToolbarIndices?: number[]
 
     // 工具栏 tooltip
     tooltipPosition: { left: number } | null
@@ -57,6 +59,7 @@ export function ToolboxHeader({
     visibleToolbarButtons,
     toolbarActions,
     toolbarButtonRefs,
+    matchedToolbarIndices = [],
     tooltipPosition,
     setTooltipPosition,
     selectedModelName,
@@ -100,7 +103,7 @@ export function ToolboxHeader({
                         value={searchQuery || ""}
                         onChange={(e) => onSearchChange(e.target.value)}
                         onKeyDown={onKeyDown}
-                        placeholder="搜索命令、模型..."
+                        placeholder="搜索命令、技能、模型..."
                         className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
                     />
                 </div>
@@ -109,6 +112,8 @@ export function ToolboxHeader({
                 <div className="flex items-center gap-0.5">
                     {visibleToolbarButtons.map((btn, idx) => {
                         const isFocused = focusArea.type === "toolbar" && focusArea.index === idx
+                        // 检查是否匹配过滤词（需要检查原始索引是否在 matchedToolbarIndices 中）
+                        const isMatched = matchedToolbarIndices.includes(idx)
                         return (
                             <ButtonWithTooltip
                                 key={btn.key}
@@ -122,7 +127,9 @@ export function ToolboxHeader({
                                 tooltipContent={btn.tooltip}
                                 className={cn(
                                     "h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted",
-                                    isFocused && "ring-2 ring-primary text-foreground"
+                                    isFocused && "ring-2 ring-primary text-foreground",
+                                    // 匹配过滤词时高亮显示
+                                    isMatched && !isFocused && "bg-primary/10 text-primary border border-primary/30"
                                 )}
                             >
                                 {TOOLBAR_ICONS[btn.key]}
