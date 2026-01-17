@@ -259,10 +259,12 @@ export function useChatInput({
     // 使用统一的过滤 Hook
     const {
         filterQuery,
+        filterTerms,
         isSlashMode,
         filteredCommands,
         filteredSkills,
         filteredModels,
+        matchedToolbarIndices,
         selectableItems,
     } = useToolboxFilter({
         input,
@@ -276,65 +278,41 @@ export function useChatInput({
         showUnvalidatedModels,
     })
 
-    // 工具栏按钮配置（用于斜杠命令匹配）
-    const toolbarButtons = [
-        { key: 'preview', command: '/preview' },
-        { key: 'save', command: '/save' },
-        { key: 'export', command: '/export' },
-        { key: 'upload', command: '/upload' },
-        { key: 'url', command: '/url' },
-        { key: 'model', command: '/model' },
-    ]
+    /**
+     * 斜杠命令焦点匹配
+     * 
+     * 基于过滤结果来确定焦点位置：
+     * 1. 如果有匹配的工具栏按钮，焦点第一个匹配的按钮
+     * 2. 如果有过滤后的命令，焦点第一个命令
+     * 3. 如果有过滤后的技能，焦点第一个技能
+     * 4. 如果有过滤后的模型，焦点第一个模型
+     */
+    const findSlashMatch = useCallback((): FocusArea | null => {
+        // 没有过滤词时不匹配
+        if (filterTerms.length === 0) return null
 
-    // 斜杠命令模糊匹配 - 只匹配英文字母
-    const findSlashMatch = useCallback((query: string): FocusArea | null => {
-        if (!query || !query.startsWith('/')) return null
-        const q = query.slice(1).toLowerCase() // 去掉 / 前缀
-        if (!q) return null
-        
-        // 只匹配纯英文字母和数字
-        if (!/^[a-z0-9]+$/i.test(q)) return null
-
-        // 1. 匹配工具栏按钮
-        for (let i = 0; i < toolbarButtons.length; i++) {
-            const btn = toolbarButtons[i]
-            if (btn.command.slice(1).toLowerCase().startsWith(q)) {
-                return { type: 'toolbar', index: i }
-            }
+        // 1. 匹配工具栏按钮（使用 matchedToolbarIndices）
+        if (matchedToolbarIndices.length > 0) {
+            return { type: 'toolbar', index: matchedToolbarIndices[0] }
         }
 
         // 2. 匹配 Commands
-        for (let i = 0; i < commands.length; i++) {
-            const cmd = commands[i]
-            if (cmd.label.slice(1).toLowerCase().startsWith(q)) {
-                return { type: 'list', section: 'commands', index: i }
-            }
+        if (filteredCommands.length > 0) {
+            return { type: 'list', section: 'commands', index: 0 }
         }
 
         // 3. 匹配 Skills
-        for (let i = 0; i < skills.length; i++) {
-            const skill = skills[i]
-            if (skill.id.toLowerCase().startsWith(q)) {
-                return { type: 'list', section: 'skills', index: i }
-            }
+        if (filteredSkills.length > 0) {
+            return { type: 'list', section: 'skills', index: 0 }
         }
 
         // 4. 匹配 Models
-        const modelList = showUnvalidatedModels
-            ? models
-            : models.filter((m) => m.validated === true)
-        for (let i = 0; i < modelList.length; i++) {
-            const model = modelList[i]
-            if (
-                model.modelId.toLowerCase().startsWith(q) ||
-                model.provider.toLowerCase().startsWith(q)
-            ) {
-                return { type: 'list', section: 'models', index: i }
-            }
+        if (filteredModels.length > 0) {
+            return { type: 'list', section: 'models', index: 0 }
         }
 
         return null
-    }, [toolbarButtons, commands, skills, models, showUnvalidatedModels])
+    }, [filterTerms, matchedToolbarIndices, filteredCommands, filteredSkills, filteredModels])
 
     // 工具箱聚焦 - 只在打开时重置
     const prevToolboxOpen = useRef(false)
@@ -363,15 +341,15 @@ export function useChatInput({
         }
 
         if (isToolboxOpen && toolboxOpenMode === 'slash' && input.startsWith('/')) {
-            const match = findSlashMatch(input)
+            const match = findSlashMatch()
             if (match) {
                 setFocusArea(match)
-            } else if (input.length > 1) {
-                // 有输入但无匹配时，清除工具栏焦点，回到搜索框
+            } else if (filterTerms.length > 0) {
+                // 有过滤词但无匹配时，清除工具栏焦点，回到搜索框
                 setFocusArea({ type: 'search' })
             }
         }
-    }, [input, isToolboxOpen, toolboxOpenMode, findSlashMatch])
+    }, [input, isToolboxOpen, toolboxOpenMode, findSlashMatch, filterTerms])
 
     // 工具箱搜索框中的斜杠命令匹配
     const prevSearchQueryRef = useRef(toolboxSearchQuery)
@@ -381,7 +359,7 @@ export function useChatInput({
         prevSearchQueryRef.current = toolboxSearchQuery
         
         if (isToolboxOpen && toolboxSearchQuery.startsWith('/')) {
-            const match = findSlashMatch(toolboxSearchQuery)
+            const match = findSlashMatch()
             if (match) {
                 setFocusArea(match)
             } else if (toolboxSearchQuery === '/') {
@@ -395,7 +373,7 @@ export function useChatInput({
             // 搜索框清空时，回到搜索框
             setFocusArea({ type: 'search' })
         }
-    }, [toolboxSearchQuery, isToolboxOpen, findSlashMatch])
+    }, [toolboxSearchQuery, isToolboxOpen, findSlashMatch, filterTerms])
 
     // 点击外部关闭工具箱（由 Toolbox 组件内部处理）
 
@@ -631,10 +609,23 @@ export function useChatInput({
             }
         }
 
-        // "/" 或 "、" 在第一个字符位置打开工具箱
+        // "/" 或 "、" 在行首位置打开工具箱
         if (e.key === "/" || e.key === "、") {
-            // 只有在输入框为空时才触发
-            if (input === "") {
+            const textarea = textareaRef.current
+            if (!textarea) return
+
+            const { selectionStart, value } = textarea
+            
+            // 检测是否在行首：
+            // 1. 输入框完全为空
+            // 2. 光标位置是 0
+            // 3. 光标前一个字符是换行符（多行模式下新行的第一个字符）
+            const isAtLineStart = 
+                value === "" ||
+                selectionStart === 0 ||
+                (selectionStart > 0 && value[selectionStart - 1] === "\n")
+            
+            if (isAtLineStart) {
                 e.preventDefault()
                 // 打开工具箱，标记为斜杠模式
                 setIsToolboxOpen(true)
@@ -642,18 +633,20 @@ export function useChatInput({
                 setToolboxSearchQuery("")
                 setSelectedItemIndex(0)
                 
-                // 将、转为/，并插入到输入框
+                // 将、转为/，并插入到当前光标位置
+                const newValue = value.slice(0, selectionStart) + "/" + value.slice(selectionStart)
                 const syntheticEvent = {
-                    target: { value: "/" },
+                    target: { value: newValue },
                 } as any
                 onChange(syntheticEvent)
                 
-                // 确保光标在输入框末尾
+                // 确保光标在插入的 / 后面
                 requestAnimationFrame(() => {
                     if (textareaRef.current) {
                         textareaRef.current.focus()
-                        textareaRef.current.selectionStart = 1
-                        textareaRef.current.selectionEnd = 1
+                        const newPos = selectionStart + 1
+                        textareaRef.current.selectionStart = newPos
+                        textareaRef.current.selectionEnd = newPos
                     }
                 })
             }
@@ -991,6 +984,8 @@ export function useChatInput({
         filteredSkills,
         filteredModels,
         selectableItems,
+        filterTerms,
+        matchedToolbarIndices,
 
         // 状态设置
         setShowVersionList,

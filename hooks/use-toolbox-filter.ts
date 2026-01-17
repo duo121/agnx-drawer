@@ -1,5 +1,16 @@
 import { useMemo } from "react"
 import type { Command, Skill, ModelItem, ToolboxSelectableItem } from "@/components/toolbox/main"
+import {
+    parseFilterTerms,
+    filterItems,
+    filterToolbarButtons,
+    COMMAND_KEYWORDS,
+    SKILL_KEYWORDS,
+    MODEL_KEYWORDS,
+    SESSION_KEYWORDS,
+    TOOLBAR_BUTTON_KEYWORDS,
+    type ToolbarButtonKeywords,
+} from "@/shared/toolbox-keywords"
 
 export interface Session {
     id: string
@@ -37,6 +48,8 @@ export interface UseToolboxFilterOptions {
 export interface UseToolboxFilterReturn {
     // 计算出的过滤查询（去掉 / 前缀）
     filterQuery: string
+    // 解析后的过滤词数组
+    filterTerms: string[]
     // 是否处于斜杠命令模式
     isSlashMode: boolean
     // 过滤后的结果
@@ -44,12 +57,19 @@ export interface UseToolboxFilterReturn {
     filteredSkills: Skill[]
     filteredModels: ModelItem[]
     filteredSessions: Session[]
+    // 匹配的工具栏按钮索引
+    matchedToolbarIndices: number[]
     // 统一的可选项列表
     selectableItems: ToolboxSelectableItem[]
 }
 
 /**
  * 统一的工具箱过滤 Hook
+ * 
+ * 支持多级关键词过滤：
+ * - 输入的文本使用空格切割，每个词进行逐级过滤
+ * - 例如 "/model glm" 会先匹配 "model" 类型关键词（过滤出所有模型），
+ *   然后用 "glm" 进一步过滤模型名称
  * 
  * 处理两种模式：
  * 1. 斜杠模式（slash）：用户在输入框输入 / 开头的内容触发
@@ -95,62 +115,29 @@ export function useToolboxFilter(options: UseToolboxFilterOptions): UseToolboxFi
         return toolboxSearchQuery
     }, [isToolboxOpen, toolboxOpenMode, input, toolboxSearchQuery])
 
-    // 过滤 Commands
+    // 解析过滤词数组
+    const filterTerms = useMemo(() => {
+        return parseFilterTerms(filterQuery)
+    }, [filterQuery])
+
+    // 过滤 Commands - 使用新的关键词系统
     const filteredCommands = useMemo(() => {
-        return commands.filter((cmd) => {
-            if (!filterQuery) return true
-            const q = filterQuery.toLowerCase()
-            if (isSlashMode) {
-                // 斜杠模式：匹配 label（去掉 / 前缀后）
-                return cmd.label.slice(1).toLowerCase().includes(q)
-            } else {
-                // 搜索框模式：匹配 id + label + desc
-                return (
-                    cmd.id.toLowerCase().includes(q) ||
-                    cmd.label.toLowerCase().includes(q) ||
-                    cmd.desc.toLowerCase().includes(q)
-                )
-            }
-        })
-    }, [commands, filterQuery, isSlashMode])
+        return filterItems(commands, COMMAND_KEYWORDS, filterTerms)
+    }, [commands, filterTerms])
 
-    // 过滤 Skills
+    // 过滤 Skills - 使用新的关键词系统
     const filteredSkills = useMemo(() => {
-        return skills.filter((skill) => {
-            if (!filterQuery) return true
-            const q = filterQuery.toLowerCase()
-            if (isSlashMode) {
-                // 斜杠模式：匹配 id 或 label
-                return (
-                    skill.id.toLowerCase().includes(q) ||
-                    skill.label.toLowerCase().includes(q)
-                )
-            } else {
-                // 搜索框模式：匹配 id + label + desc
-                return (
-                    skill.id.toLowerCase().includes(q) ||
-                    skill.label.toLowerCase().includes(q) ||
-                    skill.desc.toLowerCase().includes(q)
-                )
-            }
-        })
-    }, [skills, filterQuery, isSlashMode])
+        return filterItems(skills, SKILL_KEYWORDS, filterTerms)
+    }, [skills, filterTerms])
 
-    // 过滤 Models
+    // 过滤 Models - 使用新的关键词系统
     const filteredModels: ModelItem[] = useMemo(() => {
         let list = showUnvalidatedModels
             ? models
             : models.filter((m) => m.validated === true)
 
-        if (filterQuery) {
-            const q = filterQuery.toLowerCase()
-            list = list.filter(
-                (m) =>
-                    m.modelId.toLowerCase().includes(q) ||
-                    m.provider.toLowerCase().includes(q) ||
-                    m.providerLabel.toLowerCase().includes(q)
-            )
-        }
+        // 使用关键词系统过滤
+        list = filterItems(list, MODEL_KEYWORDS, filterTerms)
 
         return list.map((m) => ({
             id: m.id,
@@ -160,14 +147,17 @@ export function useToolboxFilter(options: UseToolboxFilterOptions): UseToolboxFi
             providerLabel: m.providerLabel,
             validated: m.validated,
         }))
-    }, [models, filterQuery, showUnvalidatedModels])
+    }, [models, filterTerms, showUnvalidatedModels])
 
-    // 过滤 Sessions（历史会话）
+    // 过滤 Sessions（历史会话）- 使用新的关键词系统
     const filteredSessions = useMemo(() => {
-        if (!filterQuery) return sessions
-        const q = filterQuery.toLowerCase()
-        return sessions.filter((s) => s.title.toLowerCase().includes(q))
-    }, [sessions, filterQuery])
+        return filterItems(sessions, SESSION_KEYWORDS, filterTerms)
+    }, [sessions, filterTerms])
+
+    // 匹配的工具栏按钮索引
+    const matchedToolbarIndices = useMemo(() => {
+        return filterToolbarButtons(TOOLBAR_BUTTON_KEYWORDS, filterTerms)
+    }, [filterTerms])
 
     // 统一的可选项列表
     const selectableItems: ToolboxSelectableItem[] = useMemo(() => {
@@ -180,11 +170,13 @@ export function useToolboxFilter(options: UseToolboxFilterOptions): UseToolboxFi
 
     return {
         filterQuery,
+        filterTerms,
         isSlashMode,
         filteredCommands,
         filteredSkills,
         filteredModels,
         filteredSessions,
+        matchedToolbarIndices,
         selectableItems,
     }
 }

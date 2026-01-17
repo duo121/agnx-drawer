@@ -41,6 +41,7 @@ import { SessionDetailDialog } from "@/components/history/session-detail-dialog"
 import type { UseModelConfigReturn } from "@/hooks/use-model-config"
 import type { FlattenedModel, ProviderConfig, ProviderName } from "@/shared/types/model-config"
 import { cn } from "@/shared/utils"
+import { TOOLBAR_BUTTON_KEYWORDS, type ToolbarButtonKeywords } from "@/shared/toolbox-keywords"
 
 // ============ 类型定义 ============
 
@@ -82,11 +83,12 @@ export type ToolboxSelectableItem = Command | Skill | ModelItem
 
 type ToolboxView = "main" | "history" | "export" | "url" | "config"
 
-// 按钮配置类型
+// 按钮配置类型（兼容旧代码，同时支持 keywords）
 export interface ToolbarButtonConfig {
     key: string
     command: string
     tooltip: string
+    keywords?: string[]
     isVisible?: () => boolean
 }
 
@@ -106,35 +108,13 @@ const PROVIDER_LOGO_MAP: Record<string, string> = {
     zhipu: "zhipu",
 }
 
-// 按钮组配置（按照渲染顺序）
-const TOOLBAR_BUTTONS: ToolbarButtonConfig[] = [
-    {
-        key: 'save',
-        command: '/save',
-        tooltip: '/save 保存当前版本',
-    },
-    {
-        key: 'export',
-        command: '/export',
-        tooltip: '/export 导出图表',
-    },
-    {
-        key: 'upload',
-        command: '/upload',
-        tooltip: '/upload 上传文件',
-    },
-    {
-        key: 'url',
-        command: '/url',
-        tooltip: '/url 从 URL 提取',
-        isVisible: () => true, // 可以根据 props 动态判断
-    },
-    {
-        key: 'model',
-        command: '/model',
-        tooltip: '/model 配置模型',
-    },
-]
+// 按钮组配置（从统一的关键词配置中生成）
+const TOOLBAR_BUTTONS: ToolbarButtonConfig[] = TOOLBAR_BUTTON_KEYWORDS.map(btn => ({
+    key: btn.key,
+    command: btn.command,
+    tooltip: btn.tooltip,
+    keywords: btn.keywords,
+}))
 
 // ============ 工具函数 ============
 
@@ -192,6 +172,11 @@ export interface ToolboxProps {
 
     // 工具箱打开方式
     toolboxOpenMode: 'button' | 'slash'
+
+    // 过滤词数组（用于高亮匹配的工具栏按钮）
+    filterTerms?: string[]
+    // 匹配的工具栏按钮索引
+    matchedToolbarIndices?: number[]
 
     // 焦点管理
     focusArea: FocusArea
@@ -263,6 +248,9 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             showUnvalidatedModels,
             modelConfig,
             toolboxOpenMode,
+            // 过滤词和匹配的工具栏按钮
+            filterTerms = [],
+            matchedToolbarIndices = [],
             // 焦点管理
             focusArea,
             onFocusChange,
@@ -1406,6 +1394,7 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                             visibleToolbarButtons={visibleToolbarButtons}
                             toolbarActions={toolbarActions}
                             toolbarButtonRefs={toolbarButtonRefs}
+                            matchedToolbarIndices={matchedToolbarIndices}
                             tooltipPosition={tooltipPosition}
                             setTooltipPosition={setTooltipPosition}
                             selectedModelName={selectedModelName}

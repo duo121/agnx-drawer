@@ -158,6 +158,8 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
         filteredSkills,
         filteredModels,
         selectableItems,
+        filterTerms,
+        matchedToolbarIndices,
         // 状态设置
         setToolboxSearchQuery,
         setToolboxOpenMode,
@@ -511,6 +513,9 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
                         modelConfig={modelConfig}
                         // 工具箱打开方式
                         toolboxOpenMode={toolboxOpenMode}
+                        // 过滤词和匹配的工具栏按钮
+                        filterTerms={filterTerms}
+                        matchedToolbarIndices={matchedToolbarIndices}
                         // 焦点管理
                         focusArea={focusArea}
                         onFocusChange={setFocusArea}
