@@ -370,16 +370,6 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             versionIndex: -1,
         })
 
-        // 会话删除确认对话框状态
-        const [sessionDeleteDialog, setSessionDeleteDialog] = useState<{
-            isOpen: boolean
-            sessionId: string | null
-            sessionTitle: string
-        }>({
-            isOpen: false,
-            sessionId: null,
-            sessionTitle: "",
-        })
 
         // 会话详情弹框状态
         const [sessionDetailDialog, setSessionDetailDialog] = useState<{
@@ -693,31 +683,6 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
         }, [])
 
         // ============ 会话操作 ============
-
-        // 点击会话删除按钮
-        const handleSessionDeleteClick = useCallback((e: React.MouseEvent, sessionId: string, sessionTitle: string) => {
-            e.stopPropagation()
-            setSessionDeleteDialog({
-                isOpen: true,
-                sessionId,
-                sessionTitle,
-            })
-        }, [])
-
-        // 确认删除会话
-        const handleConfirmSessionDelete = useCallback(() => {
-            const { sessionId } = sessionDeleteDialog
-            setSessionDeleteDialog({ isOpen: false, sessionId: null, sessionTitle: "" })
-            if (sessionId && onSessionDelete) {
-                onSessionDelete(sessionId)
-                toast.success("已删除会话")
-            }
-        }, [sessionDeleteDialog, onSessionDelete])
-
-        // 取消删除会话
-        const handleCancelSessionDelete = useCallback(() => {
-            setSessionDeleteDialog({ isOpen: false, sessionId: null, sessionTitle: "" })
-        }, [])
 
         // 点击会话 - 打开详情弹框
         const handleSessionClick = useCallback((session: {
@@ -1227,60 +1192,9 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                             {formatRelativeTime(session.updatedAt)}
                         </span>
                     </div>
-
-                    {/* 删除按钮 - 不能删除当前会话 */}
-                    {!isCurrentSession && (
-                        <button
-                            type="button"
-                            onClick={(e) => handleSessionDeleteClick(e, session.id, session.title)}
-                            className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm w-5 h-5 flex items-center justify-center z-10"
-                            title="删除会话"
-                        >
-                            <X className="h-2.5 w-2.5" />
-                        </button>
-                    )}
                 </div>
             )
         }
-
-        // 模型列表项
-        const renderModelItem = (model: FlattenedModel) => (
-            <button
-                key={model.id}
-                type="button"
-                onClick={() => onModelSelect(model.id)}
-                className={cn(
-                    "w-full px-3 py-2 text-left transition-colors flex items-center gap-3 rounded-lg hover:bg-background/60",
-                    selectedModelId === model.id && "bg-background/60"
-                )}
-            >
-                <img
-                    alt={model.provider}
-                    className="h-4 w-4 dark:invert shrink-0"
-                    src={`https://models.dev/logos/${
-                        PROVIDER_LOGO_MAP[model.provider] || model.provider
-                    }.svg`}
-                    onError={(e) => {
-                        e.currentTarget.style.display = "none"
-                    }}
-                />
-
-                <span className="text-sm flex-1 truncate">
-                    {model.providerLabel} / {model.modelId}
-                </span>
-
-                {model.validated !== true && (
-                    <AlertTriangle className="h-3 w-3 text-warning shrink-0" />
-                )}
-
-                <Check
-                    className={cn(
-                        "h-4 w-4 shrink-0 text-primary",
-                        selectedModelId === model.id ? "opacity-100" : "opacity-0"
-                    )}
-                />
-            </button>
-        )
 
         // 根据引擎获取可用的保存格式
         const saveFormats = useMemo(() => {
@@ -1845,15 +1759,6 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                 onClose={handleCancelDelete}
                 onConfirm={handleConfirmDelete}
                 portalTarget={containerRef.current}
-            />
-            {/* 会话删除确认对话框 */}
-            <DeleteConfirmDialog
-                isOpen={sessionDeleteDialog.isOpen}
-                onClose={handleCancelSessionDelete}
-                onConfirm={handleConfirmSessionDelete}
-                portalTarget={containerRef.current}
-                title="删除会话"
-                description={`确定要删除会话 "${sessionDeleteDialog.sessionTitle}" 吗？此操作无法撤销。`}
             />
             {/* 会话详情弹框 */}
             <SessionDetailDialog
