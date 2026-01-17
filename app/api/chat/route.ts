@@ -110,6 +110,9 @@ async function handleChatRequest(req: Request): Promise<Response> {
     const engineId = requestEngineId || "drawio"
     const engine = getEngine(engineId)
 
+    // Read skill disabled preference from header (user clicked X on engine badge)
+    const isSkillDisabled = req.headers.get("x-skill-disabled") === "true"
+
     // Extract user input text early for skill matching
     const lastUserMessage = [...messages]
         .reverse()
@@ -156,8 +159,9 @@ async function handleChatRequest(req: Request): Promise<Response> {
     }
 
     // Load skills based on intent (auto-detection from keywords)
-    const skillsToLoad = getSkillsToLoad(userIntent, engineId as CanvasType)
-    console.log(`[Skills] Intent-based skills to load:`, skillsToLoad)
+    // Skip skill loading if skill is disabled via header (user clicked X on engine badge)
+    const skillsToLoad = isSkillDisabled ? [] : getSkillsToLoad(userIntent, engineId as CanvasType)
+    console.log(`[Skills] Intent-based skills to load:`, skillsToLoad, isSkillDisabled ? '(skill disabled by user)' : '')
 
     // Load active skills from intent detection
     let activeSkills = skillsToLoad
@@ -169,8 +173,8 @@ async function handleChatRequest(req: Request): Promise<Response> {
         console.log(`[Skills] Loaded skill "${skill.id}" from intent`)
     })
 
-    // Fallback: If no skills from intent, try semantic matching
-    if (activeSkills.length === 0 && userInputText) {
+    // Fallback: If no skills from intent, try semantic matching (skip if skill disabled)
+    if (!isSkillDisabled && activeSkills.length === 0 && userInputText) {
         const allSkills = skillLoader.listSkills()
         const bestMatch = getBestSkillMatch(allSkills, userInputText, engineId as EngineType, 3)
         if (bestMatch) {

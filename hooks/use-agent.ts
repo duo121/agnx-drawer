@@ -97,6 +97,8 @@ export interface UseAgentOptions {
     maxContinuationRetry?: number
     /** 是否使用简洁风格 */
     minimalStyle?: boolean
+    /** 是否启用 Skill/引擎提示词注入 */
+    isSkillEnabled?: boolean
     /** 获取画布主题 */
     getCanvasTheme?: () => string
     /** 工具调用处理器 */
@@ -231,6 +233,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
         maxAutoRetry = DEFAULT_MAX_AUTO_RETRY,
         maxContinuationRetry = DEFAULT_MAX_CONTINUATION_RETRY,
         minimalStyle = false,
+        isSkillEnabled = true,
         getCanvasTheme,
         onToolCall,
         onExternalError,
@@ -482,6 +485,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
                         ...(config.awsSessionToken && { 'x-aws-session-token': config.awsSessionToken }),
                     }),
                     ...(minimalStyle && { 'x-minimal-style': 'true' }),
+                    ...(!isSkillEnabled && { 'x-skill-disabled': 'true' }),
                     ...(engineId === 'excalidraw' && getCanvasTheme && {
                         'x-canvas-theme': getCanvasTheme(),
                     }),
@@ -575,13 +579,14 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
                         ...(config.awsSessionToken && { 'x-aws-session-token': config.awsSessionToken }),
                     }),
                     ...(minimalStyle && { 'x-minimal-style': 'true' }),
+                    ...(!isSkillEnabled && { 'x-skill-disabled': 'true' }),
                     ...(engineId === 'excalidraw' && getCanvasTheme && {
                         'x-canvas-theme': getCanvasTheme(),
                     }),
                 },
             }
         )
-    }, [chatSendMessage, sessionId, engineId, minimalStyle, getCanvasTheme, hooks, partialXmlRef])
+    }, [chatSendMessage, sessionId, engineId, minimalStyle, isSkillEnabled, getCanvasTheme, hooks, partialXmlRef])
 
     // === 重新生成 ===
     const regenerate = useCallback(async (assistantMessageIndex: number) => {

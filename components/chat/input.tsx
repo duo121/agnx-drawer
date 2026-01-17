@@ -61,7 +61,11 @@ interface ChatInputProps extends UseChatInputOptions {
     // Engine switch
     activeEngine?: string
     onEngineSwitch?: () => void
+    onSkillSelect?: (skillId: string) => void
     isEngineSwitching?: boolean
+    // Skill/Engine prompt injection control
+    isSkillEnabled?: boolean
+    onSkillEnabledChange?: (enabled: boolean) => void
     // Dialog state (to disable click outside when dialog is open)
     isDialogOpen?: boolean
     // Session management
@@ -109,7 +113,10 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
     onMinimalStyleChange = () => {},
     activeEngine = "drawio",
     onEngineSwitch = () => {},
+    onSkillSelect,
     isEngineSwitching = false,
+    isSkillEnabled = true,
+    onSkillEnabledChange,
     isDialogOpen = false,
     // Session management
     sessions = [],
@@ -134,7 +141,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
         models,
         showUnvalidatedModels,
         onModelSelect,
-        // onSkillSelect 由父组件传入，布局此处不方便处理
+        onSkillSelect,
     })
 
     const {
@@ -227,6 +234,9 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
 
     // 图片徽章悬浮状态
     const [isImageBadgeHovered, setIsImageBadgeHovered] = useState(false)
+
+    // 引擎徽章悬浮状态（用于显示关闭按钮）
+    const [isEngineBadgeHovered, setIsEngineBadgeHovered] = useState(false)
 
     // 发送按钮悬浮状态（用于加载时显示停止按钮）
     const [isSendButtonHovered, setIsSendButtonHovered] = useState(false)
@@ -729,58 +739,66 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
 
                             {HiddenFileInput}
 
-                            {/* 引擎切换按钮 */}
-                            <ButtonWithTooltip
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={onEngineSwitch}
-                                disabled={isToolbarDisabled || isEngineSwitching}
-                                tooltipContent={activeEngine === "drawio" ? "当前引擎 Draw.io" : "当前引擎 Excalidraw"}
-                                className={cn(
-                                    "h-8 w-8 rounded-full border transition-all",
-                                    "text-muted-foreground border-border hover:text-foreground hover:bg-muted/80"
-                                )}
-                            >
-                                {activeEngine === "drawio" ? (
-                                    <svg
-                                        width={16}
-                                        height={16}
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <rect x="3" y="3" width="7" height="7" rx="1"/>
-                                        <rect x="14" y="3" width="7" height="7" rx="1"/>
-                                        <rect x="3" y="14" width="7" height="7" rx="1"/>
-                                        <rect x="14" y="14" width="7" height="7" rx="1"/>
-                                        <line x1="10" y1="6.5" x2="14" y2="6.5"/>
-                                        <line x1="10" y1="17.5" x2="14" y2="17.5"/>
-                                        <line x1="6.5" y1="10" x2="6.5" y2="14"/>
-                                        <line x1="17.5" y1="10" x2="17.5" y2="14"/>
-                                    </svg>
-                                ) : (
-                                    <svg
-                                        width={16}
-                                        height={16}
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <path d="M3 17.5l5-5 4 4 6-6"/>
-                                        <polyline points="16,12 18,10 22,6"/>
-                                        <circle cx="6" cy="20" r="2"/>
-                                        <path d="M20 4l-4 4"/>
-                                        <path d="M4 4h7v7"/>
-                                    </svg>
-                                )}
-                            </ButtonWithTooltip>
+                            {/* 引擎徽章 - 悬浮可关闭，模仿图生图按钮 */}
+                            {isSkillEnabled && (
+                                <button
+                                    type="button"
+                                    className={cn(
+                                        "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm transition-all",
+                                        isEngineBadgeHovered
+                                            ? "bg-destructive/10 text-destructive"
+                                            : activeEngine === "drawio"
+                                                ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                                                : "bg-purple-500/10 text-purple-600 dark:text-purple-400"
+                                    )}
+                                    onClick={() => onSkillEnabledChange?.(false)}
+                                    onMouseEnter={() => setIsEngineBadgeHovered(true)}
+                                    onMouseLeave={() => setIsEngineBadgeHovered(false)}
+                                    title={isEngineBadgeHovered ? "关闭引擎提示词" : (activeEngine === "drawio" ? "Draw.io 引擎" : "Excalidraw 引擎")}
+                                >
+                                    {isEngineBadgeHovered ? (
+                                        <X className="h-4 w-4" />
+                                    ) : activeEngine === "drawio" ? (
+                                        <svg
+                                            width={16}
+                                            height={16}
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                                            <line x1="10" y1="6.5" x2="14" y2="6.5"/>
+                                            <line x1="10" y1="17.5" x2="14" y2="17.5"/>
+                                            <line x1="6.5" y1="10" x2="6.5" y2="14"/>
+                                            <line x1="17.5" y1="10" x2="17.5" y2="14"/>
+                                        </svg>
+                                    ) : (
+                                        <svg
+                                            width={16}
+                                            height={16}
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <path d="M3 17.5l5-5 4 4 6-6"/>
+                                            <polyline points="16,12 18,10 22,6"/>
+                                            <circle cx="6" cy="20" r="2"/>
+                                            <path d="M20 4l-4 4"/>
+                                            <path d="M4 4h7v7"/>
+                                        </svg>
+                                    )}
+                                    <span>{activeEngine === "drawio" ? "Draw.io" : "Excalidraw"}</span>
+                                </button>
+                            )}
 
                             {/* 图生图模式工具 */}
                             {isImageToImageMode && hasImages && (

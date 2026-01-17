@@ -217,6 +217,8 @@ export default function ChatPanel({
     const [dailyTokenLimit, setDailyTokenLimit] = useState(0)
     const [tpmLimit, setTpmLimit] = useState(0)
     const [minimalStyle, setMinimalStyle] = useState(false)
+    // Skill/Engine prompt injection control
+    const [isSkillEnabled, setIsSkillEnabled] = useState(true)
 
     // Restore input from sessionStorage on mount
     useEffect(() => {
@@ -494,6 +496,7 @@ export default function ChatPanel({
         partialXmlRef,
         getCurrentState: getCurrentStateForAgent,
         minimalStyle,
+        isSkillEnabled,
         getCanvasTheme: () => getExcalidrawScene?.()?.appState?.theme || "dark",
         onToolCall: async (toolCall, addToolOutputFn) => {
             console.log("[chat-panel] onToolCall received:", toolCall)
@@ -1600,6 +1603,27 @@ export default function ChatPanel({
                     onMinimalStyleChange={setMinimalStyle}
                     activeEngine={activeEngine}
                     isEngineSwitching={engineSwitchInProgressRef.current}
+                    isSkillEnabled={isSkillEnabled}
+                    onSkillEnabledChange={setIsSkillEnabled}
+                    onSkillSelect={async (skillId) => {
+                        // SKILL 选择后切换引擎（如果需要）
+                        if (skillId !== activeEngine) {
+                            // 保存当前会话
+                            if (sessionManager.isAvailable && messages.length > 0) {
+                                const sessionData = await buildSessionData({ withThumbnail: true })
+                                await sessionManager.saveCurrentSession(sessionData)
+                            }
+                            // 防止 URL 同步 effect 加载旧会话
+                            sessionManager.skipNextUrlSync()
+                            // 重置 DrawIO 就绪状态
+                            resetDrawioReady()
+                            // 切换引擎并标记需要新建会话
+                            setDiagramEngineId(skillId as any)
+                            setStartNewChatAfterEngineSwitch(true)
+                        }
+                        // 确保引擎提示词开启
+                        setIsSkillEnabled(true)
+                    }}
                     isDialogOpen={(() => {
                         console.log('[Panel] showModelConfigDialog:', showModelConfigDialog)
                         return showModelConfigDialog
