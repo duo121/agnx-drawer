@@ -116,6 +116,7 @@ export default function ChatPanel({
         pushExcalidrawHistory,
         isDrawioReady,
         resetDrawioReady,
+        isExcalidrawReady,
         // 使用 context 的 chartXMLRef（同步更新），而不是本地 ref（通过 useEffect 异步同步）
         chartXMLRef,
         // Excalidraw 历史记录
@@ -192,6 +193,17 @@ export default function ChatPanel({
     
     // 引擎切换锁，防止竞态条件
     const engineSwitchInProgressRef = useRef(false)
+    
+    // 用于追踪引擎就绪状态的 ref（解决闭包问题）
+    const isDrawioReadyRef = useRef(isDrawioReady)
+    const isExcalidrawReadyRef = useRef(isExcalidrawReady)
+    // 更新 ref
+    useEffect(() => {
+        isDrawioReadyRef.current = isDrawioReady
+    }, [isDrawioReady])
+    useEffect(() => {
+        isExcalidrawReadyRef.current = isExcalidrawReady
+    }, [isExcalidrawReady])
 
     const [showModelConfigDialog, setShowModelConfigDialog] = useState(false)
 
@@ -376,11 +388,54 @@ export default function ChatPanel({
         editExcalidrawByOperations,
         selectExcalidrawElements,
         pushExcalidrawHistory,
-        onSwitchCanvas: (target, reason) => {
+        onSwitchCanvas: async (target, reason) => {
+            // 如果已经是目标引擎，直接返回
+            if (activeEngine === target) {
+                return
+            }
+            
+            debugLog('[onSwitchCanvas] Switching canvas from', activeEngine, 'to', target, reason)
+            
+            // 切换引擎
+            resetDrawioReady()
             setDiagramEngineId(target)
-            // if (reason) {
-            //     toast.info(`Switched to ${ENGINE_DISPLAY_NAME[target] || target}: ${reason}`)
-            // }
+            
+            // 等待新画板就绪
+            const maxWaitTime = 10000 // 最多等待 10 秒
+            const checkInterval = 100 // 每 100ms 检查一次
+            const startTime = Date.now()
+            
+            await new Promise<void>((resolve) => {
+                const checkReady = () => {
+                    const elapsed = Date.now() - startTime
+                    
+                    // 检查目标引擎是否就绪（使用 ref 获取最新状态）
+                    const isReady = target === "drawio" 
+                        ? isDrawioReadyRef.current 
+                        : isExcalidrawReadyRef.current
+                    
+                    if (isReady) {
+                        debugLog('[onSwitchCanvas] Canvas ready after', elapsed, 'ms')
+                        resolve()
+                        return
+                    }
+                    
+                    if (elapsed > maxWaitTime) {
+                        console.warn('[onSwitchCanvas] Timeout waiting for canvas ready after', elapsed, 'ms')
+                        // 超时也 resolve，让 AI 继续执行
+                        resolve()
+                        return
+                    }
+                    
+                    // 继续轮询
+                    setTimeout(checkReady, checkInterval)
+                }
+                
+                // 给 React 一点时间来响应状态变化
+                setTimeout(checkReady, 100)
+            })
+            
+            debugLog('[onSwitchCanvas] Canvas switched to', target, reason)
         },
     })
 

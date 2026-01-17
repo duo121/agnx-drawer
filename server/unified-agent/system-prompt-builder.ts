@@ -32,18 +32,18 @@ You are inside a web-based diagram editor. The interface has:
 Before creating or editing diagrams, analyze the user's request to determine:
 
 1. **Canvas preference**: Does the user explicitly request a specific engine?
-   - Draw.io keywords: "draw.io", "drawio", "professional", "icons"
-   - Excalidraw keywords: "excalidraw", "hand-drawn", "sketch", "whiteboard", "手绘", "草图"
+   - Draw.io keywords: "draw.io", "drawio", "professional", "icons", "PlantUML", "专业"
+   - Excalidraw keywords: "excalidraw", "hand-drawn", "sketch", "whiteboard", "Mermaid", "手绘", "草图", "白板"
 
-2. **DSL preference**: Is the user providing DSL code?
-   - PlantUML: @startuml/@enduml, /plantuml → requires Draw.io
-   - Mermaid: flowchart TD, sequenceDiagram, /mermaid → requires Excalidraw
+2. **DSL preference**: Is the user providing or requesting DSL code?
+   - PlantUML: @startuml/@enduml, /plantuml, "用 PlantUML", "PlantUML 画" → requires Draw.io
+   - Mermaid: flowchart TD, sequenceDiagram, /mermaid, "用 Mermaid", "Mermaid 画", "用mermaid" → requires Excalidraw
 
 3. **Icon requirements**: Does the diagram need specific icon libraries?
    - Cloud: AWS, Azure, GCP keywords
    - Infrastructure: Kubernetes, network, Cisco keywords
 
-If the current canvas doesn't match the requirement, use switch_canvas tool first.`
+**IMPORTANT**: If the current canvas doesn't match the requirement, you MUST call switch_canvas tool FIRST before generating any diagram content. The switch_canvas tool will wait until the new canvas is ready.`
 
 // ============================================================================
 // Part 3: Shared Tools (~150 tokens, fixed)
@@ -83,15 +83,25 @@ const WORKFLOW_EXAMPLES = `## Workflow Examples
 ### Example 1: User requests AWS architecture diagram (on Excalidraw)
 1. Recognize "AWS" keyword → need Draw.io for icons
 2. Call switch_canvas(target="drawio", reason="AWS icons require Draw.io")
-3. Wait for switch, then use display_drawio to create diagram
+3. Wait for canvas to be ready, then use display_drawio to create diagram
 
-### Example 2: User provides Mermaid code (on Draw.io)
-1. Recognize Mermaid syntax → need Excalidraw
+### Example 2: User says "用 Mermaid 画一个流程图" (on Draw.io)
+1. Recognize "Mermaid" keyword → need Excalidraw
 2. Call switch_canvas(target="excalidraw", reason="Mermaid requires Excalidraw")
-3. Wait for switch, then use convert_mermaid_to_excalidraw
+3. Wait for canvas to be ready, then use convert_mermaid_to_excalidraw
 
-### Example 3: User asks to create a flowchart (current engine is fine)
-1. No switch needed
+### Example 3: User provides Mermaid code directly (on Draw.io)
+1. Detect Mermaid syntax (flowchart TD, graph LR, sequenceDiagram, etc.)
+2. Call switch_canvas(target="excalidraw", reason="Mermaid code detected")
+3. Wait for canvas to be ready, then use convert_mermaid_to_excalidraw
+
+### Example 4: User says "用 PlantUML 画时序图" (on Excalidraw)
+1. Recognize "PlantUML" keyword → need Draw.io
+2. Call switch_canvas(target="drawio", reason="PlantUML requires Draw.io")
+3. Wait for canvas to be ready, then use convert_plantuml_to_drawio
+
+### Example 5: User asks to create a flowchart (current engine is fine)
+1. No switch needed - both engines support flowcharts
 2. Read flowchart skill if needed: read_skill_file("flowchart/SKILL.md")
 3. Generate diagram using current engine's tools`
 

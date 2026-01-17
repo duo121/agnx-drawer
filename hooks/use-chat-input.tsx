@@ -221,22 +221,22 @@ export function useChatInput({
     // 多行模式状态
     const [isMultiLineMode, setIsMultiLineMode] = useState(false)
 
-    // 命令定义
+    // 命令定义 - 所有命令都可用，AI 会自动切换到对应引擎
     const commands: Command[] = [
         {
             id: "plantuml",
             type: "command",
             label: "/plantuml",
-            desc: "生成 PlantUML 脚本并插入 Draw.io 画板",
-            enabled: engineId === "drawio",
+            desc: "生成 PlantUML 脚本并插入画板",
+            enabled: true, // 始终可用，AI 会自动切换到 Draw.io
             badge: "Draw.io",
         },
         {
             id: "mermaid",
             type: "command",
             label: "/mermaid",
-            desc: "生成 Mermaid 脚本并插入 Excalidraw 画板",
-            enabled: engineId === "excalidraw",
+            desc: "生成 Mermaid 脚本并插入画板",
+            enabled: true, // 始终可用，AI 会自动切换到 Excalidraw
             badge: "Excalidraw",
         },
     ]

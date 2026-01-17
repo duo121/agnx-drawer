@@ -59,8 +59,8 @@ interface UseDiagramToolHandlersParams {
     selectExcalidrawElements?: (ids?: string[]) => void
     // Excalidraw 历史记录
     pushExcalidrawHistory?: (label?: string) => Promise<void>
-    // 画板切换
-    onSwitchCanvas?: (targetEngine: "drawio" | "excalidraw", reason?: string) => void
+    // 画板切换 - 返回 Promise，在新画板就绪后 resolve
+    onSwitchCanvas?: (targetEngine: "drawio" | "excalidraw", reason?: string) => Promise<void>
 }
 
 const ensureExcalidrawElements = (elements: any[] = []) => {
@@ -146,13 +146,13 @@ export function useDiagramToolHandlers({
             await handleMermaid(toolCall, addToolOutput)
         // Shared tools
         } else if (toolCall.toolName === "switch_canvas") {
-            handleSwitchCanvas(toolCall, addToolOutput)
+            await handleSwitchCanvas(toolCall, addToolOutput)
         } else {
             console.warn(`[onToolCall] 未知的工具名称: ${toolCall.toolName}`)
         }
     }
 
-    const handleSwitchCanvas = (
+    const handleSwitchCanvas = async (
         toolCall: ToolCall,
         addToolOutput: AddToolOutputFn,
     ) => {
@@ -169,14 +169,15 @@ export function useDiagramToolHandlers({
         }
 
         try {
-            onSwitchCanvas(target, reason)
+            // 等待画板切换完成并就绪
+            await onSwitchCanvas(target, reason)
             addToolOutput({
                 tool: "switch_canvas",
                 toolCallId: toolCall.toolCallId,
                 output: {
                     success: true,
                     targetEngine: target,
-                    message: `Switched to ${target === "drawio" ? "Draw.io" : "Excalidraw"} canvas.${reason ? ` Reason: ${reason}` : ""}`,
+                    message: `Switched to ${target === "drawio" ? "Draw.io" : "Excalidraw"} canvas. Canvas is now ready.${reason ? ` Reason: ${reason}` : ""}`,
                 },
             })
         } catch (error) {

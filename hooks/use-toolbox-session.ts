@@ -52,13 +52,13 @@ function loadSession(): ToolboxSession {
     try {
         const saved = localStorage.getItem(STORAGE_KEY)
         if (saved) {
-            const parsed = JSON.parse(saved) as Partial<ToolboxSession>
+            const parsed = JSON.parse(saved) as Partial<ToolboxSession> & { zoomLevel?: number }
             return {
                 ...DEFAULT_SESSION,
                 ...parsed,
                 // 验证高度范围
                 height: Math.max(MIN_HEIGHT, parsed.height ?? DEFAULT_HEIGHT),
-                // 验证版本缩放级别范围
+                // 验证版本缩放级别范围（兼容旧的 zoomLevel 字段）
                 versionZoomLevel: Math.min(
                     ZOOM_LEVELS.length - 1,
                     Math.max(0, parsed.versionZoomLevel ?? parsed.zoomLevel ?? DEFAULT_ZOOM)
