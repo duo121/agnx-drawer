@@ -14,6 +14,7 @@ export {
     type DrawioHistoryEntry,
     type ExcalidrawHistoryEntry,
     type ExcalidrawScene,
+    type UnifiedHistoryEntry,
     // Functions
     isIndexedDBAvailable,
     migrateFromLocalStorage,

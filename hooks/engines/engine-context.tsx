@@ -32,7 +32,7 @@ import {
     registerEngine,
     type EngineService,
 } from "./"
-import type { DrawioHistoryEntry, ExcalidrawHistoryEntry } from "@/hooks/session"
+import type { DrawioHistoryEntry, ExcalidrawHistoryEntry, UnifiedHistoryEntry } from "@/hooks/session"
 
 // ============ 类型导出 ============
 
@@ -121,6 +121,9 @@ interface EngineContextType {
     clearExcalidrawHistory: () => void
     initExcalidrawHistory: (entries: ExcalidrawHistoryEntry[]) => void
     getExcalidrawHistory: () => ExcalidrawHistoryEntry[]
+
+    // 统一历史记录（合并两个引擎的历史，按时间戳降序排序）
+    unifiedHistory: UnifiedHistoryEntry[]
 
     // 画布版本计数器：用于追踪画布内容变化（如快照恢复），触发 auto-save
     canvasVersion: number
@@ -263,6 +266,30 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
         }
     }, [isSwitching, engineSwitch.engineId, excalidraw.isReady, drawio.isReady])
 
+    // ========== 统一历史记录 ==========
+    const unifiedHistory = useMemo((): UnifiedHistoryEntry[] => {
+        const drawioEntries: UnifiedHistoryEntry[] = drawio.diagramHistory.map((item, index) => ({
+            engineId: "drawio" as const,
+            timestamp: item.timestamp || 0,
+            isManual: item.isManual,
+            svg: item.svg,
+            xml: item.xml,
+            originalIndex: index,
+        }))
+        const excalidrawEntries: UnifiedHistoryEntry[] = excalidrawHistoryHook.history.map((item, index) => ({
+            engineId: "excalidraw" as const,
+            timestamp: item.timestamp,
+            isManual: item.isManual,
+            scene: item.scene,
+            thumbnailDataUrl: item.thumbnailDataUrl,
+            label: item.label,
+            originalIndex: index,
+        }))
+        // 合并并按时间戳降序排序（最新的在前）
+        return [...drawioEntries, ...excalidrawEntries]
+            .sort((a, b) => b.timestamp - a.timestamp)
+    }, [drawio.diagramHistory, excalidrawHistoryHook.history])
+
     // ========== Context Value ==========
     const value: EngineContextType = {
         // DrawIO 状态
@@ -324,6 +351,9 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
         clearExcalidrawHistory: excalidrawHistoryHook.clearHistory,
         initExcalidrawHistory: excalidrawHistoryHook.initHistory,
         getExcalidrawHistory: excalidrawHistoryHook.getHistory,
+
+        // 统一历史记录
+        unifiedHistory,
 
         // 画布版本计数器
         canvasVersion,

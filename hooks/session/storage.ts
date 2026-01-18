@@ -74,6 +74,22 @@ export interface ExcalidrawHistoryEntry {
     isManual?: boolean // Whether this was manually saved by user (vs auto-saved)
 }
 
+// Unified history entry for displaying all engine versions together
+export interface UnifiedHistoryEntry {
+    engineId: "drawio" | "excalidraw"
+    timestamp: number
+    isManual?: boolean
+    // DrawIO specific
+    svg?: string
+    xml?: string
+    // Excalidraw specific
+    scene?: ExcalidrawScene
+    thumbnailDataUrl?: string
+    label?: string
+    // Original index in the source array (for restore/delete operations)
+    originalIndex: number
+}
+
 interface ChatSessionDB extends DBSchema {
     sessions: {
         key: string

@@ -7,6 +7,8 @@ import { toast } from "sonner"
 import { useEngine } from "@/hooks/engines/engine-context"
 import { ButtonWithTooltip } from "@/components/button-with-tooltip"
 import { RestoreConfirmDialog } from "./restore-confirm-dialog"
+import { DrawioIcon, ExcalidrawIcon } from "@/components/ui/engine-icons"
+import type { UnifiedHistoryEntry } from "@/hooks/session"
 
 interface VersionHistoryListProps {
     onClose: () => void
@@ -61,6 +63,8 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
         chartXML,
         // 画布变化通知
         notifyCanvasChange,
+        // 统一历史记录
+        unifiedHistory,
     } = useEngine()
 
     const isExcalidraw = engineId === "excalidraw"
@@ -71,10 +75,10 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
     // 恢复确认对话框状态
     const [restoreDialog, setRestoreDialog] = useState<{
         isOpen: boolean
-        versionIndex: number
+        entry: UnifiedHistoryEntry | null
     }>({
         isOpen: false,
-        versionIndex: -1,
+        entry: null,
     })
 
     // refs
@@ -168,11 +172,10 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
         }
     }
 
-    // 直接恢复版本
-    const restoreVersion = useCallback(async (index: number) => {
-        if (isExcalidraw) {
-            const entry = excalidrawHistory[index]
-            if (entry?.scene) {
+    // 直接恢复版本（基于统一历史条目）
+    const restoreVersion = useCallback(async (entry: UnifiedHistoryEntry) => {
+        if (entry.engineId === "excalidraw") {
+            if (entry.scene) {
                 const baseAppState = getExcalidrawScene()?.appState || {}
 
                 const safeScene = {
@@ -188,17 +191,16 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
                 notifyCanvasChange()
             }
         } else {
-            const entry = diagramHistory[index]
-            if (entry?.xml) {
+            if (entry.xml) {
                 loadDiagram(entry.xml, true)
                 notifyCanvasChange()
             }
         }
-    }, [isExcalidraw, excalidrawHistory, diagramHistory, getExcalidrawScene, setExcalidrawScene, loadDiagram, notifyCanvasChange])
+    }, [getExcalidrawScene, setExcalidrawScene, loadDiagram, notifyCanvasChange])
 
     // 保存后恢复
-    const saveAndRestoreVersion = useCallback(async (index: number) => {
-        // 先保存当前状态
+    const saveAndRestoreVersion = useCallback(async (entry: UnifiedHistoryEntry) => {
+        // 先保存当前状态（保存当前引擎的状态）
         if (isExcalidraw) {
             const scene = getExcalidrawScene()
             if (scene?.elements?.length) {
@@ -212,70 +214,71 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
             }
         }
         // 然后恢复选中的版本
-        await restoreVersion(index)
+        await restoreVersion(entry)
     }, [isExcalidraw, getExcalidrawScene, pushExcalidrawHistory, latestSvg, chartXML, pushDrawioHistory, restoreVersion])
 
     // 点击历史版本项 - 打开恢复确认对话框
-    const handleVersionClick = useCallback((index: number) => {
+    const handleVersionClick = useCallback((entry: UnifiedHistoryEntry) => {
         setRestoreDialog({
             isOpen: true,
-            versionIndex: index,
+            entry,
         })
     }, [])
 
     // 恢复确认对话框 - 直接恢复
     const handleDirectRestore = useCallback(async () => {
-        const { versionIndex } = restoreDialog
-        setRestoreDialog({ isOpen: false, versionIndex: -1 })
-        await restoreVersion(versionIndex)
+        const { entry } = restoreDialog
+        setRestoreDialog({ isOpen: false, entry: null })
+        if (entry) {
+            await restoreVersion(entry)
+        }
     }, [restoreDialog, restoreVersion])
 
     // 恢复确认对话框 - 插入并选中
     const handleInsertAndSelect = useCallback(async () => {
-        const { versionIndex } = restoreDialog
-        setRestoreDialog({ isOpen: false, versionIndex: -1 })
+        const { entry } = restoreDialog
+        setRestoreDialog({ isOpen: false, entry: null })
         
-        if (isExcalidraw) {
-            const entry = excalidrawHistory[versionIndex]
-            if (entry?.scene?.elements) {
-                // 使用 appendExcalidrawElements 插入元素并选中
-                // 不需要传入 selectIds，函数会自动选中新插入的元素
-                await appendExcalidrawElements(entry.scene.elements)
-                notifyCanvasChange()
-            }
-        } else {
+        if (entry?.engineId === "excalidraw" && entry.scene?.elements) {
+            // 使用 appendExcalidrawElements 插入元素并选中
+            await appendExcalidrawElements(entry.scene.elements)
+            notifyCanvasChange()
+        } else if (entry) {
             // DrawIO 不支持插入，降级为直接恢复
-            await restoreVersion(versionIndex)
+            await restoreVersion(entry)
         }
-    }, [restoreDialog, isExcalidraw, excalidrawHistory, appendExcalidrawElements, restoreVersion, notifyCanvasChange])
+    }, [restoreDialog, appendExcalidrawElements, restoreVersion, notifyCanvasChange])
 
     // 恢复确认对话框 - 保存后恢复
     const handleSaveAndRestore = useCallback(async () => {
-        const { versionIndex } = restoreDialog
-        setRestoreDialog({ isOpen: false, versionIndex: -1 })
-        await saveAndRestoreVersion(versionIndex)
+        const { entry } = restoreDialog
+        setRestoreDialog({ isOpen: false, entry: null })
+        if (entry) {
+            await saveAndRestoreVersion(entry)
+        }
     }, [restoreDialog, saveAndRestoreVersion])
 
     // 恢复确认对话框 - 取消
     const handleCancelRestore = useCallback(() => {
-        setRestoreDialog({ isOpen: false, versionIndex: -1 })
+        setRestoreDialog({ isOpen: false, entry: null })
     }, [])
 
     // 删除版本
     const handleConfirmDelete = useCallback(() => {
-        const { versionIndex } = restoreDialog
-        setRestoreDialog({ isOpen: false, versionIndex: -1 })
+        const { entry } = restoreDialog
+        setRestoreDialog({ isOpen: false, entry: null })
         
-        if (isExcalidraw) {
-            deleteExcalidrawVersion(versionIndex)
-        } else {
-            deleteDrawioHistory(versionIndex)
+        if (entry) {
+            if (entry.engineId === "excalidraw") {
+                deleteExcalidrawVersion(entry.originalIndex)
+            } else {
+                deleteDrawioHistory(entry.originalIndex)
+            }
+            toast.success("已删除版本")
         }
-        toast.success("已删除版本")
-    }, [restoreDialog, isExcalidraw, deleteExcalidrawVersion, deleteDrawioHistory])
+    }, [restoreDialog, deleteExcalidrawVersion, deleteDrawioHistory])
 
-    const historyItems = isExcalidraw ? excalidrawHistory : diagramHistory
-    const hasItems = historyItems.length > 0
+    const hasItems = unifiedHistory.length > 0
     const itemsPerRow = ZOOM_LEVELS[zoomLevel]
 
     // 计算图片尺寸（正方形）
@@ -362,31 +365,18 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
             {/* 历史版本列表 */}
             <div className="p-3 pb-6 overflow-y-auto flex-1">
                 <div className="flex flex-wrap gap-3 content-start">
-                    {isExcalidraw ? (
-                        // Excalidraw 历史
-                        excalidrawHistory.map((item, index) => (
-                            <VersionItem
-                                key={item.timestamp}
-                                thumbnailUrl={item.thumbnailDataUrl}
-                                label={formatRelativeTime(item.timestamp)}
-                                isManual={item.isManual}
-                                style={itemStyle}
-                                onClick={() => handleVersionClick(index)}
-                            />
-                        ))
-                    ) : (
-                        // DrawIO 历史
-                        diagramHistory.map((item, index) => (
-                            <VersionItem
-                                key={item.timestamp || index}
-                                thumbnailUrl={item.svg}
-                                label={item.timestamp ? formatRelativeTime(item.timestamp) : `v${index + 1}`}
-                                isManual={item.isManual}
-                                style={itemStyle}
-                                onClick={() => handleVersionClick(index)}
-                            />
-                        ))
-                    )}
+                    {/* 统一历史记录（按时间戳降序） */}
+                    {unifiedHistory.map((item) => (
+                        <VersionItem
+                            key={`${item.engineId}-${item.timestamp}`}
+                            thumbnailUrl={item.engineId === "excalidraw" ? item.thumbnailDataUrl : item.svg}
+                            label={formatRelativeTime(item.timestamp)}
+                            isManual={item.isManual}
+                            engineId={item.engineId}
+                            style={itemStyle}
+                            onClick={() => handleVersionClick(item)}
+                        />
+                    ))}
 
                     {/* 添加保存按钮 */}
                     <AddSaveButton onClick={handleSaveVersion} style={itemStyle} />
@@ -425,7 +415,7 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
                     onClose={handleCancelRestore}
                     onDirectRestore={handleDirectRestore}
                     onSaveAndRestore={handleSaveAndRestore}
-                    onInsertAndSelect={isExcalidraw ? handleInsertAndSelect : undefined}
+                    onInsertAndSelect={restoreDialog.entry?.engineId === "excalidraw" ? handleInsertAndSelect : undefined}
                     onDelete={handleConfirmDelete}
                     portalTarget={portalTarget}
                 />
@@ -449,7 +439,7 @@ export function VersionHistoryList({ onClose }: VersionHistoryListProps) {
                 onClose={handleCancelRestore}
                 onDirectRestore={handleDirectRestore}
                 onSaveAndRestore={handleSaveAndRestore}
-                onInsertAndSelect={isExcalidraw ? handleInsertAndSelect : undefined}
+                onInsertAndSelect={restoreDialog.entry?.engineId === "excalidraw" ? handleInsertAndSelect : undefined}
                 onDelete={handleConfirmDelete}
             />
         </>
@@ -480,11 +470,12 @@ interface VersionItemProps {
     thumbnailUrl?: string
     label: string
     isManual?: boolean
+    engineId?: "drawio" | "excalidraw"
     style: React.CSSProperties
     onClick: () => void
 }
 
-function VersionItem({ thumbnailUrl, label, isManual, style, onClick }: VersionItemProps) {
+function VersionItem({ thumbnailUrl, label, isManual, engineId, style, onClick }: VersionItemProps) {
     return (
         <div
             className={`relative group shrink-0 cursor-pointer rounded-xl transition-all ${
@@ -502,6 +493,21 @@ function VersionItem({ thumbnailUrl, label, isManual, style, onClick }: VersionI
                     <span className="text-xs text-muted-foreground">无预览</span>
                 )}
             </div>
+
+            {/* 引擎图标徽章 - 左上角圆形彩色背景 */}
+            {engineId && (
+                <div className="absolute -top-1.5 -left-1.5 z-10">
+                    {engineId === "excalidraw" ? (
+                        <div className="rounded-full w-4 h-4 flex items-center justify-center shadow-sm bg-purple-500 text-white">
+                            <ExcalidrawIcon className="h-3 w-3" />
+                        </div>
+                    ) : (
+                        <div className="rounded-full w-4 h-4 flex items-center justify-center shadow-sm bg-blue-500 text-white">
+                            <DrawioIcon className="h-3 w-3" />
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* 时间标签 */}
             <div className="absolute -bottom-5 left-0 right-0 text-center">

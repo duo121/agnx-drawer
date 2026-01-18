@@ -40,6 +40,7 @@ import { RestoreConfirmDialog } from "@/components/history/restore-confirm-dialo
 import { DeleteConfirmDialog } from "@/components/history/delete-confirm-dialog"
 import { SessionDetailDialog } from "@/components/history/session-detail-dialog"
 import type { UseModelConfigReturn } from "@/hooks/use-model-config"
+import type { UnifiedHistoryEntry } from "@/hooks/session"
 import type { FlattenedModel, ProviderConfig, ProviderName } from "@/shared/types/model-config"
 import { cn } from "@/shared/utils"
 import { TOOLBAR_BUTTON_KEYWORDS, type ToolbarButtonKeywords } from "@/shared/toolbox-keywords"
@@ -304,6 +305,8 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             notifyCanvasChange,
             // 保存图表
             saveDiagramToFile,
+            // 统一历史记录
+            unifiedHistory,
         } = useEngine()
 
         const isExcalidraw = engineId === "excalidraw"
@@ -360,19 +363,19 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
         // 确认恢复对话框状态
         const [restoreConfirmDialog, setRestoreConfirmDialog] = useState<{
             isOpen: boolean
-            versionIndex: number
+            entry: UnifiedHistoryEntry | null
         }>({
             isOpen: false,
-            versionIndex: -1,
+            entry: null,
         })
 
         // 删除确认对话框状态
         const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{
             isOpen: boolean
-            versionIndex: number
+            entry: UnifiedHistoryEntry | null
         }>({
             isOpen: false,
-            versionIndex: -1,
+            entry: null,
         })
 
 
@@ -399,7 +402,8 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
 
         // ============ 计算值 ============
 
-        const historyItems = isExcalidraw ? excalidrawHistory : diagramHistory
+        // 使用统一历史记录
+        const historyItems = unifiedHistory
         const itemsPerRow = ZOOM_LEVELS[versionZoomLevel]
 
         // 计算每个 section 的起始索引（用于高亮映射）
@@ -563,13 +567,11 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             setCurrentView("main")
         }
 
-        // 直接恢复版本
-        const restoreVersion = useCallback(async (index: number) => {
-            console.log('[Toolbox] restoreVersion called, index:', index, 'isExcalidraw:', isExcalidraw)
-            if (isExcalidraw) {
-                const entry = excalidrawHistory[index]
-                console.log('[Toolbox] excalidraw entry:', entry)
-                if (entry?.scene) {
+        // 直接恢复版本（基于统一历史条目）
+        const restoreVersion = useCallback(async (entry: UnifiedHistoryEntry) => {
+            console.log('[Toolbox] restoreVersion called, entry:', entry)
+            if (entry.engineId === "excalidraw") {
+                if (entry.scene) {
                     const baseAppState = getExcalidrawScene()?.appState || {}
 
                     const safeScene = {
@@ -585,18 +587,16 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                     notifyCanvasChange()
                 }
             } else {
-                const entry = diagramHistory[index]
-                console.log('[Toolbox] drawio entry:', entry)
-                if (entry?.xml) {
+                if (entry.xml) {
                     loadDiagram(entry.xml, true)
                     notifyCanvasChange()
                 }
             }
-        }, [isExcalidraw, excalidrawHistory, diagramHistory, getExcalidrawScene, setExcalidrawScene, loadDiagram, notifyCanvasChange])
+        }, [getExcalidrawScene, setExcalidrawScene, loadDiagram, notifyCanvasChange])
 
         // 保存后恢复
-        const saveAndRestoreVersion = useCallback(async (index: number) => {
-            // 先保存当前状态
+        const saveAndRestoreVersion = useCallback(async (entry: UnifiedHistoryEntry) => {
+            // 先保存当前状态（保存当前引擎的状态）
             if (isExcalidraw) {
                 const scene = getExcalidrawScene()
                 if (scene?.elements?.length) {
@@ -610,96 +610,100 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                 }
             }
             // 然后恢复选中的版本
-            await restoreVersion(index)
+            await restoreVersion(entry)
         }, [isExcalidraw, getExcalidrawScene, pushExcalidrawHistory, latestSvg, chartXML, pushDrawioHistory, restoreVersion])
 
-        // 选择历史版本 - 打开确认对话框（新功能）
-        const handleSelectVersion = useCallback((index: number) => {
+        // 选择历史版本 - 打开确认对话框
+        const handleSelectVersion = useCallback((entry: UnifiedHistoryEntry) => {
             setRestoreConfirmDialog({
                 isOpen: true,
-                versionIndex: index,
+                entry,
             })
         }, [])
 
         // 确认对话框 - 直接恢复
         const handleDirectRestore = useCallback(async () => {
-            const { versionIndex } = restoreConfirmDialog
-            console.log('[Toolbox] handleDirectRestore called, versionIndex:', versionIndex)
-            setRestoreConfirmDialog({ isOpen: false, versionIndex: -1 })
-            await restoreVersion(versionIndex)
+            const { entry } = restoreConfirmDialog
+            setRestoreConfirmDialog({ isOpen: false, entry: null })
+            if (entry) {
+                console.log('[Toolbox] handleDirectRestore called, entry:', entry)
+                await restoreVersion(entry)
+            }
         }, [restoreConfirmDialog, restoreVersion])
 
         // 确认对话框 - 插入并选中
         const handleInsertAndSelect = useCallback(async () => {
-            const { versionIndex } = restoreConfirmDialog
-            console.log('[Toolbox] handleInsertAndSelect called, versionIndex:', versionIndex)
-            setRestoreConfirmDialog({ isOpen: false, versionIndex: -1 })
+            const { entry } = restoreConfirmDialog
+            setRestoreConfirmDialog({ isOpen: false, entry: null })
             
-            if (isExcalidraw) {
-                const entry = excalidrawHistory[versionIndex]
-                if (entry?.scene?.elements) {
-                    // 使用 appendExcalidrawElements 插入元素并选中
-                    // 不需要传入 selectIds，函数会自动选中新插入的元素
-                    await appendExcalidrawElements(entry.scene.elements)
-                    notifyCanvasChange()
-                }
-            } else {
+            if (entry?.engineId === "excalidraw" && entry.scene?.elements) {
+                console.log('[Toolbox] handleInsertAndSelect called, entry:', entry)
+                // 使用 appendExcalidrawElements 插入元素并选中
+                await appendExcalidrawElements(entry.scene.elements)
+                notifyCanvasChange()
+            } else if (entry) {
                 // DrawIO 不支持插入，降级为直接恢复
-                await restoreVersion(versionIndex)
+                await restoreVersion(entry)
             }
-        }, [restoreConfirmDialog, isExcalidraw, excalidrawHistory, appendExcalidrawElements, restoreVersion, notifyCanvasChange])
+        }, [restoreConfirmDialog, appendExcalidrawElements, restoreVersion, notifyCanvasChange])
 
         // 确认对话框 - 保存后恢复
         const handleSaveAndRestore = useCallback(async () => {
-            const { versionIndex } = restoreConfirmDialog
-            console.log('[Toolbox] handleSaveAndRestore called, versionIndex:', versionIndex)
-            setRestoreConfirmDialog({ isOpen: false, versionIndex: -1 })
-            await saveAndRestoreVersion(versionIndex)
+            const { entry } = restoreConfirmDialog
+            setRestoreConfirmDialog({ isOpen: false, entry: null })
+            if (entry) {
+                console.log('[Toolbox] handleSaveAndRestore called, entry:', entry)
+                await saveAndRestoreVersion(entry)
+            }
         }, [restoreConfirmDialog, saveAndRestoreVersion])
 
         // 确认对话框 - 取消
         const handleCancelRestore = useCallback(() => {
-            setRestoreConfirmDialog({ isOpen: false, versionIndex: -1 })
+            setRestoreConfirmDialog({ isOpen: false, entry: null })
         }, [])
 
         // 确认对话框 - 删除版本
         const handleRestoreDialogDelete = useCallback(() => {
-            const { versionIndex } = restoreConfirmDialog
-            setRestoreConfirmDialog({ isOpen: false, versionIndex: -1 })
+            const { entry } = restoreConfirmDialog
+            setRestoreConfirmDialog({ isOpen: false, entry: null })
             
-            if (isExcalidraw) {
-                deleteExcalidrawVersion(versionIndex)
-            } else {
-                deleteDrawioHistory(versionIndex)
+            if (entry) {
+                if (entry.engineId === "excalidraw") {
+                    deleteExcalidrawVersion(entry.originalIndex)
+                } else {
+                    deleteDrawioHistory(entry.originalIndex)
+                }
+                toast.success("已删除版本")
             }
-            toast.success("已删除版本")
-        }, [restoreConfirmDialog, isExcalidraw, deleteExcalidrawVersion, deleteDrawioHistory])
+        }, [restoreConfirmDialog, deleteExcalidrawVersion, deleteDrawioHistory])
 
         // 删除版本 - 打开删除确认对话框
-        const handleDeleteVersion = (e: React.MouseEvent, index: number) => {
+        const handleDeleteVersion = (e: React.MouseEvent, entry: UnifiedHistoryEntry) => {
             e.stopPropagation()
             setDeleteConfirmDialog({
                 isOpen: true,
-                versionIndex: index,
+                entry,
             })
         }
 
         // 删除确认对话框 - 确认删除
         const handleConfirmDelete = useCallback(() => {
-            const { versionIndex } = deleteConfirmDialog
-            setDeleteConfirmDialog({ isOpen: false, versionIndex: -1 })
+            const { entry } = deleteConfirmDialog
+            setDeleteConfirmDialog({ isOpen: false, entry: null })
             
-            if (isExcalidraw) {
-                deleteExcalidrawVersion(versionIndex)
-            } else {
-                deleteDrawioHistory(versionIndex)
+            if (entry) {
+                if (entry.engineId === "excalidraw") {
+                    deleteExcalidrawVersion(entry.originalIndex)
+                } else {
+                    deleteDrawioHistory(entry.originalIndex)
+                }
+                toast.success("已删除版本")
             }
-            toast.success("已删除版本")
-        }, [deleteConfirmDialog, isExcalidraw, deleteExcalidrawVersion, deleteDrawioHistory])
+        }, [deleteConfirmDialog, deleteExcalidrawVersion, deleteDrawioHistory])
 
         // 删除确认对话框 - 取消
         const handleCancelDelete = useCallback(() => {
-            setDeleteConfirmDialog({ isOpen: false, versionIndex: -1 })
+            setDeleteConfirmDialog({ isOpen: false, entry: null })
         }, [])
 
         // ============ 会话操作 ============
@@ -874,7 +878,10 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                         }
                     }
                 } else if (focusArea.type === 'history') {
-                    handleSelectVersion(focusArea.index)
+                    const entry = historyItems[focusArea.index]
+                    if (entry) {
+                        handleSelectVersion(entry)
+                    }
                 }
                 return
             }
@@ -1079,11 +1086,11 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
 
         // 版本缩略图
         const renderVersionThumbnail = (
-            item: any,
+            item: UnifiedHistoryEntry,
             index: number,
             expanded = false
         ) => {
-            const thumbnailUrl = isExcalidraw
+            const thumbnailUrl = item.engineId === "excalidraw"
                 ? item.thumbnailDataUrl
                 : item.svg
             const timestamp = item.timestamp
@@ -1091,9 +1098,9 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
 
             return (
                 <div
-                    key={index}
+                    key={`${item.engineId}-${item.timestamp}`}
                     onClick={() => {
-                        handleSelectVersion(index)
+                        handleSelectVersion(item)
                     }}
                     className={cn(
                         "relative group cursor-pointer rounded-lg transition-all",
@@ -1114,6 +1121,19 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                             <span className="text-[10px] text-muted-foreground">
                                 无
                             </span>
+                        )}
+                    </div>
+
+                    {/* 引擎图标徽章 - 左上角圆形彩色背景 */}
+                    <div className="absolute -top-1.5 -left-1.5 z-10">
+                        {item.engineId === "excalidraw" ? (
+                            <div className="rounded-full w-4 h-4 flex items-center justify-center shadow-sm bg-purple-500 text-white">
+                                <ExcalidrawIcon className="h-3 w-3" />
+                            </div>
+                        ) : (
+                            <div className="rounded-full w-4 h-4 flex items-center justify-center shadow-sm bg-blue-500 text-white">
+                                <DrawioIcon className="h-3 w-3" />
+                            </div>
                         )}
                     </div>
 
@@ -1507,12 +1527,8 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                                         >
                                             <Plus className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                                         </div>
-                                        {/* 历史版本：最新在前（反转数组，但保持原始索引用于操作） */}
-                                        {[...historyItems].reverse().map((item, displayIdx) => {
-                                            // 计算原始索引：反转后的 displayIdx=0 对应原始的 length-1
-                                            const originalIdx = historyItems.length - 1 - displayIdx
-                                            return renderVersionThumbnail(item, originalIdx)
-                                        })}
+                                        {/* 历史版本：已按时间戳降序排列，最新在前 */}
+                                        {historyItems.map((item, idx) => renderVersionThumbnail(item, idx))}
                                     </div>
                                 </div>
                             )}
@@ -1747,7 +1763,7 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                 onClose={handleCancelRestore}
                 onDirectRestore={handleDirectRestore}
                 onSaveAndRestore={handleSaveAndRestore}
-                onInsertAndSelect={isExcalidraw ? handleInsertAndSelect : undefined}
+                onInsertAndSelect={restoreConfirmDialog.entry?.engineId === "excalidraw" ? handleInsertAndSelect : undefined}
                 onDelete={handleRestoreDialogDelete}
                 portalTarget={containerRef.current}
             />

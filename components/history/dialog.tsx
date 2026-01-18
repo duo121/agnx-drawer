@@ -14,6 +14,8 @@ import {
 import { useEngine } from "@/hooks/engines/engine-context"
 import { useDictionary } from "@/hooks/use-dictionary"
 import { formatMessage } from "@/shared/i18n/utils"
+import { DrawioIcon, ExcalidrawIcon } from "@/components/ui/engine-icons"
+import type { UnifiedHistoryEntry } from "@/hooks/session"
 
 interface HistoryDialogProps {
     showHistory: boolean
@@ -28,30 +30,29 @@ export function HistoryDialog({
     const {
         loadDiagram: onDisplayChart,
         diagramHistory,
-        engineId,
         excalidrawHistory,
         restoreExcalidrawVersion,
+        unifiedHistory,
     } = useEngine()
-    const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+    const [selectedEntry, setSelectedEntry] = useState<UnifiedHistoryEntry | null>(null)
 
-    // 根据当前引擎选择历史记录
-    const isExcalidraw = engineId === "excalidraw"
-    const historyItems = isExcalidraw ? excalidrawHistory : diagramHistory
-    const hasHistory = historyItems.length > 0
+    const hasHistory = unifiedHistory.length > 0
 
     const handleClose = () => {
-        setSelectedIndex(null)
+        setSelectedEntry(null)
         onToggleHistory(false)
     }
 
     const handleConfirmRestore = () => {
-        if (selectedIndex !== null) {
-            if (isExcalidraw) {
+        if (selectedEntry) {
+            if (selectedEntry.engineId === "excalidraw") {
                 // 恢复 Excalidraw 版本
-                restoreExcalidrawVersion(selectedIndex)
+                restoreExcalidrawVersion(selectedEntry.originalIndex)
             } else {
                 // 恢复 DrawIO 版本（跳过验证）
-                onDisplayChart(diagramHistory[selectedIndex].xml, true)
+                if (selectedEntry.xml) {
+                    onDisplayChart(selectedEntry.xml, true)
+                }
             }
             handleClose()
         }
@@ -83,82 +84,74 @@ export function HistoryDialog({
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 py-4">
-                        {isExcalidraw
-                            ? // Excalidraw 历史记录
-                              excalidrawHistory.map((item, index) => (
-                                  <div
-                                      key={item.timestamp}
-                                      className={`border rounded-md p-2 cursor-pointer hover:border-primary transition-colors ${
-                                          selectedIndex === index
-                                              ? "border-primary ring-2 ring-primary"
-                                              : ""
-                                      }`}
-                                      onClick={() => setSelectedIndex(index)}
-                                  >
-                                      <div className="aspect-video bg-white dark:bg-gray-800 rounded overflow-hidden flex items-center justify-center">
-                                          {item.thumbnailDataUrl ? (
-                                              <Image
-                                                  src={item.thumbnailDataUrl}
-                                                  alt={`${dict.history.version} ${index + 1}`}
-                                                  width={200}
-                                                  height={100}
-                                                  className="object-contain w-full h-full p-1"
-                                              />
-                                          ) : (
-                                              <div className="text-xs text-muted-foreground">
-                                                  {item.scene.elements.length} 个元素
-                                              </div>
-                                          )}
-                                      </div>
-                                      <div className="text-xs text-center mt-1 text-gray-500">
-                                          <div>{formatTimestamp(item.timestamp)}</div>
-                                          {item.label && (
-                                              <div className="text-primary/70 truncate">
-                                                  {item.label}
-                                              </div>
-                                          )}
-                                      </div>
-                                  </div>
-                              ))
-                            : // DrawIO 历史记录
-                              diagramHistory.map((item, index) => (
-                                  <div
-                                      key={index}
-                                      className={`border rounded-md p-2 cursor-pointer hover:border-primary transition-colors ${
-                                          selectedIndex === index
-                                              ? "border-primary ring-2 ring-primary"
-                                              : ""
-                                      }`}
-                                      onClick={() => setSelectedIndex(index)}
-                                  >
-                                      <div className="aspect-video bg-white rounded overflow-hidden flex items-center justify-center">
-                                          <Image
-                                              src={item.svg}
-                                              alt={`${dict.history.version} ${index + 1}`}
-                                              width={200}
-                                              height={100}
-                                              className="object-contain w-full h-full p-1"
-                                          />
-                                      </div>
-                                      <div className="text-xs text-center mt-1 text-gray-500">
-                                          {dict.history.version} {index + 1}
-                                      </div>
-                                  </div>
-                              ))}
+                        {unifiedHistory.map((item) => {
+                            const thumbnailUrl = item.engineId === "excalidraw" 
+                                ? item.thumbnailDataUrl 
+                                : item.svg
+                            const isSelected = selectedEntry?.timestamp === item.timestamp && 
+                                               selectedEntry?.engineId === item.engineId
+                            
+                            return (
+                                <div
+                                    key={`${item.engineId}-${item.timestamp}`}
+                                    className={`relative border rounded-md p-2 cursor-pointer hover:border-primary transition-colors ${
+                                        isSelected
+                                            ? "border-primary ring-2 ring-primary"
+                                            : ""
+                                    }`}
+                                    onClick={() => setSelectedEntry(item)}
+                                >
+                                    <div className="aspect-video bg-white dark:bg-gray-800 rounded overflow-hidden flex items-center justify-center">
+                                        {thumbnailUrl ? (
+                                            <Image
+                                                src={thumbnailUrl}
+                                                alt={formatTimestamp(item.timestamp)}
+                                                width={200}
+                                                height={100}
+                                                className="object-contain w-full h-full p-1"
+                                            />
+                                        ) : (
+                                            <div className="text-xs text-muted-foreground">
+                                                {item.engineId === "excalidraw" && item.scene 
+                                                    ? `${item.scene.elements.length} 个元素`
+                                                    : "无预览"
+                                                }
+                                            </div>
+                                        )}
+                                    </div>
+                                    {/* 引擎图标 badge */}
+                                    <div className="absolute top-3 right-3 bg-background/80 backdrop-blur-sm rounded p-0.5 border border-border/50">
+                                        {item.engineId === "excalidraw" ? (
+                                            <ExcalidrawIcon className="h-3 w-3 text-muted-foreground" />
+                                        ) : (
+                                            <DrawioIcon className="h-3 w-3 text-muted-foreground" />
+                                        )}
+                                    </div>
+                                    <div className="text-xs text-center mt-1 text-gray-500">
+                                        <div>{formatTimestamp(item.timestamp)}</div>
+                                        {item.label && (
+                                            <div className="text-primary/70 truncate">
+                                                {item.label}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )
+                        })}
                     </div>
                 )}
 
                 <DialogFooter>
-                    {selectedIndex !== null ? (
+                    {selectedEntry !== null ? (
                         <>
                             <div className="flex-1 text-sm text-muted-foreground">
                                 {formatMessage(dict.history.restoreTo, {
-                                    version: selectedIndex + 1,
+                                    version: formatTimestamp(selectedEntry.timestamp),
                                 })}
                             </div>
                             <Button
                                 variant="outline"
-                                onClick={() => setSelectedIndex(null)}
+                                onClick={() => setSelectedEntry(null)}
                             >
                                 {dict.common.cancel}
                             </Button>
