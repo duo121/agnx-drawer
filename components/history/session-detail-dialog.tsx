@@ -14,7 +14,9 @@ interface SessionDetailDialogProps {
         title: string
         updatedAt: number
         thumbnailDataUrl?: string
-        engineId?: string
+        activeEngineId?: string
+        hasDrawio?: boolean
+        hasExcalidraw?: boolean
         messageCount?: number
     } | null
     isCurrentSession: boolean
@@ -150,17 +152,29 @@ export function SessionDetailDialog({
                             无预览
                         </div>
                     )}
-                    {/* 引擎图标徽章 */}
-                    <div
-                        className={cn(
-                            "absolute top-3 left-3 rounded-full px-2 py-1 text-xs font-medium flex items-center gap-1",
-                            session.engineId === "excalidraw"
-                                ? "bg-purple-500 text-white"
-                                : "bg-blue-500 text-white",
+                    {/* 引擎图标徽章：显示会话包含的引擎 */}
+                    <div className="absolute top-3 left-3 flex gap-1">
+                        {session.hasDrawio && (
+                            <div className="rounded-full px-2 py-1 text-xs font-medium flex items-center gap-1 bg-blue-500 text-white">
+                                <svg
+                                    className="h-3 w-3"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                                </svg>
+                                <span>Draw.io</span>
+                            </div>
                         )}
-                    >
-                        {session.engineId === "excalidraw" ? (
-                            <>
+                        {session.hasExcalidraw && (
+                            <div className="rounded-full px-2 py-1 text-xs font-medium flex items-center gap-1 bg-purple-500 text-white">
                                 <svg
                                     className="h-3 w-3"
                                     viewBox="0 0 24 24"
@@ -174,49 +188,7 @@ export function SessionDetailDialog({
                                     <polyline points="16,12 18,10 22,6" />
                                 </svg>
                                 <span>Excalidraw</span>
-                            </>
-                        ) : (
-                            <>
-                                <svg
-                                    className="h-3 w-3"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <rect
-                                        x="3"
-                                        y="3"
-                                        width="7"
-                                        height="7"
-                                        rx="1"
-                                    />
-                                    <rect
-                                        x="14"
-                                        y="3"
-                                        width="7"
-                                        height="7"
-                                        rx="1"
-                                    />
-                                    <rect
-                                        x="3"
-                                        y="14"
-                                        width="7"
-                                        height="7"
-                                        rx="1"
-                                    />
-                                    <rect
-                                        x="14"
-                                        y="14"
-                                        width="7"
-                                        height="7"
-                                        rx="1"
-                                    />
-                                </svg>
-                                <span>Draw.io</span>
-                            </>
+                            </div>
                         )}
                     </div>
                 </div>

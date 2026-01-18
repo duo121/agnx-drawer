@@ -202,7 +202,9 @@ export interface ToolboxProps {
         title: string
         updatedAt: number
         thumbnailDataUrl?: string
-        engineId?: string
+        activeEngineId?: string
+        hasDrawio?: boolean
+        hasExcalidraw?: boolean
         messageCount?: number
     }>
     // 过滤后的历史会话（由统一的 useToolboxFilter 计算）
@@ -211,7 +213,9 @@ export interface ToolboxProps {
         title: string
         updatedAt: number
         thumbnailDataUrl?: string
-        engineId?: string
+        activeEngineId?: string
+        hasDrawio?: boolean
+        hasExcalidraw?: boolean
         messageCount?: number
     }>
     currentSessionId?: string | null
@@ -379,7 +383,9 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                 title: string
                 updatedAt: number
                 thumbnailDataUrl?: string
-                engineId?: string
+                activeEngineId?: string
+                hasDrawio?: boolean
+                hasExcalidraw?: boolean
                 messageCount?: number
             } | null
         }>({
@@ -703,7 +709,9 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             title: string
             updatedAt: number
             thumbnailDataUrl?: string
-            engineId?: string
+            activeEngineId?: string
+            hasDrawio?: boolean
+            hasExcalidraw?: boolean
             messageCount?: number
         }) => {
             setSessionDetailDialog({
@@ -1116,23 +1124,13 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                             </span>
                         </div>
                     )}
-
-                    {/* 删除按钮 */}
-                    <button
-                        type="button"
-                        onClick={(e) => handleDeleteVersion(e, index)}
-                        className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm w-4 h-4 flex items-center justify-center z-10"
-                        title="删除版本"
-                    >
-                        <span className="text-[10px]">×</span>
-                    </button>
                 </div>
             )
         }
 
         // 会话缩略图
         const renderSessionThumbnail = (
-            session: { id: string; title: string; updatedAt: number; thumbnailDataUrl?: string; engineId?: string; messageCount?: number },
+            session: { id: string; title: string; updatedAt: number; thumbnailDataUrl?: string; activeEngineId?: string; hasDrawio?: boolean; hasExcalidraw?: boolean; messageCount?: number },
         ) => {
             const isCurrentSession = session.id === currentSessionIdProp
 
@@ -1170,32 +1168,25 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                         </div>
                     </div>
 
-                    {/* 引擎图标徽章 - 左上角 */}
-                    <div className={cn(
-                        "absolute -top-1.5 -left-1.5 rounded-full w-5 h-5 flex items-center justify-center shadow-sm z-10",
-                        session.engineId === 'excalidraw' 
-                            ? "bg-purple-500 text-white" 
-                            : "bg-blue-500 text-white"
-                    )}>
-                        {session.engineId === 'excalidraw' ? (
-                            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M3 17.5l5-5 4 4 6-6"/>
-                                <polyline points="16,12 18,10 22,6"/>
-                                <circle cx="6" cy="20" r="2"/>
-                                <path d="M20 4l-4 4"/>
-                                <path d="M4 4h7v7"/>
-                            </svg>
-                        ) : (
-                            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="3" y="3" width="7" height="7" rx="1"/>
-                                <rect x="14" y="3" width="7" height="7" rx="1"/>
-                                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                                <rect x="14" y="14" width="7" height="7" rx="1"/>
-                                <line x1="10" y1="6.5" x2="14" y2="6.5"/>
-                                <line x1="10" y1="17.5" x2="14" y2="17.5"/>
-                                <line x1="6.5" y1="10" x2="6.5" y2="14"/>
-                                <line x1="17.5" y1="10" x2="17.5" y2="14"/>
-                            </svg>
+                    {/* 引擎图标徽章 - 左上角：显示会话包含的引擎 */}
+                    <div className="absolute -top-1.5 -left-1.5 flex gap-0.5 z-10">
+                        {session.hasDrawio && (
+                            <div className="rounded-full w-4 h-4 flex items-center justify-center shadow-sm bg-blue-500 text-white">
+                                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                                </svg>
+                            </div>
+                        )}
+                        {session.hasExcalidraw && (
+                            <div className="rounded-full w-4 h-4 flex items-center justify-center shadow-sm bg-purple-500 text-white">
+                                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M3 17.5l5-5 4 4 6-6"/>
+                                    <polyline points="16,12 18,10 22,6"/>
+                                </svg>
+                            </div>
                         )}
                     </div>
 

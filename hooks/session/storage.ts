@@ -3,7 +3,7 @@ import { nanoid } from "nanoid"
 
 // Constants
 const DB_NAME = "next-ai-drawio"
-const DB_VERSION = 3
+const DB_VERSION = 4
 const STORE_NAME = "sessions"
 const MIGRATION_FLAG = "next-ai-drawio-migrated-to-idb"
 const MAX_SESSIONS = 50
@@ -12,15 +12,21 @@ const MAX_SESSIONS = 50
 export interface ChatSession {
     id: string
     title: string
-    engineId?: string
+    /** 最后使用的引擎，用于加载会话时恢复视图 */
+    activeEngineId?: string
     createdAt: number
     updatedAt: number
     messages: StoredMessage[]
-    diagramXml: string
-    excalidrawScene?: ExcalidrawScene // Excalidraw scene (elements/appState/files)
-    excalidrawHistory?: ExcalidrawHistoryEntry[] // Excalidraw version history
-    thumbnailDataUrl?: string // Small PNG preview of the diagram
-    diagramHistory?: DrawioHistoryEntry[] // Version history of diagram edits (DrawIO)
+    /** DrawIO 图表 XML */
+    drawioXml: string
+    /** DrawIO 历史版本 */
+    drawioHistory?: DrawioHistoryEntry[]
+    /** Excalidraw 场景 (elements/appState/files) */
+    excalidrawScene?: ExcalidrawScene
+    /** Excalidraw 历史版本 */
+    excalidrawHistory?: ExcalidrawHistoryEntry[]
+    /** 缩略图 (当前激活引擎的预览) */
+    thumbnailDataUrl?: string
 }
 
 // DrawIO history entry for version tracking
@@ -43,9 +49,13 @@ export interface SessionMetadata {
     createdAt: number
     updatedAt: number
     messageCount: number
-    hasDiagram: boolean
+    /** 是否有 DrawIO 图表 */
+    hasDrawio: boolean
+    /** 是否有 Excalidraw 图表 */
+    hasExcalidraw: boolean
     thumbnailDataUrl?: string
-    engineId?: string
+    /** 最后使用的引擎 */
+    activeEngineId?: string
 }
 
 // Minimal Excalidraw scene structure for persistence
@@ -68,7 +78,7 @@ interface ChatSessionDB extends DBSchema {
     sessions: {
         key: string
         value: ChatSession
-        indexes: { "by-updated": number; "by-engine": string }
+        indexes: { "by-updated": number }
     }
 }
 
@@ -87,20 +97,15 @@ async function getDB(): Promise<IDBPDatabase<ChatSessionDB>> {
                                   { keyPath: "id" },
                               )
                               created.createIndex("by-updated", "updatedAt")
-                              created.createIndex("by-engine", "engineId")
                               return created
                           })()
                         : transaction.objectStore(STORE_NAME)
 
                 if (oldVersion < 2) {
-                    if (!store.indexNames.contains("by-engine")) {
-                        store.createIndex("by-engine", "engineId")
-                    }
-
                     // Backfill legacy sessions with default engine
                     let cursor = await store.openCursor()
                     while (cursor) {
-                        if (!cursor.value.engineId) {
+                        if (!(cursor.value as any).engineId) {
                             const updated = {
                                 ...cursor.value,
                                 engineId: "drawio",
@@ -113,6 +118,52 @@ async function getDB(): Promise<IDBPDatabase<ChatSessionDB>> {
                 if (oldVersion < 3) {
                     // No structural changes; excalidrawScene is optional.
                     // Existing records remain valid.
+                }
+                if (oldVersion < 4) {
+                    // V4: 双引擎会话架构
+                    // - diagramXml → drawioXml
+                    // - diagramHistory → drawioHistory  
+                    // - engineId → activeEngineId
+                    // - 移除 by-engine 索引
+                    
+                    // 删除旧索引（如果存在）
+                    // Note: by-engine 索引在 V2 时添加，现在不再需要
+                    try {
+                        const indexNames = Array.from(store.indexNames) as string[]
+                        if (indexNames.includes("by-engine")) {
+                            (store as any).deleteIndex("by-engine")
+                        }
+                    } catch {
+                        // 索引可能不存在，忽略错误
+                    }
+                    
+                    // 迁移数据字段
+                    let cursor = await store.openCursor()
+                    while (cursor) {
+                        const oldValue = cursor.value as any
+                        const updated: any = { ...oldValue }
+                        
+                        // 重命名 diagramXml → drawioXml
+                        if (oldValue.diagramXml !== undefined && oldValue.drawioXml === undefined) {
+                            updated.drawioXml = oldValue.diagramXml
+                            delete updated.diagramXml
+                        }
+                        
+                        // 重命名 diagramHistory → drawioHistory
+                        if (oldValue.diagramHistory !== undefined && oldValue.drawioHistory === undefined) {
+                            updated.drawioHistory = oldValue.diagramHistory
+                            delete updated.diagramHistory
+                        }
+                        
+                        // 重命名 engineId → activeEngineId
+                        if (oldValue.engineId !== undefined && oldValue.activeEngineId === undefined) {
+                            updated.activeEngineId = oldValue.engineId
+                            delete updated.engineId
+                        }
+                        
+                        await cursor.update(updated)
+                        cursor = await cursor.continue()
+                    }
                 }
             },
         })
@@ -149,12 +200,12 @@ export async function getAllSessionMetadata(): Promise<SessionMetadata[]> {
                 createdAt: s.createdAt,
                 updatedAt: s.updatedAt,
                 messageCount: s.messages.length,
-                hasDiagram:
-                    (!!s.diagramXml && s.diagramXml.trim().length > 0) ||
-                    (Array.isArray(s.excalidrawScene?.elements) &&
-                        s.excalidrawScene.elements.length > 0),
+                hasDrawio: !!s.drawioXml && s.drawioXml.trim().length > 0,
+                hasExcalidraw:
+                    Array.isArray(s.excalidrawScene?.elements) &&
+                    s.excalidrawScene.elements.length > 0,
                 thumbnailDataUrl: s.thumbnailDataUrl,
-                engineId: s.engineId,
+                activeEngineId: s.activeEngineId,
             })
             cursor = await cursor.continue()
         }
@@ -165,37 +216,6 @@ export async function getAllSessionMetadata(): Promise<SessionMetadata[]> {
     }
 }
 
-export async function getSessionMetadataByEngine(
-    engineId?: string,
-): Promise<SessionMetadata[]> {
-    if (!isIndexedDBAvailable()) return []
-    if (!engineId) return getAllSessionMetadata()
-    try {
-        const db = await getDB()
-        const tx = db.transaction(STORE_NAME, "readonly")
-        const index = tx.store.index("by-engine")
-        const metadata: SessionMetadata[] = []
-        let cursor = await index.openCursor(engineId, "prev")
-        while (cursor) {
-            const s = cursor.value
-            metadata.push({
-                id: s.id,
-                title: s.title,
-                createdAt: s.createdAt,
-                updatedAt: s.updatedAt,
-                messageCount: s.messages.length,
-                hasDiagram: !!s.diagramXml && s.diagramXml.trim().length > 0,
-                thumbnailDataUrl: s.thumbnailDataUrl,
-                engineId: s.engineId,
-            })
-            cursor = await cursor.continue()
-        }
-        return metadata
-    } catch (error) {
-        console.error("Failed to get session metadata by engine:", error)
-        return []
-    }
-}
 
 export async function getSession(id: string): Promise<ChatSession | null> {
     if (!isIndexedDBAvailable()) return null
@@ -290,14 +310,16 @@ export async function enforceSessionLimit(): Promise<void> {
 }
 
 // Helper: Create a new empty session
-export function createEmptySession(): ChatSession {
+export function createEmptySession(activeEngineId?: string): ChatSession {
     return {
         id: nanoid(),
         title: "New Chat",
+        activeEngineId: activeEngineId || "drawio",
         createdAt: Date.now(),
         updatedAt: Date.now(),
         messages: [],
-        diagramXml: "",
+        drawioXml: "",
+        drawioHistory: [],
         excalidrawScene: {
             elements: [],
             appState: {
@@ -305,6 +327,7 @@ export function createEmptySession(): ChatSession {
             },
             files: {},
         },
+        excalidrawHistory: [],
     }
 }
 
@@ -388,10 +411,11 @@ export async function migrateFromLocalStorage(): Promise<string | null> {
                 const session: ChatSession = {
                     id: nanoid(),
                     title: extractTitle(sanitized),
+                    activeEngineId: "drawio", // 旧数据默认是 drawio
                     createdAt: Date.now(),
                     updatedAt: Date.now(),
                     messages: sanitized,
-                    diagramXml: savedXml || "",
+                    drawioXml: savedXml || "",
                 }
                 const saved = await saveSession(session)
                 if (saved) {

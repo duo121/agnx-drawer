@@ -103,8 +103,8 @@ export default function ChatPanel({
         latestSvg,
         clearDiagram,
         getThumbnailSvg,
-        diagramHistory,
-        setDiagramHistory,
+        diagramHistory: drawioHistory,
+        setDiagramHistory: setDrawioHistory,
         selectCells,
         engineId: diagramEngineId,
         setEngineId: setDiagramEngineId,
@@ -124,6 +124,8 @@ export default function ChatPanel({
         initExcalidrawHistory,
         // 画布版本计数器（用于触发 auto-save）
         canvasVersion,
+        // 引擎切换（Promise-based，等待就绪）
+        switchEngine,
     } = useEngine()
 
     const dict = useDictionary()
@@ -185,10 +187,6 @@ export default function ChatPanel({
     // Use diagram context's engineId as the source of truth
     const activeEngine = diagramEngineId || DEFAULT_ENGINE_ID
     const prevEngineRef = useRef<string>(diagramEngineId || DEFAULT_ENGINE_ID)
-    const [
-        startNewChatAfterEngineSwitch,
-        setStartNewChatAfterEngineSwitch,
-    ] = useState(false)
     const pendingSessionToOpenRef = useRef<string | null>(null)
     
     // 引擎切换锁，防止竞态条件
@@ -218,7 +216,7 @@ export default function ChatPanel({
 
     const sessionManager = useSessionManager({
         initialSessionId: urlSessionId || savedSessionId || undefined,
-        engineId: activeEngine,
+        activeEngineId: activeEngine,
     })
 
     const [input, setInput] = useState("")
@@ -388,55 +386,8 @@ export default function ChatPanel({
         editExcalidrawByOperations,
         selectExcalidrawElements,
         pushExcalidrawHistory,
-        onSwitchCanvas: async (target, reason) => {
-            // 如果已经是目标引擎，直接返回
-            if (activeEngine === target) {
-                return
-            }
-            
-            debugLog('[onSwitchCanvas] Switching canvas from', activeEngine, 'to', target, reason)
-            
-            // 切换引擎
-            resetDrawioReady()
-            setDiagramEngineId(target)
-            
-            // 等待新画板就绪
-            const maxWaitTime = 10000 // 最多等待 10 秒
-            const checkInterval = 100 // 每 100ms 检查一次
-            const startTime = Date.now()
-            
-            await new Promise<void>((resolve) => {
-                const checkReady = () => {
-                    const elapsed = Date.now() - startTime
-                    
-                    // 检查目标引擎是否就绪（使用 ref 获取最新状态）
-                    const isReady = target === "drawio" 
-                        ? isDrawioReadyRef.current 
-                        : isExcalidrawReadyRef.current
-                    
-                    if (isReady) {
-                        debugLog('[onSwitchCanvas] Canvas ready after', elapsed, 'ms')
-                        resolve()
-                        return
-                    }
-                    
-                    if (elapsed > maxWaitTime) {
-                        console.warn('[onSwitchCanvas] Timeout waiting for canvas ready after', elapsed, 'ms')
-                        // 超时也 resolve，让 AI 继续执行
-                        resolve()
-                        return
-                    }
-                    
-                    // 继续轮询
-                    setTimeout(checkReady, checkInterval)
-                }
-                
-                // 给 React 一点时间来响应状态变化
-                setTimeout(checkReady, 100)
-            })
-            
-            debugLog('[onSwitchCanvas] Canvas switched to', target, reason)
-        },
+        onSwitchCanvas: switchEngine,
+        getCurrentEngineId: () => activeEngine as "drawio" | "excalidraw",
     })
 
     // External error handler for useAgent (handles quota, network errors, etc.)
@@ -611,8 +562,8 @@ export default function ChatPanel({
         (
             data: {
                 messages: unknown[]
-                diagramXml: string
-                diagramHistory?: { svg: string; xml: string }[]
+                drawioXml: string
+                drawioHistory?: { svg: string; xml: string }[]
                 excalidrawScene?: ExcalidrawScene
                 excalidrawHistory?: ExcalidrawHistoryEntry[]
             } | null,
@@ -622,12 +573,12 @@ export default function ChatPanel({
                 hasExcalidrawScene: !!data?.excalidrawScene,
                 excalidrawElementsCount: data?.excalidrawScene?.elements?.length,
                 excalidrawHistoryCount: data?.excalidrawHistory?.length,
-                hasDiagramXml: !!data?.diagramXml,
+                hasDrawioXml: !!data?.drawioXml,
                 activeEngine,
                 diagramEngineId
             })
 
-            const hasRealDiagram = isRealDiagram(data?.diagramXml)
+            const hasRealDiagram = isRealDiagram(data?.drawioXml)
             if (data) {
                 // Mark all message IDs as loaded from session
                 const messageIds = (data.messages as any[]).map(
@@ -636,8 +587,8 @@ export default function ChatPanel({
                 loadedMessageIdsRef.current = new Set(messageIds)
                 setMessages(data.messages as any)
                 if (hasRealDiagram) {
-                    onDisplayChart(data.diagramXml, true)
-                    chartXMLRef.current = data.diagramXml
+                    onDisplayChart(data.drawioXml, true)
+                    chartXMLRef.current = data.drawioXml
                 } else {
                     clearDiagram()
                     // Clear refs to prevent stale data from being saved
@@ -645,7 +596,7 @@ export default function ChatPanel({
                     latestSvgRef.current = ""
                 }
                 setExcalidrawScene(data.excalidrawScene || EMPTY_EXCALIDRAW_SCENE)
-                setDiagramHistory(data.diagramHistory || [])
+                setDrawioHistory(data.drawioHistory || [])
                 // 恢复 Excalidraw 历史记录
                 initExcalidrawHistory(data.excalidrawHistory || [])
             } else {
@@ -655,13 +606,13 @@ export default function ChatPanel({
                 // Clear refs to prevent stale data from being saved
                 chartXMLRef.current = ""
                 latestSvgRef.current = ""
-                setDiagramHistory([])
+                setDrawioHistory([])
                 setExcalidrawScene(EMPTY_EXCALIDRAW_SCENE)
                 // 清空 Excalidraw 历史记录
                 initExcalidrawHistory([])
             }
         },
-        [setMessages, onDisplayChart, clearDiagram, setDiagramHistory, setExcalidrawScene, initExcalidrawHistory],
+        [setMessages, onDisplayChart, clearDiagram, setDrawioHistory, setExcalidrawScene, initExcalidrawHistory],
     )
 
     // Helper: Build session data object for saving (eliminates duplication)
@@ -671,7 +622,7 @@ export default function ChatPanel({
             // 因为 loadDiagram 会同步更新 ref，而 state 是异步更新的
             // 当用户立即切换引擎时，ref 是最新值，state 可能还是旧值
             // 注意：即使 ref 是空字符串也要使用，因为这可能是用户清空后的状态
-            const currentDiagramXml = chartXMLRef.current
+            const currentDrawioXml = chartXMLRef.current
             const currentExcalidraw = getExcalidrawScene()
             const currentExcalidrawHistory = getExcalidrawHistory()
             
@@ -681,7 +632,7 @@ export default function ChatPanel({
                 excalidrawElementsCount: currentExcalidraw?.elements?.length,
                 excalidrawHistoryLength: currentExcalidrawHistory?.length,
                 excalidrawElements: currentExcalidraw?.elements?.map((e: any) => ({ id: e.id, type: e.type })),
-                hasDiagramXml: !!currentDiagramXml,
+                hasDrawioXml: !!currentDrawioXml,
                 chartXMLState: !!chartXML,
                 chartXMLRef: !!chartXMLRef.current
             })
@@ -691,7 +642,7 @@ export default function ChatPanel({
             const hasRealDiagram = 
                 activeEngine === "excalidraw"
                     ? (Array.isArray(currentExcalidraw?.elements) && currentExcalidraw.elements.length > 0)
-                    : isRealDiagram(currentDiagramXml)
+                    : isRealDiagram(currentDrawioXml)
             let thumbnailDataUrl: string | undefined
             if (hasRealDiagram && options.withThumbnail) {
                 const freshThumb = await getThumbnailSvg()
@@ -705,15 +656,15 @@ export default function ChatPanel({
             }
         return {
             messages: sanitizeMessages(messagesRef.current),
-            diagramXml: currentDiagramXml,
+            drawioXml: currentDrawioXml,
+            drawioHistory,
             excalidrawScene: currentExcalidraw,
-            thumbnailDataUrl,
-            diagramHistory,
             excalidrawHistory: getExcalidrawHistory(),
+            thumbnailDataUrl,
         }
     },
         // chartXML 不再使用，但保留以触发重新计算时重新捕获 ref 值
-        [diagramHistory, getThumbnailSvg, getExcalidrawScene, getExcalidrawHistory, activeEngine, chartXML],
+        [drawioHistory, getThumbnailSvg, getExcalidrawScene, getExcalidrawHistory, activeEngine, chartXML],
     )
 
     // Restore messages and XML snapshots from session manager on mount
@@ -1088,17 +1039,17 @@ export default function ChatPanel({
             const sessionData = await sessionManager.switchSession(sessionId)
             debugLog('[doSelectSession] Session data loaded from IndexedDB:', {
                 sessionId,
-                diagramXmlLength: sessionData?.diagramXml?.length,
-                diagramXmlPreview: sessionData?.diagramXml?.substring(0, 100),
+                drawioXmlLength: sessionData?.drawioXml?.length,
+                drawioXmlPreview: sessionData?.drawioXml?.substring(0, 100),
             })
             if (sessionData) {
                 debugLog("switchSession loaded", {
                     msgCount: sessionData.messages.length,
-                    hasXml: !!sessionData.diagramXml,
+                    hasXml: !!sessionData.drawioXml,
                     hasExcalidraw: !!sessionData.excalidrawScene,
-                    historyLen: sessionData.diagramHistory?.length,
+                    historyLen: sessionData.drawioHistory?.length,
                 })
-                const hasRealDiagram = isRealDiagram(sessionData.diagramXml)
+                const hasRealDiagram = isRealDiagram(sessionData.drawioXml)
                 justLoadedSessionRef.current = true
                 latestSvgRef.current = sessionData.thumbnailDataUrl || ""
 
@@ -1135,7 +1086,7 @@ export default function ChatPanel({
 
             // 识别目标会话的引擎类型
             const target = sessionManager.sessions.find((s) => s.id === sessionId)
-            const targetEngine = target?.engineId
+            const targetEngine = target?.activeEngineId as "drawio" | "excalidraw" | undefined
 
             // 引擎不匹配时，先切换引擎再打开会话
             if (targetEngine && targetEngine !== activeEngine) {
@@ -1148,14 +1099,9 @@ export default function ChatPanel({
                         await sessionManager.saveCurrentSession(sessionData)
                     }
 
-                    // 2. 关键修复：重置 DrawIO 就绪状态
-                    // 确保切换到 DrawIO 会话时，useEffect([isDrawioReady]) 能正确触发恢复逻辑
-                    resetDrawioReady()
-
-                    // 3. 切换引擎（不新建会话，因为要加载目标会话）
+                    // 2. 切换引擎并等待就绪
                     pendingSessionToOpenRef.current = sessionId
-                    setDiagramEngineId(targetEngine)
-                    setStartNewChatAfterEngineSwitch(false)  // 关键：不要新建会话
+                    await switchEngine(targetEngine)
                     // 注意：engineSwitchInProgressRef 会在 doSelectSession 中解锁
                 } catch (error) {
                     console.error('[handleSelectSession] Error during engine switch:', error)
@@ -1167,7 +1113,7 @@ export default function ChatPanel({
             // 同引擎切换会话
             await doSelectSession(sessionId)
         },
-        [sessionManager, messages, buildSessionData, activeEngine, doSelectSession],
+        [sessionManager, messages, buildSessionData, activeEngine, doSelectSession, switchEngine],
     )
     
     // 引擎切换后打开待处理的会话
@@ -1178,7 +1124,7 @@ export default function ChatPanel({
         
         // 确保引擎已切换完成
         const target = sessionManager.sessions.find((s) => s.id === pending)
-        if (target?.engineId && target.engineId !== activeEngine) {
+        if (target?.activeEngineId && target.activeEngineId !== activeEngine) {
             // 引擎还没切换完成，等待
             return
         }
@@ -1224,7 +1170,7 @@ export default function ChatPanel({
         // Clear UI state (can't use syncUIWithSession here because we also need to clear files)
         setMessages([])
         clearDiagram()
-        setDiagramHistory([])
+        setDrawioHistory([])
         initExcalidrawHistory([]) // 清空 Excalidraw 历史记录
         handleFileChange([]) // Use handleFileChange to also clear pdfData
         setUrlData(new Map())
@@ -1248,7 +1194,7 @@ export default function ChatPanel({
         router,
         dict.dialogs.clearSuccess,
         buildSessionData,
-        setDiagramHistory,
+        setDrawioHistory,
         initExcalidrawHistory,
     ])
 
@@ -1308,56 +1254,6 @@ export default function ChatPanel({
         setHistoryIndex(nextIndex)
         return inputHistory[nextIndex] ?? ""
     }, [historyIndex, inputHistory])
-
-    // 引擎切换后的新建会话逻辑（仅在 startNewChatAfterEngineSwitch 为 true 时触发）
-    useEffect(() => {
-        if (!startNewChatAfterEngineSwitch) return
-        
-        const handleEngineSwitchNewChat = async () => {
-            try {
-                // 清除会话管理器状态
-                sessionManager.clearCurrentSession()
-                // 防止 URL 同步 effect 干扰（双重保险，配合按钮点击时的 skipNextUrlSync）
-                sessionManager.skipNextUrlSync()
-                lastSyncedSessionIdRef.current = null
-                debugLog("newChat cleared session (after engine switch)")
-
-                // 清除 UI 状态
-                setMessages([])
-                clearDiagram()
-                setDiagramHistory([])
-                initExcalidrawHistory([]) // 清空 Excalidraw 历史记录
-                handleFileChange([])
-                setUrlData(new Map())
-                // 根据当前 dark mode 状态设置 Excalidraw 主题
-                const currentTheme = document.documentElement.classList.contains("dark") ? "dark" : "light"
-                setExcalidrawScene({
-                    ...EMPTY_EXCALIDRAW_SCENE,
-                    appState: {
-                        ...EMPTY_EXCALIDRAW_SCENE.appState,
-                        theme: currentTheme,
-                    },
-                })
-
-                const newSessionId = `session-${Date.now()}-${Math.random()
-                    .toString(36)
-                    .slice(2, 9)}`
-                setSessionId(newSessionId)
-                sessionStorage.removeItem(SESSION_STORAGE_INPUT_KEY)
-
-                // 清除 URL
-                router.replace(window.location.pathname, { scroll: false })
-                
-                // toast.success(dict.dialogs.clearSuccess)
-                debugLog("newChat created (after engine switch)", newSessionId)
-            } finally {
-                engineSwitchInProgressRef.current = false
-            }
-        }
-        
-        handleEngineSwitchNewChat()
-        setStartNewChatAfterEngineSwitch(false)
-    }, [startNewChatAfterEngineSwitch, sessionManager, clearDiagram, handleFileChange, setMessages, setSessionId, router, dict.dialogs.clearSuccess, setDiagramHistory, setExcalidrawScene, initExcalidrawHistory])
 
     // Send chat message wrapper - delegates to useAgent's sendMessage
     const sendChatMessage = useCallback((
@@ -1687,20 +1583,9 @@ export default function ChatPanel({
                             newSet.add(skillId)
                             setSelectedSkillIds(newSet)
                             
-                            // 如果需要切换画板
+                            // 如果需要切换画板，使用 switchEngine（不新建会话）
                             if (skillId !== activeEngine) {
-                                // 保存当前会话
-                                if (sessionManager.isAvailable && messages.length > 0) {
-                                    const sessionData = await buildSessionData({ withThumbnail: true })
-                                    await sessionManager.saveCurrentSession(sessionData)
-                                }
-                                // 防止 URL 同步 effect 加载旧会话
-                                sessionManager.skipNextUrlSync()
-                                // 重置 DrawIO 就绪状态
-                                resetDrawioReady()
-                                // 切换引擎并标记需要新建会话
-                                setDiagramEngineId(skillId as any)
-                                setStartNewChatAfterEngineSwitch(true)
+                                await switchEngine(skillId as "drawio" | "excalidraw")
                             }
                         } else {
                             // 非引擎类 SKILL：直接添加到集合
@@ -1731,29 +1616,12 @@ export default function ChatPanel({
                         engineSwitchInProgressRef.current = true
                         
                         try {
-                            // 保存当前会话
-                            if (sessionManager.isAvailable && messages.length > 0) {
-                                const sessionData = await buildSessionData({ withThumbnail: true })
-                                debugLog('[Engine switch] Saving session before switch:', {
-                                    sessionId: sessionManager.currentSessionId,
-                                    diagramXmlLength: sessionData.diagramXml?.length,
-                                })
-                                await sessionManager.saveCurrentSession(sessionData)
-                            }
-
                             const nextEngine = activeEngine === "drawio" ? "excalidraw" : "drawio"
-
-                            // 防止 URL 同步 effect 加载旧会话
-                            sessionManager.skipNextUrlSync()
-
-                            // 重置 DrawIO 就绪状态
-                            resetDrawioReady()
-
-                            // 切换引擎并标记需要新建会话
-                            setDiagramEngineId(nextEngine)
-                            setStartNewChatAfterEngineSwitch(true)
+                            // 使用 switchEngine 切换引擎（不新建会话，同一会话支持双引擎）
+                            await switchEngine(nextEngine)
                         } catch (error) {
                             console.error('[Engine switch] Error:', error)
+                        } finally {
                             engineSwitchInProgressRef.current = false
                         }
                     }}

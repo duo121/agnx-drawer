@@ -71,9 +71,9 @@ Read skill documentation to learn specific diagram techniques.
   - flowchart/SKILL.md - Flowchart patterns`
 
 // ============================================================================
-// Part 4: Engine Section (dynamically loaded based on engineId)
+// Part 4: Engine Section (动态加载双引擎提示词)
 // ============================================================================
-// This is loaded from skills/_engines/{engineId}/SKILL.md
+// 加载两个引擎的 SKILL.md，让 AI 了解如何使用两种引擎
 
 // ============================================================================
 // Part 5: Workflow Examples (~100 tokens, fixed)
@@ -137,6 +137,7 @@ function loadEngineSkill(engineId: CanvasType): string {
 
 /**
  * Build the unified agent system prompt
+ * 双引擎会话：加载两个引擎的提示词，让 AI 了解如何使用两种引擎
  */
 export function buildUnifiedSystemPrompt(options: BuildOptions): string {
     const { engineId, modelId, minimalStyle, canvasTheme, userIntent } = options
@@ -152,10 +153,20 @@ export function buildUnifiedSystemPrompt(options: BuildOptions): string {
     // Part 3: Shared Tools
     parts.push(SHARED_TOOLS_SECTION)
 
-    // Part 4: Engine-specific section
-    const engineSkill = loadEngineSkill(engineId)
-    if (engineSkill) {
-        parts.push(`## Current Engine: ${engineId === "drawio" ? "Draw.io" : "Excalidraw"}\n\n${engineSkill}`)
+    // Part 4: 双引擎提示词（加载两个引擎的 SKILL.md）
+    const drawioSkill = loadEngineSkill("drawio")
+    const excalidrawSkill = loadEngineSkill("excalidraw")
+    
+    // 用户当前活跃的引擎
+    const currentEngineName = engineId === "drawio" ? "Draw.io" : "Excalidraw"
+    parts.push(`## Current Active Engine: ${currentEngineName}\nThe user is currently viewing the ${currentEngineName} canvas. Tools for this engine will execute immediately.\nTo use tools for the other engine, call switch_canvas first to switch the view.`)
+    
+    // 加载两个引擎的详细提示词
+    if (drawioSkill) {
+        parts.push(`## Draw.io Engine Reference\n\n${drawioSkill}`)
+    }
+    if (excalidrawSkill) {
+        parts.push(`## Excalidraw Engine Reference\n\n${excalidrawSkill}`)
     }
 
     // Part 5: Workflow Examples

@@ -18,11 +18,15 @@ import {
 
 export interface SessionData {
     messages: StoredMessage[]
-    diagramXml: string
+    /** DrawIO 图表 XML */
+    drawioXml: string
+    /** DrawIO 历史版本 */
+    drawioHistory?: { svg: string; xml: string; timestamp?: number; isManual?: boolean }[]
+    /** Excalidraw 场景 */
     excalidrawScene?: any
-    thumbnailDataUrl?: string
-    diagramHistory?: { svg: string; xml: string; timestamp?: number; isManual?: boolean }[]
+    /** Excalidraw 历史版本 */
     excalidrawHistory?: any[]
+    thumbnailDataUrl?: string
 }
 
 export interface UseSessionManagerReturn {
@@ -51,13 +55,14 @@ export interface UseSessionManagerReturn {
 interface UseSessionManagerOptions {
     /** Session ID from URL param - if provided, load this session; if null, start blank */
     initialSessionId?: string | null
-    engineId?: string
+    /** 当前激活的引擎，用于新建会话时设置 activeEngineId */
+    activeEngineId?: string
 }
 
 export function useSessionManager(
     options: UseSessionManagerOptions = {},
 ): UseSessionManagerReturn {
-    const { initialSessionId, engineId } = options
+    const { initialSessionId, activeEngineId } = options
     const [sessions, setSessions] = useState<SessionMetadata[]>([])
     const [currentSessionId, setCurrentSessionId] = useState<string | null>(
         null,
@@ -195,7 +200,6 @@ export function useSessionManager(
 
             // Save current session first if it has messages
             if (currentSession && currentSession.messages.length > 0) {
-                // 不修改 engineId,保持会话原有的引擎类型
                 await saveSession(currentSession)
             }
 
@@ -212,14 +216,14 @@ export function useSessionManager(
 
             return {
                 messages: session.messages,
-                diagramXml: session.diagramXml,
-                thumbnailDataUrl: session.thumbnailDataUrl,
-                diagramHistory: session.diagramHistory,
+                drawioXml: session.drawioXml,
+                drawioHistory: session.drawioHistory,
                 excalidrawScene: session.excalidrawScene,
                 excalidrawHistory: session.excalidrawHistory,
+                thumbnailDataUrl: session.thumbnailDataUrl,
             }
         },
-        [currentSessionId, currentSession, engineId],
+        [currentSessionId, currentSession],
     )
 
     // Delete a session
@@ -252,9 +256,9 @@ export function useSessionManager(
             console.log('[saveCurrentSession] Called:', {
                 forSessionId,
                 currentSessionId,
-                currentSessionEngineId: currentSession?.engineId,
+                currentSessionActiveEngineId: currentSession?.activeEngineId,
                 dataMessagesCount: data.messages?.length,
-                dataDiagramXmlLength: data.diagramXml?.length,
+                dataDrawioXmlLength: data.drawioXml?.length,
                 dataExcalidrawElementsCount: data.excalidrawScene?.elements?.length,
                 hasCurrentSession: !!currentSession,
             })
@@ -274,21 +278,15 @@ export function useSessionManager(
 
             if (!currentSession) {
                 // Create a new session if none exists
-                // 新会话必须有 engineId,且一旦设置就不能修改
-                if (!engineId) {
-                    console.error('[saveCurrentSession] Cannot create session without engineId')
-                    return
-                }
                 const newSession: ChatSession = {
-                    ...createEmptySession(),
+                    ...createEmptySession(activeEngineId),
                     messages: data.messages,
-                    diagramXml: data.diagramXml,
+                    drawioXml: data.drawioXml,
+                    drawioHistory: data.drawioHistory,
                     excalidrawScene: data.excalidrawScene,
                     excalidrawHistory: data.excalidrawHistory,
                     thumbnailDataUrl: data.thumbnailDataUrl,
-                    diagramHistory: data.diagramHistory,
                     title: extractTitle(data.messages),
-                    engineId,
                 }
                 await saveSession(newSession)
                 await enforceSessionLimit()
@@ -299,19 +297,19 @@ export function useSessionManager(
             }
 
             // Update existing session
+            // activeEngineId 使用当前激活引擎（可能已切换）
             const updatedSession: ChatSession = {
                 ...currentSession,
                 messages: data.messages,
-                diagramXml: data.diagramXml,
+                drawioXml: data.drawioXml,
+                drawioHistory: data.drawioHistory ?? currentSession.drawioHistory,
                 excalidrawScene: data.excalidrawScene ?? currentSession.excalidrawScene,
                 excalidrawHistory: data.excalidrawHistory ?? currentSession.excalidrawHistory,
                 thumbnailDataUrl:
                     data.thumbnailDataUrl ?? currentSession.thumbnailDataUrl,
-                diagramHistory:
-                    data.diagramHistory ?? currentSession.diagramHistory,
                 updatedAt: Date.now(),
-                // IMPORTANT: engineId 一旦设置就不能修改,永远使用会话原有的 engineId
-                engineId: currentSession.engineId,
+                // activeEngineId 更新为当前激活引擎
+                activeEngineId: activeEngineId || currentSession.activeEngineId,
                 // Update title if it's still default and we have messages
                 title:
                     currentSession.title === "New Chat" &&
@@ -322,9 +320,9 @@ export function useSessionManager(
 
             console.log('[saveCurrentSession] Saving updated session:', {
                 sessionId: updatedSession.id,
-                engineId: updatedSession.engineId,
+                activeEngineId: updatedSession.activeEngineId,
                 messagesCount: updatedSession.messages.length,
-                diagramXmlLength: updatedSession.diagramXml?.length,
+                drawioXmlLength: updatedSession.drawioXml?.length,
                 excalidrawElementsCount: updatedSession.excalidrawScene?.elements?.length,
             })
 
@@ -338,25 +336,25 @@ export function useSessionManager(
                         ? {
                               ...s,
                               title: updatedSession.title,
-                            updatedAt: updatedSession.updatedAt,
-                            messageCount: updatedSession.messages.length,
-                            engineId: updatedSession.engineId,
-                            hasDiagram:
-                                  (!!updatedSession.diagramXml &&
-                                      updatedSession.diagramXml.trim().length >
-                                          0) ||
-                                  (Array.isArray(
+                              updatedAt: updatedSession.updatedAt,
+                              messageCount: updatedSession.messages.length,
+                              activeEngineId: updatedSession.activeEngineId,
+                              hasDrawio:
+                                  !!updatedSession.drawioXml &&
+                                  updatedSession.drawioXml.trim().length > 0,
+                              hasExcalidraw:
+                                  Array.isArray(
                                       updatedSession.excalidrawScene?.elements,
                                   ) &&
-                                      updatedSession.excalidrawScene.elements
-                                          .length > 0),
-                            thumbnailDataUrl: updatedSession.thumbnailDataUrl,
-                        }
+                                  updatedSession.excalidrawScene.elements
+                                      .length > 0,
+                              thumbnailDataUrl: updatedSession.thumbnailDataUrl,
+                          }
                         : s,
                 ),
             )
         },
-        [currentSession, currentSessionId, refreshSessions, engineId],
+        [currentSession, currentSessionId, refreshSessions, activeEngineId],
     )
 
     // Clear current session state (for starting fresh without loading another session)

@@ -547,3 +547,164 @@
         animation: none;
     }
 }
+
+/* ============================================
+   ENGINE SWITCH TRANSITION ANIMATIONS
+   ============================================ */
+
+/* 主背景渐变动画 - 多彩流动 */
+@keyframes engine-transition-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* 图标缩放脉冲动画 */
+@keyframes engine-icon-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+}
+
+/* 图标旋转光环 */
+@keyframes engine-icon-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 粒子漂浮动画 */
+@keyframes engine-particle-float {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-20px) translateX(10px);
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.3;
+    }
+}
+
+/* 切换文字闪烁 */
+@keyframes engine-text-shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* 淡入动画 */
+@keyframes engine-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 淡出动画 */
+@keyframes engine-fade-out {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+}
+
+/* 引擎切换过渡容器 */
+.engine-transition-overlay {
+    background: linear-gradient(
+        135deg,
+        oklch(0.25 0.02 260 / 0.97),
+        oklch(0.2 0.04 280 / 0.98),
+        oklch(0.22 0.03 300 / 0.97)
+    );
+    background-size: 200% 200%;
+    animation: engine-transition-gradient 2s ease infinite;
+    backdrop-filter: blur(12px);
+}
+
+.dark .engine-transition-overlay {
+    background: linear-gradient(
+        135deg,
+        oklch(0.15 0.02 260 / 0.97),
+        oklch(0.12 0.04 280 / 0.98),
+        oklch(0.13 0.03 300 / 0.97)
+    );
+}
+
+/* 切换图标容器 */
+.engine-icon-container {
+    position: relative;
+    animation: engine-icon-pulse 1.5s ease-in-out infinite;
+}
+
+/* 图标外圈光环 */
+.engine-icon-ring {
+    position: absolute;
+    inset: -8px;
+    border: 2px solid transparent;
+    border-top-color: oklch(0.7 0.2 280);
+    border-radius: 50%;
+    animation: engine-icon-ring 1.5s linear infinite;
+}
+
+/* 切换文字渐变 */
+.engine-transition-text {
+    background: linear-gradient(
+        90deg,
+        oklch(0.9 0 0),
+        oklch(0.75 0.15 280),
+        oklch(0.9 0 0)
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: engine-text-shimmer 2s linear infinite;
+}
+
+/* 减少动画 */
+@media (prefers-reduced-motion: reduce) {
+    .engine-transition-overlay {
+        animation: none;
+    }
+    .engine-icon-container {
+        animation: none;
+    }
+    .engine-icon-ring {
+        animation: none;
+    }
+    .engine-transition-text {
+        animation: none;
+        -webkit-text-fill-color: currentColor;
+    }
+}

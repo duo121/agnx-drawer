@@ -17,7 +17,9 @@ export interface Session {
     title: string
     updatedAt: number
     thumbnailDataUrl?: string
-    engineId?: string
+    activeEngineId?: string
+    hasDrawio?: boolean
+    hasExcalidraw?: boolean
 }
 
 // 模型的最小必要字段（用于过滤）

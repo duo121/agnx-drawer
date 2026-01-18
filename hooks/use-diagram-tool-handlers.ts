@@ -61,6 +61,8 @@ interface UseDiagramToolHandlersParams {
     pushExcalidrawHistory?: (label?: string) => Promise<void>
     // 画板切换 - 返回 Promise，在新画板就绪后 resolve
     onSwitchCanvas?: (targetEngine: "drawio" | "excalidraw", reason?: string) => Promise<void>
+    /** 获取当前引擎 ID */
+    getCurrentEngineId?: () => "drawio" | "excalidraw"
 }
 
 const ensureExcalidrawElements = (elements: any[] = []) => {
@@ -116,7 +118,35 @@ export function useDiagramToolHandlers({
     selectExcalidrawElements,
     pushExcalidrawHistory,
     onSwitchCanvas,
+    getCurrentEngineId,
 }: UseDiagramToolHandlersParams) {
+    /**
+     * 确保当前引擎与工具所需引擎匹配
+     * 如果不匹配，自动切换引擎并等待就绪
+     * @param requiredEngine 工具所需的引擎类型
+     * @returns 如果切换成功或已经是正确引擎，返回 true；如果切换失败，返回 false
+     */
+    const ensureCorrectEngine = async (requiredEngine: "drawio" | "excalidraw"): Promise<boolean> => {
+        if (!getCurrentEngineId || !onSwitchCanvas) {
+            // 无法检测/切换，假设引擎正确
+            return true
+        }
+        
+        const currentEngine = getCurrentEngineId()
+        if (currentEngine === requiredEngine) {
+            // 已经是正确引擎
+            return true
+        }
+        
+        try {
+            console.log(`[ensureCorrectEngine] Auto-switching from ${currentEngine} to ${requiredEngine}`)
+            await onSwitchCanvas(requiredEngine, `Tool requires ${requiredEngine} engine`)
+            return true
+        } catch (error) {
+            console.error(`[ensureCorrectEngine] Failed to switch to ${requiredEngine}:`, error)
+            return false
+        }
+    }
     const handleToolCall = async (
         { toolCall }: { toolCall: ToolCall },
         addToolOutput: AddToolOutputFn,
@@ -126,22 +156,95 @@ export function useDiagramToolHandlers({
         )
         console.log(`[onToolCall] Tool call 完整数据:`, JSON.stringify(toolCall, null, 2))
 
-        // DrawIO tools
+        // DrawIO tools - 自动切换引擎
         if (toolCall.toolName === "display_drawio") {
+            if (!await ensureCorrectEngine("drawio")) {
+                addToolOutput({
+                    tool: toolCall.toolName,
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText: "Failed to switch to DrawIO engine. Please try again.",
+                })
+                return
+            }
             await handleDisplayDrawio(toolCall, addToolOutput)
         } else if (toolCall.toolName === "edit_drawio") {
+            if (!await ensureCorrectEngine("drawio")) {
+                addToolOutput({
+                    tool: toolCall.toolName,
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText: "Failed to switch to DrawIO engine. Please try again.",
+                })
+                return
+            }
             await handleEditDrawio(toolCall, addToolOutput)
         } else if (toolCall.toolName === "append_drawio") {
+            if (!await ensureCorrectEngine("drawio")) {
+                addToolOutput({
+                    tool: toolCall.toolName,
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText: "Failed to switch to DrawIO engine. Please try again.",
+                })
+                return
+            }
             handleAppendDrawio(toolCall, addToolOutput)
         } else if (toolCall.toolName === "convert_plantuml_to_drawio") {
+            if (!await ensureCorrectEngine("drawio")) {
+                addToolOutput({
+                    tool: toolCall.toolName,
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText: "Failed to switch to DrawIO engine. Please try again.",
+                })
+                return
+            }
             await handlePlantUML(toolCall, addToolOutput)
+        // Excalidraw tools - 自动切换引擎
         } else if (toolCall.toolName === "display_excalidraw") {
+            if (!await ensureCorrectEngine("excalidraw")) {
+                addToolOutput({
+                    tool: toolCall.toolName,
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText: "Failed to switch to Excalidraw engine. Please try again.",
+                })
+                return
+            }
             await handleDisplayExcalidraw(toolCall, addToolOutput)
         } else if (toolCall.toolName === "append_excalidraw") {
+            if (!await ensureCorrectEngine("excalidraw")) {
+                addToolOutput({
+                    tool: toolCall.toolName,
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText: "Failed to switch to Excalidraw engine. Please try again.",
+                })
+                return
+            }
             await handleAppendExcalidraw(toolCall, addToolOutput)
         } else if (toolCall.toolName === "edit_excalidraw") {
+            if (!await ensureCorrectEngine("excalidraw")) {
+                addToolOutput({
+                    tool: toolCall.toolName,
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText: "Failed to switch to Excalidraw engine. Please try again.",
+                })
+                return
+            }
             await handleEditExcalidraw(toolCall, addToolOutput)
         } else if (toolCall.toolName === "convert_mermaid_to_excalidraw") {
+            if (!await ensureCorrectEngine("excalidraw")) {
+                addToolOutput({
+                    tool: toolCall.toolName,
+                    toolCallId: toolCall.toolCallId,
+                    state: "output-error",
+                    errorText: "Failed to switch to Excalidraw engine. Please try again.",
+                })
+                return
+            }
             console.log(`[onToolCall] 开始执行 handleMermaid`)
             await handleMermaid(toolCall, addToolOutput)
         // Shared tools

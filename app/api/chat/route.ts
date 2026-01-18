@@ -21,7 +21,7 @@ import {
     replaceHistoricalToolInputs,
     validateFileParts,
 } from "@/server/chat-helpers"
-import { getEngine } from "@/server/diagram-engines/registry"
+import { getEngine, getAllEngineTools } from "@/server/diagram-engines/registry"
 import {
     checkAndIncrementRequest,
     isQuotaEnabled,
@@ -693,7 +693,8 @@ ${userInputText}
                 recordTokenUsage(userId, totalTokens)
             }
         },
-        tools: engine.getTools(),
+        // 双引擎会话：加载所有引擎的工具，客户端会根据需要自动切换引擎
+        tools: getAllEngineTools(),
         ...(process.env.TEMPERATURE !== undefined && {
             temperature: parseFloat(process.env.TEMPERATURE),
         }),

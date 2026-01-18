@@ -14,7 +14,7 @@
  */
 
 import type React from "react"
-import { createContext, useContext, useCallback, useState, useEffect, useMemo } from "react"
+import { createContext, useContext, useCallback, useState, useEffect, useMemo, useRef } from "react"
 import {
     useDrawioEngine,
     useExcalidrawEngine,
@@ -55,6 +55,10 @@ interface EngineContextType {
     // 引擎切换
     engineId: string
     setEngineId: (id: string) => void
+    /** 是否正在切换引擎（用于显示过渡动画） */
+    isSwitching: boolean
+    /** 切换引擎并等待就绪，返回 Promise */
+    switchEngine: (targetEngine: "drawio" | "excalidraw") => Promise<void>
 
     // DrawIO Refs
     drawioRef: React.RefObject<any>
@@ -157,6 +161,10 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
     // 画布版本计数器：用于追踪画布内容变化（如快照恢复），触发 auto-save
     const [canvasVersion, setCanvasVersion] = useState(0)
 
+    // 引擎切换状态
+    const [isSwitching, setIsSwitching] = useState(false)
+    const switchResolverRef = useRef<(() => void) | null>(null)
+
     // ========== 服务层实例 ==========
     // 创建 DrawIO 服务（使用 useMemo 确保稳定引用）
     const drawioService = useMemo(() => {
@@ -219,6 +227,42 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
         })
     }, [])
 
+    // ========== 引擎切换函数 ==========
+    const switchEngine = useCallback(async (targetEngine: "drawio" | "excalidraw"): Promise<void> => {
+        // 如果已经是目标引擎，直接返回
+        if (engineSwitch.engineId === targetEngine) {
+            return
+        }
+
+        console.log('[EngineContext] switchEngine start:', { from: engineSwitch.engineId, to: targetEngine })
+        setIsSwitching(true)
+
+        return new Promise<void>((resolve) => {
+            switchResolverRef.current = resolve
+            engineSwitch.setEngineId(targetEngine)
+        })
+    }, [engineSwitch])
+
+    // 监听引擎就绪状态，完成切换
+    useEffect(() => {
+        if (!isSwitching) return
+        if (!switchResolverRef.current) return
+
+        const isTargetReady = engineSwitch.engineId === "excalidraw"
+            ? excalidraw.isReady
+            : drawio.isReady
+
+        if (isTargetReady) {
+            console.log('[EngineContext] switchEngine complete:', { engineId: engineSwitch.engineId })
+            // 延迟一帧确保 UI 渲染完成
+            requestAnimationFrame(() => {
+                setIsSwitching(false)
+                switchResolverRef.current?.()
+                switchResolverRef.current = null
+            })
+        }
+    }, [isSwitching, engineSwitch.engineId, excalidraw.isReady, drawio.isReady])
+
     // ========== Context Value ==========
     const value: EngineContextType = {
         // DrawIO 状态
@@ -233,6 +277,8 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
         // 引擎切换
         engineId: engineSwitch.engineId,
         setEngineId: (id: string) => engineSwitch.setEngineId(id as EngineId),
+        isSwitching,
+        switchEngine,
 
         // DrawIO Refs
         drawioRef: drawio.drawioRef,

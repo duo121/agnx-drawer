@@ -10,6 +10,7 @@ import {
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { ExcalidrawCanvas } from "@/components/excalidraw-canvas"
+import { EngineTransition } from "@/components/engine-transition"
 import { useEngine } from "@/hooks/engines/engine-context"
 import { i18n, type Locale } from "@/shared/i18n/config"
 
@@ -24,6 +25,7 @@ export default function Home() {
         onDrawioLoad,
         resetDrawioReady,
         engineId,
+        isSwitching,
     } = useEngine()
     const router = useRouter()
     const pathname = usePathname()
@@ -164,6 +166,11 @@ export default function Home() {
                         }`}
                     >
                         <div className="h-full rounded-xl overflow-hidden shadow-soft-lg border border-border/30 relative">
+                            {/* 引擎切换过渡动画 */}
+                            {isSwitching && (
+                                <EngineTransition targetEngine={engineId as "drawio" | "excalidraw"} />
+                            )}
+                            
                             {isLoaded && darkMode !== null && engineId === "drawio" ? (
                                 <>
                                     <div
