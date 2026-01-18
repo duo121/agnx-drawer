@@ -223,52 +223,59 @@ export function SessionDetailDialog({
                         <span>{formatRelativeTime(session.updatedAt)}</span>
                     </div>
 
-                    {/* 当前会话标识 */}
-                    {isCurrentSession && (
-                        <div className="flex items-center gap-2 text-sm text-primary bg-primary/10 rounded-lg px-3 py-2">
-                            <Check className="h-4 w-4" />
-                            <span>当前会话</span>
-                        </div>
-                    )}
-
                     {/* 操作按钮 */}
-                    <div className="flex gap-2 pt-2">
-                        {!isCurrentSession && (
-                            <Button className="flex-1" onClick={handleSwitch}>
-                                切换到此会话
-                            </Button>
-                        )}
-                        {showDeleteConfirm ? (
-                            <div className="flex-1 flex gap-2">
+                    <div className="flex gap-3 pt-2">
+                        {isCurrentSession ? (
+                            <>
+                                <div className="flex-1 flex items-center justify-center gap-2 text-sm text-primary bg-primary/10 rounded-lg px-3 h-10">
+                                    <Check className="h-4 w-4" />
+                                    <span>当前会话</span>
+                                </div>
                                 <Button
                                     variant="outline"
-                                    className="flex-1"
-                                    onClick={() => setShowDeleteConfirm(false)}
+                                    className="h-10 gap-2 text-destructive/50 border-destructive/30 cursor-not-allowed"
+                                    disabled
                                 >
-                                    取消
+                                    <Trash2 className="h-4 w-4" />
+                                    删除
                                 </Button>
-                                <Button
-                                    variant="destructive"
-                                    className="flex-1"
-                                    onClick={handleDelete}
-                                    disabled={isCurrentSession}
-                                >
-                                    确认删除
-                                </Button>
-                            </div>
+                            </>
                         ) : (
-                            <Button
-                                variant="outline"
-                                className={cn(
-                                    "gap-2",
-                                    isCurrentSession && "flex-1",
+                            <>
+                                <Button 
+                                    className="flex-1 h-10 font-medium shadow-sm hover:shadow transition-all" 
+                                    onClick={handleSwitch}
+                                >
+                                    切换到此会话
+                                </Button>
+                                {showDeleteConfirm ? (
+                                    <div className="flex gap-2">
+                                        <Button
+                                            variant="outline"
+                                            className="h-10"
+                                            onClick={() => setShowDeleteConfirm(false)}
+                                        >
+                                            取消
+                                        </Button>
+                                        <Button
+                                            variant="destructive"
+                                            className="h-10 shadow-sm"
+                                            onClick={handleDelete}
+                                        >
+                                            确认删除
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <Button
+                                        variant="outline"
+                                        className="h-10 gap-2 text-destructive border-destructive/50 hover:bg-destructive/10 transition-colors"
+                                        onClick={() => setShowDeleteConfirm(true)}
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                        删除
+                                    </Button>
                                 )}
-                                onClick={() => setShowDeleteConfirm(true)}
-                                disabled={isCurrentSession}
-                            >
-                                <Trash2 className="h-4 w-4" />
-                                {isCurrentSession ? "无法删除当前会话" : "删除"}
-                            </Button>
+                            </>
                         )}
                     </div>
                 </div>
