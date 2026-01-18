@@ -137,7 +137,7 @@ export async function convertMermaidToExcalidraw(
     }
 
     try {
-        // 调用官方库进行转换
+        // 调用官方库进行转换 - 返回 skeleton format
         const parseResult = await parseMermaidToExcalidraw(processedCode, {
             themeVariables: {
                 fontSize: "16px",
@@ -145,7 +145,7 @@ export async function convertMermaidToExcalidraw(
             },
         } as any)
 
-        console.log("[Mermaid] Parse result:", {
+        console.log("[Mermaid] Parse result (skeleton):", {
             elementsCount: parseResult.elements?.length || 0,
             hasFiles: !!parseResult.files,
             firstElement: parseResult.elements?.[0],
@@ -168,76 +168,70 @@ export async function convertMermaidToExcalidraw(
             )
         }
 
-        // 清理和验证元素
-        const sanitized = sanitizeExcalidrawElements(
-            parseResult.elements as any[],
-            options,
-        )
-
-        // 确保所有元素都有有效 ID
-        const normalized = ensureElementIds(sanitized)
-
-        // 将 label 转换为独立的 text 元素
-        const withTextElements: any[] = []
-        normalized.forEach((element: any) => {
-            withTextElements.push(element)
+        // 将 skeleton format 转换为完全合格的 excalidraw 元素
+        // 这一步会正确测量文本尺寸、处理绑定关系、创建绑定的文本元素等
+        // 注意：此函数只能在浏览器环境中调用，因为依赖 DOM API
+        let finalElements: any[] = []
+        
+        try {
+            const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw")
             
-            // 如果元素有 label 字段，创建对应的 text 元素
-            if (element.label && element.label.text) {
-                const textElement = {
-                    type: 'text',
-                    id: `${element.id}-label`,
-                    x: element.x + (element.width || 100) / 2 - 50, // 居中
-                    y: element.label.verticalAlign === 'top' 
-                        ? element.y + 10 
-                        : element.y + (element.height || 60) / 2 - 10,
-                    width: 100,
-                    height: 25,
-                    angle: 0,
-                    strokeColor: options.isDark ? '#e2e8f0' : '#1e293b',
-                    backgroundColor: 'transparent',
-                    fillStyle: 'solid',
-                    strokeWidth: 1,
-                    strokeStyle: 'solid',
-                    roughness: 0,
-                    opacity: 100,
-                    groupIds: element.label.groupIds || element.groupIds || [],
-                    frameId: null,
-                    roundness: null,
-                    seed: Math.floor(Math.random() * 1000000),
-                    version: 1,
-                    versionNonce: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
-                    isDeleted: false,
-                    boundElements: null,
-                    updated: Date.now(),
-                    link: null,
-                    locked: false,
-                    text: element.label.text,
-                    fontSize: element.label.fontSize || 16,
-                    fontFamily: 2, // Helvetica
-                    textAlign: 'center',
-                    verticalAlign: 'middle',
-                    baseline: element.label.fontSize || 16,
-                    containerId: null,
-                    originalText: element.label.text,
-                    lineHeight: 1.25,
+            const convertedElements = convertToExcalidrawElements(parseResult.elements as any[])
+            
+            console.log("[Mermaid] Raw converted elements:", {
+                elementsCount: convertedElements?.length || 0,
+                textElements: convertedElements?.filter((el: any) => el.type === 'text').length || 0,
+                boundTextCount: convertedElements?.filter((el: any) => el.type === 'text' && el.containerId).length || 0,
+                unboundTextCount: convertedElements?.filter((el: any) => el.type === 'text' && !el.containerId).length || 0,
+            })
+            
+            // 过滤掉没有绑定到容器的重复文本元素
+            // convertToExcalidrawElements 会从带 label 的容器创建绑定文本 (containerId 不为空)
+            // 但也会保留原始 skeleton 中的独立 text 元素 (containerId 为空)
+            // 这导致文字重复，需要过滤
+            const boundTextContents = new Set(
+                convertedElements
+                    .filter((el: any) => el.type === 'text' && el.containerId)
+                    .map((el: any) => el.text)
+            )
+            
+            finalElements = convertedElements.filter((el: any) => {
+                // 保留所有非 text 元素
+                if (el.type !== 'text') return true
+                // 保留绑定到容器的文本
+                if (el.containerId) return true
+                // 对于未绑定的文本，如果存在同样内容的绑定文本，则过滤掉
+                if (boundTextContents.has(el.text)) {
+                    console.log("[Mermaid] Filtering duplicate unbound text:", el.text)
+                    return false
                 }
-                withTextElements.push(textElement)
-                
-                // 删除原始元素的 label 字段
-                delete element.label
-            }
-        })
+                return true
+            })
+            
+            console.log("[Mermaid] After filtering duplicates:", {
+                elementsCount: finalElements?.length || 0,
+                textElements: finalElements?.filter((el: any) => el.type === 'text').length || 0,
+                textContents: finalElements?.filter((el: any) => el.type === 'text').map((el: any) => ({
+                    text: el.text,
+                    containerId: el.containerId || 'none',
+                })),
+            })
+        } catch (conversionError) {
+            console.warn("[Mermaid] convertToExcalidrawElements failed, falling back to sanitize:", conversionError)
+            // 只有在 convertToExcalidrawElements 失败时才使用 sanitize
+            finalElements = sanitizeExcalidrawElements(parseResult.elements as any[], options)
+            finalElements = ensureElementIds(finalElements)
+        }
 
+        // convertToExcalidrawElements 返回的已经是完整元素，不需要再处理
         console.log("[Mermaid] Successfully converted:", {
-            elementsCount: withTextElements.length,
-            originalElements: normalized.length,
-            elementTypes: [...new Set(withTextElements.map((e: any) => e.type))],
-            textElements: withTextElements.filter((e: any) => e.type === 'text').length,
+            elementsCount: finalElements.length,
+            elementTypes: [...new Set(finalElements.map((e: any) => e.type))],
+            textElements: finalElements.filter((e: any) => e.type === 'text').length,
         })
 
         return {
-            elements: withTextElements as ExcalidrawElement[],
+            elements: finalElements as ExcalidrawElement[],
             files: parseResult.files,
         }
     } catch (error) {

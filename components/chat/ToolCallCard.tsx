@@ -384,6 +384,8 @@ export function ToolCallCard({
                   onReinsert?.({
                     toolName,
                     excalidrawScene,
+                    // 传递 code 以支持重新转换
+                    code: (meta?.code as string) || (input as any)?.code,
                   })
                 }
                 className="p-1 rounded hover:bg-muted transition-colors"

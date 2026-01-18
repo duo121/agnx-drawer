@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { convertMermaidToExcalidraw, buildMermaidImgUrl } from "@/shared/script-convertor"
+import { buildMermaidImgUrl } from "@/shared/script-convertor"
 
 /**
  * Excalidraw tool definitions (client-rendered; no server execution).
@@ -86,62 +86,32 @@ Use autoInsert=false for complex requests that need:
                         "If true (default), insert directly into canvas. If false, return elements for AI to review/enhance before calling edit_excalidraw.",
                     ),
             }),
+            // 注意：@excalidraw/mermaid-to-excalidraw 依赖浏览器 API (DOMPurify 等)
+            // 不能在服务端执行，转换在客户端进行
+            // 服务端只生成图片下载 URL
             execute: async ({ code, autoInsert = true }: { code: string; autoInsert?: boolean }) => {
-                console.log("[Mermaid Tool Execute] === 开始服务端执行 ===")
-                console.log("[Mermaid Tool Execute] 输入代码长度:", code?.length || 0)
-                console.log("[Mermaid Tool Execute] autoInsert:", autoInsert)
+                console.log("[Mermaid Tool Execute] 服务端只生成 URL，转换在客户端进行")
+                
+                // 生成图片下载链接 (仅 URL 编码，不需要 DOM)
+                let pngUrl = ""
+                let svgUrl = ""
                 
                 try {
-                    // 服务端执行转换
-                    const result = await convertMermaidToExcalidraw(code, {
-                        isDark: false, // 默认浅色,客户端会根据实际主题重新处理
-                    })
-                    
-                    console.log("[Mermaid Tool Execute] 转换结果:", {
-                        elementsCount: result.elements?.length || 0,
-                        hasFiles: !!result.files,
-                        firstElementType: result.elements?.[0]?.type,
-                    })
-                    
-                    // 生成图片下载链接
-                    let pngUrl = ""
-                    let svgUrl = ""
-                    
-                    try {
-                        pngUrl = await buildMermaidImgUrl(code, { format: "png" })
-                        svgUrl = await buildMermaidImgUrl(code, { format: "svg" })
-                        console.log("[Mermaid Tool Execute] Generated URLs:", { pngUrl, svgUrl })
-                    } catch (urlError) {
-                        console.error("[Mermaid Tool Execute] Failed to generate download URLs:", urlError)
-                        // 继续执行,但不提供下载链接
-                    }
-                    
-                    const returnValue = {
-                        elements: result.elements,
-                        files: result.files,
-                        code, // 返回原始代码供客户端使用
-                        pngUrl, // PNG 格式下载链接
-                        svgUrl, // SVG 格式下载链接
-                        autoInsert,
-                        message: autoInsert
-                            ? "Mermaid converted and ready to insert."
-                            : "Conversion complete. Review the elements and call edit_excalidraw to insert with modifications.",
-                    }
-                    
-                    console.log("[Mermaid Tool Execute] 返回值:", {
-                        hasElements: Array.isArray(returnValue.elements),
-                        elementsCount: returnValue.elements?.length || 0,
-                        hasFiles: !!returnValue.files,
-                        hasCode: !!returnValue.code,
-                        hasPngUrl: !!returnValue.pngUrl,
-                        hasSvgUrl: !!returnValue.svgUrl,
-                        autoInsert: returnValue.autoInsert,
-                    })
-                    
-                    return returnValue
-                } catch (error) {
-                    console.error("[Mermaid Tool Execute] Execute failed:", error)
-                    throw error
+                    pngUrl = await buildMermaidImgUrl(code, { format: "png" })
+                    svgUrl = await buildMermaidImgUrl(code, { format: "svg" })
+                    console.log("[Mermaid Tool Execute] Generated URLs:", { pngUrl, svgUrl })
+                } catch (urlError) {
+                    console.error("[Mermaid Tool Execute] Failed to generate download URLs:", urlError)
+                }
+                
+                // 返回代码和 URL，客户端负责转换
+                return {
+                    code,
+                    pngUrl,
+                    svgUrl,
+                    autoInsert,
+                    // 不返回 elements，客户端会检测到并自行转换
+                    message: "Code received. Client will convert to Excalidraw elements.",
                 }
             },
         },

@@ -333,12 +333,28 @@ const processNewElementsWithOfficialAPI = async (elements: any[]): Promise<any[]
         const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw")
         const processed = convertToExcalidrawElements(newElements, { regenerateIds: false })
 
-        // 合并：用处理后的新元素替换原来的
+        // 合并：保留原有属性，只用处理后的元素补充/更新
         const processedMap = new Map(processed.map((el: any) => [el.id, el]))
+        
+        // 构建原始元素映射
+        const originalMap = new Map(newElements.map((el: any) => [el.id, el]))
 
         let result = elements.map((el) => {
-            if (processedMap.has(el.id)) {
-                return processedMap.get(el.id)
+            const processedEl = processedMap.get(el.id)
+            if (processedEl) {
+                const originalEl = originalMap.get(el.id)
+                // 先用原始元素作为基础，然后用处理后的元素覆盖
+                // 这样可以保留原始元素中 convertToExcalidrawElements 没有处理的属性
+                // 比如 text, containerId, boundElements 等
+                return {
+                    ...el,           // 传入 sanitize 后的元素（已有所有属性）
+                    ...processedEl,  // 官方 API 处理后的属性（宽高测量等）
+                    // 确保关键属性从原始元素保留
+                    text: originalEl?.text ?? processedEl.text ?? el.text,
+                    containerId: originalEl?.containerId ?? processedEl.containerId ?? el.containerId,
+                    boundElements: originalEl?.boundElements ?? processedEl.boundElements ?? el.boundElements,
+                    originalText: originalEl?.originalText ?? processedEl.originalText ?? el.originalText,
+                }
             }
             return el
         })
@@ -614,6 +630,16 @@ export function useExcalidrawEngine(): UseExcalidrawEngineReturn {
     const appendElements = useCallback(
         async (elements: any[], options?: { selectIds?: string[] }): Promise<{ newIds: string[] }> => {
             if (!apiRef.current) return { newIds: [] }
+            
+            // 调试：打印输入元素
+            console.log("[appendElements] Input elements:", {
+                count: elements?.length,
+                textElements: elements?.filter((el: any) => el?.type === 'text').map((el: any) => ({
+                    id: el.id,
+                    text: el.text,
+                    containerId: el.containerId,
+                })),
+            })
 
             const api = apiRef.current
             const currentElements = api.getSceneElements() || []
@@ -628,36 +654,77 @@ export function useExcalidrawEngine(): UseExcalidrawEngineReturn {
             
             // 1. 先用同步方法补全基础字段
             let incoming = sanitizeExcalidrawElements(elements)
+            
+            // 调试：sanitize 后
+            console.log("[appendElements] After sanitize:", {
+                count: incoming?.length,
+                textElements: incoming?.filter((el: any) => el?.type === 'text').map((el: any) => ({
+                    id: el.id,
+                    text: el.text,
+                    containerId: el.containerId,
+                })),
+            })
 
             // 2. 再用官方 API 处理新元素（文本尺寸等）
             if (typeof window !== "undefined" && incoming.length > 0) {
                 incoming = await processNewElementsWithOfficialAPI(incoming)
             }
+            
+            // 调试：官方 API 处理后
+            console.log("[appendElements] After processNewElementsWithOfficialAPI:", {
+                count: incoming?.length,
+                textElements: incoming?.filter((el: any) => el?.type === 'text').map((el: any) => ({
+                    id: el.id,
+                    text: el.text,
+                    containerId: el.containerId,
+                    width: el.width,
+                    height: el.height,
+                })),
+            })
 
-            // 3. 为每个元素生成新的唯一ID，避免ID冲突
+            // 3. 第一遍：为所有元素生成新ID的映射（不修改元素）
             incoming.forEach((el) => {
                 const oldId = el?.id
-                const newId = `el-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`
-                
-                newIds.push(newId)
                 if (oldId) {
+                    const newId = `el-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`
                     oldIdToNewId.set(oldId, newId)
+                    newIds.push(newId)
                 }
+            })
+            
+            // 4. 第二遍：使用映射更新所有元素的 ID 和引用
+            incoming.forEach((el) => {
+                const oldId = el?.id
+                const newId = oldIdToNewId.get(oldId) || `el-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`
                 
                 // 创建新元素，使用新ID
                 const newElement = { ...el, id: newId }
                 
-                // 如果元素有 boundElements（绑定关系），需要更新引用的ID
-                if (newElement.boundElements) {
+                // 如果元素有 boundElements（绑定关系），更新引用的ID
+                if (newElement.boundElements && Array.isArray(newElement.boundElements)) {
                     newElement.boundElements = newElement.boundElements.map((bound: any) => ({
                         ...bound,
                         id: oldIdToNewId.get(bound.id) || bound.id
                     }))
                 }
                 
-                // 如果是容器元素，更新 containerId
-                if (newElement.containerId && oldIdToNewId.has(newElement.containerId)) {
-                    newElement.containerId = oldIdToNewId.get(newElement.containerId)
+                // 如果是文本元素，更新 containerId
+                if (newElement.containerId) {
+                    newElement.containerId = oldIdToNewId.get(newElement.containerId) || newElement.containerId
+                }
+                
+                // 箭头的 startBinding/endBinding
+                if (newElement.startBinding?.elementId) {
+                    newElement.startBinding = {
+                        ...newElement.startBinding,
+                        elementId: oldIdToNewId.get(newElement.startBinding.elementId) || newElement.startBinding.elementId
+                    }
+                }
+                if (newElement.endBinding?.elementId) {
+                    newElement.endBinding = {
+                        ...newElement.endBinding,
+                        elementId: oldIdToNewId.get(newElement.endBinding.elementId) || newElement.endBinding.elementId
+                    }
                 }
                 
                 map.set(newId, newElement)

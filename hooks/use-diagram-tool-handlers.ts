@@ -65,34 +65,44 @@ interface UseDiagramToolHandlersParams {
     getCurrentEngineId?: () => "drawio" | "excalidraw"
 }
 
+/**
+ * 确保 Excalidraw 元素有效
+ * 注意：必须保留所有原有属性，包括 text、containerId、boundElements 等
+ */
 const ensureExcalidrawElements = (elements: any[] = []) => {
     const toNumber = (val: any, fallback: number) =>
         typeof val === "number" && Number.isFinite(val) ? val : fallback
     return elements
         .filter((el) => el && typeof el === "object")
         .map((el) => {
-            const width = toNumber(el.width, 100)
-            const height = toNumber(el.height, 60)
-            return {
-                version: el?.version ?? 1,
-                versionNonce:
-                    el?.versionNonce ??
-                    Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
-                updated: el?.updated ?? Date.now(),
-                ...el,
-                x: toNumber(el?.x, 0),
-                y: toNumber(el?.y, 0),
-                width,
-                height,
-                angle: toNumber(el?.angle, 0),
-                strokeWidth: toNumber(el?.strokeWidth, 2),
-                roughness: toNumber(el?.roughness, 0),
-                opacity: toNumber(el?.opacity, 100),
-                // 确保 groupIds 是数组
-                groupIds: Array.isArray(el?.groupIds) ? el.groupIds : [],
-                // 确保 boundElements 是数组
-                boundElements: Array.isArray(el?.boundElements) ? el.boundElements : [],
+            // 复制原始元素，保留所有属性
+            const result = { ...el }
+            
+            // 只填充缺失的必要字段，不覆盖已有值
+            if (result.version === undefined) result.version = 1
+            if (result.versionNonce === undefined) {
+                result.versionNonce = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
             }
+            if (result.updated === undefined) result.updated = Date.now()
+            
+            // 数值字段：确保是有效数字
+            result.x = toNumber(result.x, 0)
+            result.y = toNumber(result.y, 0)
+            result.width = toNumber(result.width, 100)
+            result.height = toNumber(result.height, 60)
+            result.angle = toNumber(result.angle, 0)
+            result.strokeWidth = toNumber(result.strokeWidth, 2)
+            result.roughness = toNumber(result.roughness, 0)
+            result.opacity = toNumber(result.opacity, 100)
+            
+            // 确保 groupIds 是数组
+            if (!Array.isArray(result.groupIds)) result.groupIds = []
+            // boundElements 可以是数组或 null
+            if (result.boundElements !== null && !Array.isArray(result.boundElements)) {
+                result.boundElements = []
+            }
+            
+            return result
         })
 }
 
@@ -444,29 +454,25 @@ ${finalXml}
         }
 
         try {
-            // 如果服务端没有返回结果,则在客户端转换
-            if (!elements || !Array.isArray(elements) || elements.length === 0) {
-                if (DEBUG) {
-                    console.log("[handleMermaid] Server result missing, converting on client")
-                }
-                const { convertMermaidToExcalidraw, buildMermaidImgUrl } = await import(
-                    "@/shared/script-convertor"
-                )
-                
-                const conversionResult = await convertMermaidToExcalidraw(code, {
-                    isDark: false, // TODO: 从主题中获取
-                })
-                
-                elements = conversionResult.elements || []
-                files = conversionResult.files
-                
-                // 生成下载链接
-                if (!pngUrl) {
-                    pngUrl = await buildMermaidImgUrl(code, { format: "png" })
-                }
-                if (!svgUrl) {
-                    svgUrl = await buildMermaidImgUrl(code, { format: "svg" })
-                }
+            // 服务端不执行转换（依赖浏览器 API），在客户端转换
+            console.log("[handleMermaid] Converting Mermaid on client")
+            const { convertMermaidToExcalidraw, buildMermaidImgUrl } = await import(
+                "@/shared/script-convertor"
+            )
+            
+            const conversionResult = await convertMermaidToExcalidraw(code, {
+                isDark: false, // TODO: 从主题中获取
+            })
+            
+            elements = conversionResult.elements || []
+            files = conversionResult.files
+            
+            // 使用服务端返回的 URL，如果没有则生成
+            if (!pngUrl) {
+                pngUrl = await buildMermaidImgUrl(code, { format: "png" })
+            }
+            if (!svgUrl) {
+                svgUrl = await buildMermaidImgUrl(code, { format: "svg" })
             }
             
             if (!Array.isArray(elements) || elements.length === 0) {

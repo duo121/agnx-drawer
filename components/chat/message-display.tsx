@@ -458,8 +458,15 @@ export function ChatMessageDisplay({
                     elementsCount: excalidrawScene?.elements?.length || 0,
                 })
                 
-                // 如果是 Mermaid 工具且有 code，重新转换
-                if (toolName === "convert_mermaid_to_excalidraw" && code && (!excalidrawScene || !excalidrawScene.elements || excalidrawScene.elements.length === 0)) {
+                // 对于 Mermaid 工具，始终使用 code 重新转换
+                // 因为保存的 excalidrawScene 可能没有经过最新的过滤逻辑处理
+                if (toolName === "convert_mermaid_to_excalidraw") {
+                    if (!code) {
+                        // 旧的失败记录，没有保存 code
+                        console.warn("[handleReinsert] No Mermaid code available in old record")
+                        toast.error("旧的工具记录无法重新插入，请发送新的请求")
+                        return
+                    }
                     console.log("[handleReinsert] Re-converting from Mermaid code")
                     try {
                         const { convertMermaidToExcalidraw } = await import("@/shared/script-convertor")
@@ -472,17 +479,13 @@ export function ChatMessageDisplay({
                         }
                         console.log("[handleReinsert] Re-converted:", {
                             elementsCount: result.elements.length,
+                            textElements: result.elements.filter((e: any) => e.type === 'text').length,
                         })
                     } catch (error) {
                         console.error("[handleReinsert] Re-conversion failed:", error)
                         toast.error("重新转换 Mermaid 失败")
                         return
                     }
-                } else if (toolName === "convert_mermaid_to_excalidraw" && !code) {
-                    // 旧的失败记录，没有保存 code
-                    console.warn("[handleReinsert] No Mermaid code available in old record")
-                    toast.error("旧的工具记录无法重新插入，请发送新的请求")
-                    return
                 }
                 
                 if (!excalidrawScene || !Array.isArray(excalidrawScene.elements)) {
@@ -494,30 +497,34 @@ export function ChatMessageDisplay({
                     toast.error("Excalidraw 元素数组为空，转换可能失败")
                     return
                 }
+                // 确保元素有效，保留所有原有属性（包括 text、containerId 等）
                 const sanitize = (elements: any[] = []) => {
                     const toNumber = (val: any, fallback: number) =>
                         typeof val === "number" && Number.isFinite(val) ? val : fallback
                     return elements
                         .filter((el) => el && typeof el === "object")
                         .map((el) => {
-                            const width = toNumber(el.width, 100)
-                            const height = toNumber(el.height, 60)
-                            return {
-                                version: el?.version ?? 1,
-                                versionNonce:
-                                    el?.versionNonce ??
-                                    Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
-                                updated: el?.updated ?? Date.now(),
-                                ...el,
-                                x: toNumber(el?.x, 0),
-                                y: toNumber(el?.y, 0),
-                                width,
-                                height,
-                                angle: toNumber(el?.angle, 0),
-                                strokeWidth: toNumber(el?.strokeWidth, 2),
-                                roughness: toNumber(el?.roughness, 0),
-                                opacity: toNumber(el?.opacity, 100),
+                            // 复制原始元素，保留所有属性
+                            const result = { ...el }
+                            
+                            // 只填充缺失的必要字段
+                            if (result.version === undefined) result.version = 1
+                            if (result.versionNonce === undefined) {
+                                result.versionNonce = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
                             }
+                            if (result.updated === undefined) result.updated = Date.now()
+                            
+                            // 数值字段
+                            result.x = toNumber(result.x, 0)
+                            result.y = toNumber(result.y, 0)
+                            result.width = toNumber(result.width, 100)
+                            result.height = toNumber(result.height, 60)
+                            result.angle = toNumber(result.angle, 0)
+                            result.strokeWidth = toNumber(result.strokeWidth, 2)
+                            result.roughness = toNumber(result.roughness, 0)
+                            result.opacity = toNumber(result.opacity, 100)
+                            
+                            return result
                         })
                 }
                 const current = getExcalidrawScene()
@@ -1374,6 +1381,8 @@ export function ChatMessageDisplay({
                     })}
                 </div>
             )}
+            {/* 底部占位区域，确保最后一条消息不被输入框遮挡 */}
+            <div className="h-32" />
             <div ref={messagesEndRef} />
         </div>
     )

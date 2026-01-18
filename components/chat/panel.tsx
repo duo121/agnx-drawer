@@ -186,6 +186,9 @@ export default function ChatPanel({
     const [urlData, setUrlData] = useState<Map<string, UrlData>>(new Map())
     // Use diagram context's engineId as the source of truth
     const activeEngine = diagramEngineId || DEFAULT_ENGINE_ID
+    // Ref 用于解决 useDiagramToolHandlers 中的闭包问题
+    const activeEngineRef = useRef<string>(diagramEngineId || DEFAULT_ENGINE_ID)
+    activeEngineRef.current = activeEngine // 每次渲染时同步更新
     const prevEngineRef = useRef<string>(diagramEngineId || DEFAULT_ENGINE_ID)
     const pendingSessionToOpenRef = useRef<string | null>(null)
     
@@ -387,7 +390,8 @@ export default function ChatPanel({
         selectExcalidrawElements,
         pushExcalidrawHistory,
         onSwitchCanvas: switchEngine,
-        getCurrentEngineId: () => activeEngine as "drawio" | "excalidraw",
+        // 使用 ref 而不是直接闭包 activeEngine，避免旧值被捕获导致引擎切换失效
+        getCurrentEngineId: () => activeEngineRef.current as "drawio" | "excalidraw",
     })
 
     // External error handler for useAgent (handles quota, network errors, etc.)
@@ -639,8 +643,9 @@ export default function ChatPanel({
             
             // Only capture thumbnail if there's a meaningful diagram (not just empty template)
             // For Drawio: check XML, for Excalidraw: check if scene has elements
+            // NOTE: we must use diagramEngineId (current canvas engine), not activeEngine (LLM model).
             const hasRealDiagram = 
-                activeEngine === "excalidraw"
+                diagramEngineId === "excalidraw"
                     ? (Array.isArray(currentExcalidraw?.elements) && currentExcalidraw.elements.length > 0)
                     : isRealDiagram(currentDrawioXml)
             let thumbnailDataUrl: string | undefined
@@ -1170,6 +1175,8 @@ export default function ChatPanel({
         // Clear UI state (can't use syncUIWithSession here because we also need to clear files)
         setMessages([])
         clearDiagram()
+        // 同时清空 Excalidraw 画布（clearDiagram 只清空当前引擎）
+        setExcalidrawScene(EMPTY_EXCALIDRAW_SCENE)
         setDrawioHistory([])
         initExcalidrawHistory([]) // 清空 Excalidraw 历史记录
         handleFileChange([]) // Use handleFileChange to also clear pdfData
