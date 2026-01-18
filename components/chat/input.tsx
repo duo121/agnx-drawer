@@ -16,6 +16,7 @@ import {
     X,
     Zap,
 } from "lucide-react"
+import { DrawioIcon, ExcalidrawIcon } from "@/components/ui/engine-icons"
 import Image from "next/image"
 import type React from "react"
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
@@ -768,42 +769,9 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
                                         {isEngineBadgeHovered ? (
                                             <X className="h-4 w-4" />
                                         ) : selectedEngineSkill === "drawio" ? (
-                                            <svg
-                                                width={16}
-                                                height={16}
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                            >
-                                                <rect x="3" y="3" width="7" height="7" rx="1"/>
-                                                <rect x="14" y="3" width="7" height="7" rx="1"/>
-                                                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                                                <rect x="14" y="14" width="7" height="7" rx="1"/>
-                                                <line x1="10" y1="6.5" x2="14" y2="6.5"/>
-                                                <line x1="10" y1="17.5" x2="14" y2="17.5"/>
-                                                <line x1="6.5" y1="10" x2="6.5" y2="14"/>
-                                                <line x1="17.5" y1="10" x2="17.5" y2="14"/>
-                                            </svg>
+                                            <DrawioIcon className="h-4 w-4" />
                                         ) : (
-                                            <svg
-                                                width={16}
-                                                height={16}
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                            >
-                                                <path d="M3 17.5l5-5 4 4 6-6"/>
-                                                <polyline points="16,12 18,10 22,6"/>
-                                                <circle cx="6" cy="20" r="2"/>
-                                                <path d="M20 4l-4 4"/>
-                                                <path d="M4 4h7v7"/>
-                                            </svg>
+                                            <ExcalidrawIcon className="h-4 w-4" />
                                         )}
                                         <span>{selectedEngineSkill === "drawio" ? "Draw.io" : "Excalidraw"}</span>
                                     </button>

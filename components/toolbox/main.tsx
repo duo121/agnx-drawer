@@ -14,6 +14,7 @@ import {
     Plus,
     X
 } from "lucide-react"
+import { DrawioIcon, ExcalidrawIcon } from "@/components/ui/engine-icons"
 import {
     forwardRef,
     useCallback,
@@ -1172,20 +1173,12 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
                     <div className="absolute -top-1.5 -left-1.5 flex gap-0.5 z-10">
                         {session.hasDrawio && (
                             <div className="rounded-full w-4 h-4 flex items-center justify-center shadow-sm bg-blue-500 text-white">
-                                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <rect x="3" y="3" width="7" height="7" rx="1"/>
-                                    <rect x="14" y="3" width="7" height="7" rx="1"/>
-                                    <rect x="3" y="14" width="7" height="7" rx="1"/>
-                                    <rect x="14" y="14" width="7" height="7" rx="1"/>
-                                </svg>
+                                <DrawioIcon className="h-3 w-3" />
                             </div>
                         )}
                         {session.hasExcalidraw && (
                             <div className="rounded-full w-4 h-4 flex items-center justify-center shadow-sm bg-purple-500 text-white">
-                                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M3 17.5l5-5 4 4 6-6"/>
-                                    <polyline points="16,12 18,10 22,6"/>
-                                </svg>
+                                <ExcalidrawIcon className="h-3 w-3" />
                             </div>
                         )}
                     </div>
