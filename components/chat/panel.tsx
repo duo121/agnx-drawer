@@ -1513,7 +1513,7 @@ export default function ChatPanel({
                 className="absolute inset-0 overflow-y-auto"
                 style={{ 
                     paddingTop: isMobile ? '56px' : '72px',
-                    paddingBottom: isMobile ? '80px' : '96px'
+                    paddingBottom: isMobile ? '120px' : '140px'
                 }}
             >
                 <ChatMessageDisplay
@@ -1600,7 +1600,6 @@ export default function ChatPanel({
                         setSelectedSkillIds(newSet)
                     }}
                     isDialogOpen={(() => {
-                        console.log('[Panel] showModelConfigDialog:', showModelConfigDialog)
                         return showModelConfigDialog
                     })()}
                     // 历史会话

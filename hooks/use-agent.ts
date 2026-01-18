@@ -32,7 +32,7 @@
  */
 
 import { useChat } from "@ai-sdk/react"
-import { DefaultChatTransport } from "ai"
+import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from "ai"
 import { useCallback, useRef, type MutableRefObject } from "react"
 import { flushSync } from "react-dom"
 import { getApiEndpoint } from "@/shared/base-path"
@@ -370,62 +370,72 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
         },
 
         sendAutomaticallyWhen: ({ messages }) => {
-            const isInContinuationMode = partialXmlRef.current.length > 0
-            const shouldRetry = hasToolErrors(messages)
-
-            if (!shouldRetry) {
-                autoRetryCountRef.current = 0
-                continuationRetryCountRef.current = 0
-                partialXmlRef.current = ''
-                return false
-            }
-
-            // 检查自定义重试逻辑
-            if (hooks.shouldAutoRetry) {
-                const context = {
-                    error: new Error('Tool call failed'),
-                    retryCount: isInContinuationMode
-                        ? continuationRetryCountRef.current
-                        : autoRetryCountRef.current,
-                    maxRetries: isInContinuationMode
-                        ? maxContinuationRetry
-                        : maxAutoRetry,
-                }
-                if (!hooks.shouldAutoRetry(context)) {
-                    return false
-                }
-            }
-
-            // 默认重试逻辑
-            if (isInContinuationMode) {
-                if (continuationRetryCountRef.current >= maxContinuationRetry) {
-                    // 触发重试限制回调
-                    onRetryLimitReached?.({
-                        type: 'continuation',
-                        count: continuationRetryCountRef.current,
-                        max: maxContinuationRetry,
-                    })
+            // 1. 首先检查是否所有工具调用都已完成（成功或失败）
+            //    这是 AI SDK 的标准模式：工具调用完成后自动续传让 AI 继续
+            const shouldContinueAfterToolCalls = lastAssistantMessageIsCompleteWithToolCalls({ messages })
+            
+            if (shouldContinueAfterToolCalls) {
+                console.log('[useAgent] sendAutomaticallyWhen: tool calls complete, auto-continuing')
+                
+                // 检查是否有工具错误需要重试
+                const hasErrors = hasToolErrors(messages)
+                const isInContinuationMode = partialXmlRef.current.length > 0
+                
+                if (hasErrors) {
+                    // 有错误，检查重试次数
+                    if (hooks.shouldAutoRetry) {
+                        const context = {
+                            error: new Error('Tool call failed'),
+                            retryCount: isInContinuationMode
+                                ? continuationRetryCountRef.current
+                                : autoRetryCountRef.current,
+                            maxRetries: isInContinuationMode
+                                ? maxContinuationRetry
+                                : maxAutoRetry,
+                        }
+                        if (!hooks.shouldAutoRetry(context)) {
+                            return false
+                        }
+                    }
+                    
+                    // 检查重试限制
+                    if (isInContinuationMode) {
+                        if (continuationRetryCountRef.current >= maxContinuationRetry) {
+                            onRetryLimitReached?.({
+                                type: 'continuation',
+                                count: continuationRetryCountRef.current,
+                                max: maxContinuationRetry,
+                            })
+                            continuationRetryCountRef.current = 0
+                            partialXmlRef.current = ''
+                            return false
+                        }
+                        continuationRetryCountRef.current++
+                    } else {
+                        if (autoRetryCountRef.current >= maxAutoRetry) {
+                            onRetryLimitReached?.({
+                                type: 'auto',
+                                count: autoRetryCountRef.current,
+                                max: maxAutoRetry,
+                            })
+                            autoRetryCountRef.current = 0
+                            partialXmlRef.current = ''
+                            return false
+                        }
+                        autoRetryCountRef.current++
+                    }
+                } else {
+                    // 没有错误，重置重试计数器
+                    autoRetryCountRef.current = 0
                     continuationRetryCountRef.current = 0
                     partialXmlRef.current = ''
-                    return false
                 }
-                continuationRetryCountRef.current++
-            } else {
-                if (autoRetryCountRef.current >= maxAutoRetry) {
-                    // 触发重试限制回调
-                    onRetryLimitReached?.({
-                        type: 'auto',
-                        count: autoRetryCountRef.current,
-                        max: maxAutoRetry,
-                    })
-                    autoRetryCountRef.current = 0
-                    partialXmlRef.current = ''
-                    return false
-                }
-                autoRetryCountRef.current++
+                
+                return true
             }
-
-            return true
+            
+            // 工具调用尚未完成
+            return false
         },
     })
 

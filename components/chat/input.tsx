@@ -539,7 +539,6 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
                         onFocusBack={() => textareaRef.current?.focus()}
                         // 当有 Dialog 打开时禁用点击外部关闭
                         disableClickOutside={(() => {
-                            console.log('[ChatInput] isDialogOpen:', isDialogOpen)
                             return isDialogOpen
                         })()}
                         // 历史会话

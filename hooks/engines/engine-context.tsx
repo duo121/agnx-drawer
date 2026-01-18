@@ -167,6 +167,8 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
     // 引擎切换状态
     const [isSwitching, setIsSwitching] = useState(false)
     const switchResolverRef = useRef<(() => void) | null>(null)
+    const switchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const switchTargetRef = useRef<"drawio" | "excalidraw" | null>(null)
 
     // ========== 服务层实例 ==========
     // 创建 DrawIO 服务（使用 useMemo 确保稳定引用）
@@ -231,6 +233,8 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
     }, [])
 
     // ========== 引擎切换函数 ==========
+    const SWITCH_TIMEOUT_MS = 10000 // 10秒超时
+
     const switchEngine = useCallback(async (targetEngine: "drawio" | "excalidraw"): Promise<void> => {
         // 如果已经是目标引擎，直接返回
         if (engineSwitch.engineId === targetEngine) {
@@ -238,28 +242,80 @@ export function EngineProvider({ children }: { children: React.ReactNode }) {
         }
 
         console.log('[EngineContext] switchEngine start:', { from: engineSwitch.engineId, to: targetEngine })
-        setIsSwitching(true)
+        
+        // 清理之前的超时（如果有）
+        if (switchTimeoutRef.current) {
+            clearTimeout(switchTimeoutRef.current)
+            switchTimeoutRef.current = null
+        }
 
-        return new Promise<void>((resolve) => {
-            switchResolverRef.current = resolve
+        // 重置目标引擎的 ready 状态，确保等待新的 ready 信号
+        if (targetEngine === "drawio") {
+            drawio.resetReady()
+        } else {
+            excalidraw.setReady(false)
+        }
+
+        setIsSwitching(true)
+        switchTargetRef.current = targetEngine
+
+        return new Promise<void>((resolve, reject) => {
+            // 设置超时
+            switchTimeoutRef.current = setTimeout(() => {
+                console.error('[EngineContext] switchEngine timeout:', { targetEngine })
+                setIsSwitching(false)
+                switchResolverRef.current = null
+                switchTargetRef.current = null
+                reject(new Error(`Engine switch to ${targetEngine} timed out after ${SWITCH_TIMEOUT_MS}ms`))
+            }, SWITCH_TIMEOUT_MS)
+
+            switchResolverRef.current = () => {
+                // 清理超时
+                if (switchTimeoutRef.current) {
+                    clearTimeout(switchTimeoutRef.current)
+                    switchTimeoutRef.current = null
+                }
+                resolve()
+            }
             engineSwitch.setEngineId(targetEngine)
         })
-    }, [engineSwitch])
+    }, [engineSwitch, drawio, excalidraw])
 
     // 监听引擎就绪状态，完成切换
     useEffect(() => {
         if (!isSwitching) return
         if (!switchResolverRef.current) return
 
-        const isTargetReady = engineSwitch.engineId === "excalidraw"
+        // 使用 switchTargetRef 确保检查正确的目标引擎
+        const targetEngine = switchTargetRef.current
+        if (!targetEngine) return
+
+        // 确保当前引擎已切换到目标引擎
+        if (engineSwitch.engineId !== targetEngine) {
+            console.log('[EngineContext] switchEngine waiting for engineId change:', {
+                current: engineSwitch.engineId,
+                target: targetEngine
+            })
+            return
+        }
+
+        const isTargetReady = targetEngine === "excalidraw"
             ? excalidraw.isReady
             : drawio.isReady
+
+        console.log('[EngineContext] switchEngine checking ready:', {
+            targetEngine,
+            isTargetReady,
+            drawioReady: drawio.isReady,
+            excalidrawReady: excalidraw.isReady
+        })
 
         if (isTargetReady) {
             console.log('[EngineContext] switchEngine complete:', { engineId: engineSwitch.engineId })
             // 延迟一帧确保 UI 渲染完成
             requestAnimationFrame(() => {
                 setIsSwitching(false)
+                switchTargetRef.current = null
                 switchResolverRef.current?.()
                 switchResolverRef.current = null
             })
