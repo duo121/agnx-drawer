@@ -90,6 +90,9 @@ export default function Home() {
         setDarkMode(newValue)
         localStorage.setItem("agnx-dark-mode", String(newValue))
         document.documentElement.classList.toggle("dark", newValue)
+        // 重置 DrawIO 就绪状态，以便重新加载后能恢复图表内容
+        setIsDrawioReady(false)
+        resetDrawioReady()
     }
 
     const handleDrawioUiChange = () => {

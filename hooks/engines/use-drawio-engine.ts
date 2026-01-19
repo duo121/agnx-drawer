@@ -268,9 +268,9 @@ export function useDrawioEngine(): UseDrawioEngineReturn {
             expectHistoryExportRef.current = false
         }
 
-        // 处理 resolver
+        // 处理 resolver（如 getThumbnailSvg）- 返回原始 SVG 数据，不是提取的 XML
         if (resolverRef.current) {
-            resolverRef.current(extractedXML)
+            resolverRef.current(data.data)
             resolverRef.current = null
         }
     }, [])

@@ -64,6 +64,10 @@ interface UseDiagramToolHandlersParams {
     onSwitchCanvas?: (targetEngine: "drawio" | "excalidraw", reason?: string) => Promise<void>
     /** 获取当前引擎 ID */
     getCurrentEngineId?: () => "drawio" | "excalidraw"
+    /** 获取当前画布缩略图（用于工具卡片预览） */
+    getThumbnailSvg?: () => Promise<string | null>
+    /** 获取 DrawIO 的最新 SVG（同步读取，不触发导出） */
+    getLatestSvg?: () => string
 }
 
 /**
@@ -130,6 +134,8 @@ export function useDiagramToolHandlers({
     pushExcalidrawHistory,
     onSwitchCanvas,
     getCurrentEngineId,
+    getThumbnailSvg,
+    getLatestSvg,
 }: UseDiagramToolHandlersParams) {
     /**
      * 确保当前引擎与工具所需引擎匹配
@@ -390,19 +396,21 @@ ${finalXml}
                     "[display_drawio] Success! Adding tool output with state: output-available",
                 )
             }
+            
+            // 先输出工具结果，然后异步触发导出保存历史
+            // 缩略图会在 session auto-save 时通过 buildSessionData 捕获
             addToolOutput({
                 tool: "display_drawio",
                 toolCallId: toolCall.toolCallId,
-                output: "Successfully displayed the diagram.",
+                output: {
+                    success: true,
+                    message: "Successfully displayed the diagram.",
+                },
             })
             
-            // 自动触发导出以保存到历史记录
-            // 使用 setTimeout 确保图表已完全加载到 DrawIO
+            // 延迟触发导出以保存到历史记录
             setTimeout(() => {
-                console.log('[display_drawio] Auto-exporting for history save', {
-                    timestamp: Date.now(),
-                    toolCallId: toolCall.toolCallId
-                })
+                console.log('[display_drawio] Auto-exporting for history save')
                 onExport()
             }, 100)
             
@@ -826,10 +834,29 @@ Please check cell IDs and retry, or use display_drawio to regenerate.`,
             await pushExcalidrawHistory("AI 生成")
         }
 
+        // 延迟捕获缩略图，确保图表已渲染
+        let thumbnailDataUrl: string | undefined
+        if (getThumbnailSvg && safeElements.length > 0) {
+            await new Promise(resolve => setTimeout(resolve, 300))
+            try {
+                const svg = await getThumbnailSvg()
+                if (svg) {
+                    thumbnailDataUrl = svg
+                    console.log('[display_excalidraw] Captured thumbnail SVG')
+                }
+            } catch (err) {
+                console.warn('[display_excalidraw] Failed to capture thumbnail:', err)
+            }
+        }
+
         addToolOutput({
             tool: toolCall.toolName,
             toolCallId: toolCall.toolCallId,
-            output: "Excalidraw scene displayed",
+            output: {
+                success: true,
+                message: "Excalidraw scene displayed",
+                thumbnailDataUrl,
+            },
         })
     }
 

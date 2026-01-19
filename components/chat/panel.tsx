@@ -392,6 +392,10 @@ export default function ChatPanel({
         onSwitchCanvas: switchEngine,
         // 使用 ref 而不是直接闭包 activeEngine，避免旧值被捕获导致引擎切换失效
         getCurrentEngineId: () => activeEngineRef.current as "drawio" | "excalidraw",
+        // 用于 Excalidraw 缩略图捕获
+        getThumbnailSvg,
+        // 用于 DrawIO 缩略图捕获（同步读取，不触发导出）
+        getLatestSvg: () => latestSvgRef.current,
     })
 
     // External error handler for useAgent (handles quota, network errors, etc.)

@@ -572,6 +572,18 @@ export function applyDiagramOperations(
                 `<wrapper>${op.new_xml}</wrapper>`,
                 "text/xml",
             )
+            
+            // Check for XML parse errors in new_xml
+            const newParseError = newDoc.querySelector("parsererror")
+            if (newParseError) {
+                errors.push({
+                    type: "update",
+                    cellId: op.cell_id,
+                    message: `Invalid XML in new_xml: ${newParseError.textContent?.split('\n')[0] || 'parse error'}. Check for unclosed tags or extra closing tags.`,
+                })
+                continue
+            }
+            
             const newCell = newDoc.querySelector("mxCell")
             if (!newCell) {
                 errors.push({
@@ -624,6 +636,18 @@ export function applyDiagramOperations(
                 `<wrapper>${op.new_xml}</wrapper>`,
                 "text/xml",
             )
+            
+            // Check for XML parse errors in new_xml
+            const newParseError = newDoc.querySelector("parsererror")
+            if (newParseError) {
+                errors.push({
+                    type: "add",
+                    cellId: op.cell_id,
+                    message: `Invalid XML in new_xml: ${newParseError.textContent?.split('\n')[0] || 'parse error'}. Check for unclosed tags or extra closing tags.`,
+                })
+                continue
+            }
+            
             const newCell = newDoc.querySelector("mxCell")
             if (!newCell) {
                 errors.push({
