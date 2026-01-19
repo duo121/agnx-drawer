@@ -87,6 +87,41 @@ export function getSharedTools(currentEngine?: EngineId): Record<string, any> {
 }
 
 /**
+ * 获取不带引擎限制的共享工具（用于双引擎会话）
+ * 
+ * 在双引擎模式下，AI 需要能够读取任意引擎的文档，
+ * 所以 read_file 不应该有跨引擎限制。
+ */
+export function getSharedToolsWithoutEngineRestriction(): Record<string, any> {
+    return {
+        // 文件读取工具（无引擎限制）
+        [readTool.name]: {
+            description: readTool.description,
+            inputSchema: readTool.getInputSchema(),
+            execute: readTool.execute.bind(readTool),
+        },
+        // 文件写入工具
+        [writeTool.name]: {
+            description: writeTool.description,
+            inputSchema: writeTool.getInputSchema(),
+            execute: writeTool.execute.bind(writeTool),
+        },
+        // Bash 执行工具
+        [bashTool.name]: {
+            description: bashTool.description,
+            inputSchema: bashTool.getInputSchema(),
+            execute: bashTool.execute.bind(bashTool),
+        },
+        // 画布切换工具（客户端工具）
+        [switchCanvasTool.name]: {
+            description: switchCanvasTool.description,
+            inputSchema: switchCanvasTool.getInputSchema(),
+            execute: switchCanvasTool.execute.bind(switchCanvasTool),
+        },
+    }
+}
+
+/**
  * 获取共享工具实例列表（用于需要直接访问工具实例的场景）
  */
 export function getSharedToolInstances() {
