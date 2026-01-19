@@ -35,6 +35,27 @@ function getToolParts(message: UIMessage): any[] {
     return message.parts.filter((part: any) => part.type?.startsWith("tool-"))
 }
 
+// Truncate long strings (like base64 data) in objects
+function truncateLongStrings(obj: any, maxLen = 100): any {
+    if (obj === null || obj === undefined) return obj
+    if (typeof obj === "string") {
+        // Truncate very long strings (like base64 data)
+        if (obj.length > maxLen) {
+            return obj.slice(0, maxLen) + "..."
+        }
+        return obj
+    }
+    if (Array.isArray(obj)) return obj.map(item => truncateLongStrings(item, maxLen))
+    if (typeof obj === "object") {
+        const result: any = {}
+        for (const [key, value] of Object.entries(obj)) {
+            result[key] = truncateLongStrings(value, maxLen)
+        }
+        return result
+    }
+    return obj
+}
+
 function buildMarkdown(messages: UIMessage[]): string {
     // Count messages by role
     const userCount = messages.filter(m => m.role === "user").length
@@ -82,13 +103,13 @@ function buildMarkdown(messages: UIMessage[]): string {
                         toolContent += `\n**Input:**\n\`\`\`${lang}\n${inputStr}\n\`\`\`\n`
                     }
                     
-                    // Output
+                    // Output (truncate long strings like base64)
                     if (p.output !== undefined && p.output !== null) {
                         let outputStr: string
                         if (typeof p.output === "string") {
-                            outputStr = p.output
+                            outputStr = truncateLongStrings(p.output)
                         } else if (typeof p.output === "object") {
-                            outputStr = JSON.stringify(p.output, null, 2)
+                            outputStr = JSON.stringify(truncateLongStrings(p.output), null, 2)
                         } else {
                             outputStr = String(p.output)
                         }
@@ -99,9 +120,9 @@ function buildMarkdown(messages: UIMessage[]): string {
                     if (p.result !== undefined && p.result !== null && p.result !== p.output) {
                         let resultStr: string
                         if (typeof p.result === "string") {
-                            resultStr = p.result
+                            resultStr = truncateLongStrings(p.result)
                         } else if (typeof p.result === "object") {
-                            resultStr = JSON.stringify(p.result, null, 2)
+                            resultStr = JSON.stringify(truncateLongStrings(p.result), null, 2)
                         } else {
                             resultStr = String(p.result)
                         }
