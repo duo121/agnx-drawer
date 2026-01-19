@@ -21,8 +21,8 @@ import {
     ReasoningContent,
     ReasoningTrigger,
 } from "@/components/ai-elements/reasoning"
-import { ChatLobby } from "./ChatLobby"
-import { ToolCallCard } from "./ToolCallCard"
+import { ChatLobby } from "./chat-lobby"
+import { ToolCallCard } from "./tool-call-card"
 import type { DiagramOperation, ToolPartLike } from "./types"
 import { useDictionary } from "@/hooks/use-dictionary"
 import { getApiEndpoint } from "@/shared/base-path"

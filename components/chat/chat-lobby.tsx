@@ -1,6 +1,6 @@
 "use client"
 
-import { AnimatedDemo } from "./AnimatedDemo"
+import { AnimatedDemo } from "./animated-demo"
 
 interface ChatLobbyProps {
     onPromptClick?: (prompt: string) => void
