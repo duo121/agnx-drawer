@@ -10,6 +10,7 @@ import { CheckCircle, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/shared/utils"
 import { getToolMetadata } from "@/components/chat/tool-renderers"
+import { getAssetUrl } from "@/shared/base-path"
 
 interface SharePreviewDialogProps {
     open: boolean
@@ -198,9 +199,11 @@ export function SharePreviewDialog({
                                     darkMode ? "border-slate-700" : "border-slate-200",
                                 )}
                             >
-                                <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
-                                    AI
-                                </div>
+                                <img
+                                    src={getAssetUrl("/ai-canvas-icon-color.png")}
+                                    alt="AI-Drawer"
+                                    className="h-9 w-9 rounded-lg"
+                                />
                                 <div>
                                     <div className="text-sm font-semibold">AI-Drawer</div>
                                     <div className="text-xs opacity-60">
