@@ -699,7 +699,7 @@ export function ChatMessageDisplay({
                                 {shareMode && (
                                     <button
                                         type="button"
-                                        className="mt-2 h-4 w-4 flex-shrink-0 rounded-full border border-border flex items-center justify-center bg-background"
+                                        className="mt-2 h-4 w-4 shrink-0 rounded-full border border-border flex items-center justify-center bg-background"
                                         onClick={() => onToggleMessageSelected?.(message.id)}
                                     >
                                         <span

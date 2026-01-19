@@ -1,19 +1,15 @@
 "use client"
 
-import { useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import type { UIMessage } from "ai"
 import { toPng } from "html-to-image"
 import { toast } from "sonner"
+import { createPortal } from "react-dom"
+import { CheckCircle, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
 import { cn } from "@/shared/utils"
+import { getToolMetadata } from "@/components/chat/tool-renderers"
 
 interface SharePreviewDialogProps {
     open: boolean
@@ -32,13 +28,32 @@ function getMessageText(message: UIMessage): string {
         .join("\n")
 }
 
+// Get tool parts from a message
+function getToolParts(message: UIMessage): any[] {
+    if (!message.parts) return []
+    return message.parts.filter((part: any) => part.type?.startsWith("tool-"))
+}
+
 function buildMarkdown(messages: UIMessage[]): string {
     return messages
         .map((m) => {
             const roleLabel =
                 m.role === "user" ? "User" : m.role === "assistant" ? "Assistant" : "System"
             const text = getMessageText(m)
-            return `**${roleLabel}:**\n\n${text}`
+            const toolParts = getToolParts(m)
+            let toolsText = ""
+            if (toolParts.length > 0) {
+                toolsText = toolParts
+                    .map((p: any) => {
+                        const toolName = p.type?.replace("tool-", "") || ""
+                        const metadata = getToolMetadata(toolName)
+                        const status = p.state === "output-available" ? "✅" : p.state === "output-error" ? "❌" : "⏳"
+                        return `${status} ${metadata.displayName}`
+                    })
+                    .join("\n")
+            }
+            const content = [text, toolsText].filter(Boolean).join("\n\n")
+            return `**${roleLabel}:**\n\n${content}`
         })
         .join("\n\n---\n\n")
 }
@@ -51,6 +66,15 @@ export function SharePreviewDialog({
     darkMode,
 }: SharePreviewDialogProps) {
     const previewRef = useRef<HTMLDivElement | null>(null)
+    const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null)
+
+    // Find the chat panel container for portal
+    useEffect(() => {
+        if (open) {
+            const container = document.getElementById("chat-panel-container")
+            setPortalContainer(container)
+        }
+    }, [open])
 
     const selectedMessages = useMemo(() => {
         if (!selectedIds.length) return [] as UIMessage[]
@@ -66,7 +90,7 @@ export function SharePreviewDialog({
             const dataUrl = await toPng(previewRef.current, {
                 cacheBust: true,
                 pixelRatio: 2,
-                backgroundColor: darkMode ? "#020617" : "#f9fafb",
+                backgroundColor: darkMode ? "#1e293b" : "#f8fafc",
             })
             const link = document.createElement("a")
             link.href = dataUrl
@@ -86,11 +110,10 @@ export function SharePreviewDialog({
             const dataUrl = await toPng(previewRef.current, {
                 cacheBust: true,
                 pixelRatio: 2,
-                backgroundColor: darkMode ? "#020617" : "#f9fafb",
+                backgroundColor: darkMode ? "#1e293b" : "#f8fafc",
             })
             const res = await fetch(dataUrl)
             const blob = await res.blob()
-            // Clipboard API may not be available in all environments
             if ((navigator as any).clipboard && (window as any).ClipboardItem) {
                 const item = new (window as any).ClipboardItem({ [blob.type]: blob })
                 await (navigator as any).clipboard.write([item])
@@ -133,108 +156,204 @@ export function SharePreviewDialog({
 
     const hasSelection = selectedMessages.length > 0
 
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-md">
-                <DialogHeader>
-                    <DialogTitle>分享预览</DialogTitle>
-                </DialogHeader>
-                <div className="max-h-[420px] overflow-auto py-2">
+    if (!open) return null
+
+    const dialogContent = (
+        <div className="absolute inset-0 z-50 flex items-center justify-center">
+            {/* Backdrop */}
+            <div
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                onClick={() => onOpenChange(false)}
+            />
+            {/* Dialog */}
+            <div className="relative w-full max-w-lg mx-4 bg-card border border-border rounded-2xl shadow-2xl overflow-hidden max-h-[90%] flex flex-col">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                    <h2 className="text-base font-semibold">分享预览</h2>
+                    <button
+                        type="button"
+                        onClick={() => onOpenChange(false)}
+                        className="p-1 rounded-lg hover:bg-muted transition-colors"
+                    >
+                        <X className="w-5 h-5 text-muted-foreground" />
+                    </button>
+                </div>
+
+                {/* Preview Content */}
+                <div className="flex-1 overflow-auto p-4">
                     {hasSelection ? (
                         <div
                             ref={previewRef}
                             className={cn(
-                                "mx-auto w-[360px] rounded-3xl border shadow-lg overflow-hidden",
+                                "rounded-2xl border overflow-hidden",
                                 darkMode
-                                    ? "bg-[#020617] text-slate-50 border-white/10"
-                                    : "bg-white text-slate-900 border-slate-200",
+                                    ? "bg-slate-800 text-slate-50 border-slate-700"
+                                    : "bg-slate-50 text-slate-900 border-slate-200",
                             )}
                         >
-                            <div className="px-4 py-3 border-b border-white/10 flex items-center gap-2">
-                                <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-xs font-semibold text-primary-foreground">
+                            {/* Card Header */}
+                            <div
+                                className={cn(
+                                    "px-4 py-3 border-b flex items-center gap-3",
+                                    darkMode ? "border-slate-700" : "border-slate-200",
+                                )}
+                            >
+                                <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
                                     AI
                                 </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-semibold">AI-Drawer</span>
-                                    <span className="text-[11px] opacity-70">
+                                <div>
+                                    <div className="text-sm font-semibold">AI-Drawer</div>
+                                    <div className="text-xs opacity-60">
                                         分享 {selectedMessages.length} 条对话
-                                    </span>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="px-4 py-4 space-y-3 text-sm">
+
+                            {/* Messages */}
+                            <div className="p-4 space-y-4">
                                 {selectedMessages.map((m) => {
                                     const text = getMessageText(m)
-                                    if (!text.trim()) return null
+                                    const toolParts = getToolParts(m)
                                     const isUser = m.role === "user"
+                                    const hasContent = text.trim() || toolParts.length > 0
+
+                                    if (!hasContent) return null
+
                                     return (
-                                        <div
-                                            key={m.id}
-                                            className={cn(
-                                                "flex w-full",
-                                                isUser ? "justify-end" : "justify-start",
+                                        <div key={m.id} className="space-y-2">
+                                            {/* Text content */}
+                                            {text.trim() && (
+                                                <div
+                                                    className={cn(
+                                                        "flex w-full",
+                                                        isUser ? "justify-end" : "justify-start",
+                                                    )}
+                                                >
+                                                    <div
+                                                        className={cn(
+                                                            "rounded-2xl px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words",
+                                                            isUser
+                                                                ? "bg-primary text-primary-foreground rounded-br-md max-w-[85%]"
+                                                                : cn(
+                                                                      "rounded-bl-md w-full",
+                                                                      darkMode
+                                                                          ? "bg-slate-700/50"
+                                                                          : "bg-white border border-slate-200",
+                                                                  ),
+                                                        )}
+                                                    >
+                                                        {text}
+                                                    </div>
+                                                </div>
                                             )}
-                                        >
-                                            <div
-                                                className={cn(
-                                                    "max-w-[80%] rounded-2xl px-3 py-2 leading-relaxed whitespace-pre-wrap break-words",
-                                                    isUser
-                                                        ? "bg-primary text-primary-foreground rounded-br-md"
-                                                        : "bg-black/5 text-slate-900 rounded-bl-md dark:bg-white/10 dark:text-slate-50",
-                                                )}
-                                            >
-                                                {text}
-                                            </div>
+
+                                            {/* Tool calls */}
+                                            {toolParts.map((part: any) => {
+                                                const toolCallId = part.toolCallId
+                                                const toolName = part.type?.replace("tool-", "") || ""
+                                                const metadata = getToolMetadata(toolName)
+                                                const IconComponent = metadata.icon
+                                                const isComplete = part.state === "output-available"
+                                                const previewUrl = (part.output as any)?.thumbnailDataUrl
+
+                                                return (
+                                                    <div
+                                                        key={toolCallId}
+                                                        className={cn(
+                                                            "rounded-xl border overflow-hidden",
+                                                            darkMode
+                                                                ? "bg-slate-700/30 border-slate-600"
+                                                                : "bg-white border-slate-200",
+                                                        )}
+                                                    >
+                                                        {/* Tool header */}
+                                                        <div
+                                                            className={cn(
+                                                                "flex items-center gap-2 px-3 py-2",
+                                                                darkMode ? "bg-slate-700/50" : "bg-slate-100",
+                                                            )}
+                                                        >
+                                                            {IconComponent && (
+                                                                <IconComponent className="w-4 h-4 text-primary" />
+                                                            )}
+                                                            <span className="text-xs font-medium flex-1">
+                                                                {metadata.displayName}
+                                                            </span>
+                                                            {isComplete && (
+                                                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                                            )}
+                                                        </div>
+
+                                                        {/* Tool preview image - always show if available */}
+                                                        {previewUrl && (
+                                                            <div className="p-2">
+                                                                <img
+                                                                    src={previewUrl}
+                                                                    alt="Preview"
+                                                                    className="w-full rounded-lg"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )
+                                            })}
                                         </div>
                                     )
                                 })}
                             </div>
                         </div>
                     ) : (
-                        <div className="py-8 text-center text-sm text-muted-foreground">
+                        <div className="py-12 text-center text-sm text-muted-foreground">
                             请先在对话中选择要分享的消息
                         </div>
                     )}
                 </div>
-                <DialogFooter className="flex-col sm:flex-row sm:justify-between gap-2">
-                    <div className="text-xs text-muted-foreground">
-                        图片会跟随当前主题（{darkMode ? "深色" : "浅色"}）导出
+
+                {/* Footer */}
+                <div className="px-4 py-3 border-t border-border">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <span className="text-xs text-muted-foreground">
+                            跟随主题（{darkMode ? "深色" : "浅色"}）
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                disabled={!hasSelection}
+                                onClick={handleCopyMarkdown}
+                            >
+                                复制 MD
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                disabled={!hasSelection}
+                                onClick={handleDownloadMarkdown}
+                            >
+                                下载 MD
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={!hasSelection}
+                                onClick={handleCopyImage}
+                            >
+                                复制图片
+                            </Button>
+                            <Button
+                                size="sm"
+                                disabled={!hasSelection}
+                                onClick={handleDownloadPng}
+                            >
+                                下载 PNG
+                            </Button>
+                        </div>
                     </div>
-                    <div className="flex gap-2 flex-wrap justify-end">
-                        <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={!hasSelection}
-                            onClick={handleCopyImage}
-                        >
-                            复制图片
-                        </Button>
-                        <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={!hasSelection}
-                            onClick={handleDownloadPng}
-                        >
-                            下载 PNG
-                        </Button>
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            disabled={!hasSelection}
-                            onClick={handleCopyMarkdown}
-                        >
-                            复制 Markdown
-                        </Button>
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            disabled={!hasSelection}
-                            onClick={handleDownloadMarkdown}
-                        >
-                            下载 Markdown
-                        </Button>
-                    </div>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                </div>
+            </div>
+        </div>
     )
+
+    // Portal into chat panel container, fallback to document.body
+    return createPortal(dialogContent, portalContainer || document.body)
 }
