@@ -699,15 +699,21 @@ export function ChatMessageDisplay({
                                 {shareMode && (
                                     <button
                                         type="button"
-                                        className="mt-2 h-4 w-4 shrink-0 rounded-full border border-border flex items-center justify-center bg-background"
+                                        className="self-stretch w-6 shrink-0 flex items-center justify-center hover:bg-muted/50 rounded-l-lg transition-colors -ml-2 pl-2"
                                         onClick={() => onToggleMessageSelected?.(message.id)}
                                     >
                                         <span
                                             className={cn(
-                                                "h-2.5 w-2.5 rounded-full",
-                                                isSelected ? "bg-primary" : "bg-transparent",
+                                                "h-4 w-4 shrink-0 rounded-full border-2 flex items-center justify-center transition-colors",
+                                                isSelected 
+                                                    ? "border-primary bg-primary" 
+                                                    : "border-border bg-background",
                                             )}
-                                        />
+                                        >
+                                            {isSelected && (
+                                                <Check className="h-2.5 w-2.5 text-primary-foreground" />
+                                            )}
+                                        </span>
                                     </button>
                                 )}
                                 <div
