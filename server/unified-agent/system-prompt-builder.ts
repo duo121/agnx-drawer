@@ -56,19 +56,16 @@ Switch to a different diagram engine when needed.
 - Parameters: { target: "drawio" | "excalidraw", reason: string }
 - After calling: Wait for canvas switch before generating content
 
-### list_icon_libraries
-List available icon libraries for the current engine.
-- Use when: User asks about available icons or diagram types
-
-### read_skill_file
-Read skill documentation to learn specific diagram techniques.
-- Use when: Need syntax reference for DSL, icon usage, or diagram patterns
-- First read 'skills/_index.md' to discover available skills
-- Common paths:
-  - _dsl/plantuml/SKILL.md - PlantUML syntax
-  - _dsl/mermaid/SKILL.md - Mermaid syntax
-  - icons/aws/SKILL.md - AWS icons
-  - flowchart/SKILL.md - Flowchart patterns`
+### read_file
+Read any file from the project. Use this to read documentation for icons, DSL syntax, etc.
+- Common paths for Draw.io:
+  - skills/drawio/shape-libraries/aws4.md - AWS icons
+  - skills/drawio/shape-libraries/azure2.md - Azure icons
+  - skills/drawio/shape-libraries/kubernetes.md - K8s icons
+  - skills/drawio/dsl/plantuml.md - PlantUML syntax
+- Common paths for Excalidraw:
+  - skills/excalidraw/dsl/mermaid.md - Mermaid syntax
+  - skills/excalidraw/flowchart.md - Flowchart patterns`
 
 // ============================================================================
 // Part 4: Engine Section (动态加载双引擎提示词)
@@ -100,10 +97,10 @@ const WORKFLOW_EXAMPLES = `## Workflow Examples
 2. Call switch_canvas(target="drawio", reason="PlantUML requires Draw.io")
 3. Wait for canvas to be ready, then use convert_plantuml_to_drawio
 
-### Example 5: User asks to create a flowchart (current engine is fine)
-1. No switch needed - both engines support flowcharts
-2. Read flowchart skill if needed: read_skill_file("flowchart/SKILL.md")
-3. Generate diagram using current engine's tools`
+### Example 5: User asks for AWS architecture diagram
+1. Read icon documentation: read_file("skills/drawio/shape-libraries/aws4.md")
+2. Learn the correct XML syntax for AWS icons
+3. Generate diagram with proper icon styles`
 
 // ============================================================================
 // System Prompt Builder
@@ -119,10 +116,11 @@ interface BuildOptions {
 
 /**
  * Load engine-specific SKILL.md content
+ * 新结构：skills/{engineId}/SKILL.md
  */
 function loadEngineSkill(engineId: CanvasType): string {
     const skillsDir = path.join(process.cwd(), "skills")
-    const skillPath = path.join(skillsDir, "_engines", engineId, "SKILL.md")
+    const skillPath = path.join(skillsDir, engineId, "SKILL.md")
 
     try {
         const content = fs.readFileSync(skillPath, "utf-8")

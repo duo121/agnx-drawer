@@ -47,6 +47,37 @@ const demos: Demo[] = [
             { from: "validate", to: "error", label: "否" },
         ],
     },
+    // AWS + K8s 混合架构图
+    {
+        prompt: "AWS + K8s 架构：CloudFront → API Gateway → Lambda → EKS（微服务 + Service Mesh）→ RDS/ElastiCache",
+        promptEn: "AWS + K8s: CloudFront → API Gateway → Lambda → EKS (microservices) → RDS",
+        nodes: [
+            // AWS 服务链 (y=85 居中)
+            { id: "user", x: 20, y: 75, width: 50, height: 50, label: "User", type: "circle", color: "#64748b" },
+            { id: "cf", x: 95, y: 80, width: 55, height: 40, label: "CDN", type: "rounded", color: "#f97316" },
+            { id: "apigw", x: 175, y: 80, width: 55, height: 40, label: "API GW", type: "rounded", color: "#f97316" },
+            { id: "lambda", x: 255, y: 80, width: 55, height: 40, label: "Lambda", type: "rounded", color: "#f97316" },
+            // EKS 集群 (中间区域)
+            { id: "usersvc", x: 340, y: 35, width: 65, height: 40, label: "User Svc", type: "rounded", color: "#3b82f6" },
+            { id: "ordersvc", x: 340, y: 85, width: 65, height: 40, label: "Order Svc", type: "rounded", color: "#3b82f6" },
+            { id: "paysvc", x: 340, y: 135, width: 65, height: 40, label: "Pay Svc", type: "rounded", color: "#3b82f6" },
+            // 数据层
+            { id: "rds", x: 435, y: 55, width: 55, height: 40, label: "RDS", type: "rounded", color: "#10b981" },
+            { id: "cache", x: 435, y: 115, width: 55, height: 40, label: "Cache", type: "rounded", color: "#10b981" },
+        ],
+        edges: [
+            { from: "user", to: "cf" },
+            { from: "cf", to: "apigw" },
+            { from: "apigw", to: "lambda" },
+            { from: "lambda", to: "usersvc" },
+            { from: "lambda", to: "ordersvc" },
+            { from: "lambda", to: "paysvc" },
+            { from: "usersvc", to: "rds" },
+            { from: "ordersvc", to: "rds" },
+            { from: "ordersvc", to: "cache" },
+            { from: "paysvc", to: "cache" },
+        ],
+    },
     {
         prompt: "设计一个三层架构图",
         promptEn: "Design a 3-tier architecture diagram",
@@ -105,10 +136,10 @@ const demos: Demo[] = [
 ]
 
 // Animation timing constants (in ms)
-const TYPING_SPEED = 60
-const NODE_APPEAR_DELAY = 200
-const EDGE_APPEAR_DELAY = 150
-const COMPLETE_DISPLAY_TIME = 3000
+const TYPING_SPEED = 40  // 加快打字速度以适应较长的提示词
+const NODE_APPEAR_DELAY = 180
+const EDGE_APPEAR_DELAY = 120
+const COMPLETE_DISPLAY_TIME = 3500  // 稍微增加完成后的展示时间
 const FADE_DURATION = 500
 
 interface AnimatedDemoProps {
@@ -419,16 +450,16 @@ export function AnimatedDemo({ onPromptClick, className = "" }: AnimatedDemoProp
         >
             {/* Typing prompt area */}
             <div 
-                className="mb-6 px-4 py-3 rounded-2xl bg-primary/10 border border-primary/20 cursor-pointer hover:bg-primary/15 transition-colors max-w-[90%]"
+                className="mb-5 px-4 py-2.5 rounded-2xl bg-primary/10 border border-primary/20 cursor-pointer hover:bg-primary/15 transition-colors max-w-[95%] min-h-[44px]"
                 onClick={handleClick}
                 title="点击使用此提示"
             >
-                <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-primary shrink-0" />
-                    <span className="text-sm text-foreground">
+                <div className="flex items-start gap-2">
+                    <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm text-foreground leading-relaxed">
                         {typedText}
                         {phase === "typing" && (
-                            <span className="inline-block w-0.5 h-4 bg-primary ml-0.5 animate-pulse" />
+                            <span className="inline-block w-0.5 h-4 bg-primary ml-0.5 animate-pulse align-middle" />
                         )}
                     </span>
                 </div>
@@ -436,7 +467,7 @@ export function AnimatedDemo({ onPromptClick, className = "" }: AnimatedDemoProp
 
             {/* SVG Diagram area */}
             <div 
-                className="w-full max-w-md aspect-[16/10] rounded-xl border border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden cursor-pointer hover:border-primary/30 transition-colors"
+                className="w-full max-w-lg aspect-[16/9] rounded-xl border border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden cursor-pointer hover:border-primary/30 transition-colors"
                 onClick={handleClick}
                 title="点击使用此提示"
             >

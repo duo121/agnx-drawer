@@ -1,156 +1,132 @@
+/**
+ * Skill 加载器（简化版）
+ * 
+ * 只负责加载引擎级别的 SKILL.md 文件
+ * 其他文档（shape-libraries、dsl 等）由 LLM 通过 read_file 工具按需读取
+ */
+
 import matter from 'gray-matter'
 import fs from 'fs'
 import path from 'path'
 
-export interface SkillFrontmatter {
-  name: string
-  description: string
-  engine?: 'drawio' | 'excalidraw' | 'both'
-  license?: string
-}
-
-export interface Skill {
-  id: string
-  frontmatter: SkillFrontmatter
-  content: string
-  resources: Record<string, string>
-  path: string
-}
-
 export type EngineType = 'drawio' | 'excalidraw'
 
 /**
- * 根据当前引擎过滤可用的 Skills
+ * Skill 元数据（frontmatter）
  */
-export function filterSkillsByEngine(
-  skills: Skill[],
-  currentEngine: EngineType
-): Skill[] {
-  return skills.filter(skill => {
-    const skillEngine = skill.frontmatter.engine
+export interface SkillFrontmatter {
+    name: string
+    description: string
+    engine?: EngineType
+}
 
-    // 没有指定引擎的 Skill 对所有引擎可用
-    if (!skillEngine) return true
-
-    // 明确指定 'both' 的对所有引擎可用
-    if (skillEngine === 'both') return true
-
-    // 否则必须匹配当前引擎
-    return skillEngine === currentEngine
-  })
+/**
+ * Skill 定义
+ */
+export interface Skill {
+    id: string                      // 引擎 ID，如 'drawio', 'excalidraw'
+    frontmatter: SkillFrontmatter
+    content: string                 // SKILL.md 的完整内容（不含 frontmatter）
+    path: string                    // SKILL.md 文件路径
 }
 
 /**
  * Skill 加载器
  */
 export class SkillLoader {
-  private skillsDir: string
-  private cache: Map<string, Skill> = new Map()
+    private skillsDir: string
+    private cache: Map<string, Skill> = new Map()
 
-  constructor(skillsDir: string) {
-    this.skillsDir = skillsDir
-  }
-
-  /**
-   * 加载单个 Skill
-   */
-  loadSkill(skillId: string): Skill | null {
-    if (this.cache.has(skillId)) {
-      return this.cache.get(skillId)!
+    constructor(skillsDir: string) {
+        this.skillsDir = skillsDir
     }
 
-    const skillPath = path.join(this.skillsDir, skillId)
-    const skillFile = path.join(skillPath, 'SKILL.md')
-
-    try {
-      if (!fs.existsSync(skillFile)) {
-        return null
-      }
-
-      const fileContent = fs.readFileSync(skillFile, 'utf-8')
-      const { data, content } = matter(fileContent)
-
-      const skill: Skill = {
-        id: skillId,
-        frontmatter: data as SkillFrontmatter,
-        content: content.trim(),
-        resources: this.loadResources(skillPath),
-        path: skillPath
-      }
-
-      this.cache.set(skillId, skill)
-      return skill
-    } catch (error) {
-      console.error(`[SkillLoader] Failed to load skill "${skillId}":`, error)
-      return null
-    }
-  }
-
-  /**
-   * 加载 Skill 目录下的附加资源文件
-   */
-  private loadResources(skillPath: string): Record<string, string> {
-    const resources: Record<string, string> = {}
-
-    try {
-      const files = fs.readdirSync(skillPath)
-
-      for (const file of files) {
-        if (file !== 'SKILL.md' && file.endsWith('.md')) {
-          const filePath = path.join(skillPath, file)
-          const content = fs.readFileSync(filePath, 'utf-8')
-          resources[file] = content
+    /**
+     * 加载指定引擎的 SKILL.md
+     */
+    loadEngineSkill(engineId: EngineType): Skill | null {
+        if (this.cache.has(engineId)) {
+            return this.cache.get(engineId)!
         }
-      }
-    } catch (error) {
-      console.error(`[SkillLoader] Failed to load resources from "${skillPath}":`, error)
-    }
 
-    return resources
-  }
+        const skillFile = path.join(this.skillsDir, engineId, 'SKILL.md')
 
-  /**
-   * 列出所有可用的 Skills
-   */
-  listSkills(): Skill[] {
-    const skills: Skill[] = []
+        try {
+            if (!fs.existsSync(skillFile)) {
+                console.warn(`[SkillLoader] Engine skill not found: ${skillFile}`)
+                return null
+            }
 
-    try {
-      if (!fs.existsSync(this.skillsDir)) {
-        return skills
-      }
+            const fileContent = fs.readFileSync(skillFile, 'utf-8')
+            const { data, content } = matter(fileContent)
 
-      const dirs = fs.readdirSync(this.skillsDir, { withFileTypes: true })
+            const skill: Skill = {
+                id: engineId,
+                frontmatter: data as SkillFrontmatter,
+                content: content.trim(),
+                path: skillFile
+            }
 
-      for (const dir of dirs) {
-        if (dir.isDirectory()) {
-          const skill = this.loadSkill(dir.name)
-          if (skill) {
-            skills.push(skill)
-          }
+            this.cache.set(engineId, skill)
+            return skill
+        } catch (error) {
+            console.error(`[SkillLoader] Failed to load engine skill "${engineId}":`, error)
+            return null
         }
-      }
-    } catch (error) {
-      console.error('[SkillLoader] Failed to list skills:', error)
     }
 
-    return skills
-  }
+    /**
+     * 获取引擎 SKILL.md 的内容（用于注入 system prompt）
+     */
+    getEngineSkillContent(engineId: EngineType): string {
+        const skill = this.loadEngineSkill(engineId)
+        return skill?.content || ''
+    }
 
-  /**
-   * 列出指定引擎可用的 Skills
-   */
-  listSkillsForEngine(engine: EngineType): Skill[] {
-    const allSkills = this.listSkills()
-    return filterSkillsByEngine(allSkills, engine)
-  }
+    /**
+     * 列出所有可用的引擎
+     */
+    listEngines(): EngineType[] {
+        const engines: EngineType[] = []
 
-  /**
-   * 清除缓存
-   */
-  clearCache(): void {
-    this.cache.clear()
-  }
+        try {
+            const dirs = fs.readdirSync(this.skillsDir, { withFileTypes: true })
+
+            for (const dir of dirs) {
+                if (dir.isDirectory() && !dir.name.startsWith('_')) {
+                    const skillFile = path.join(this.skillsDir, dir.name, 'SKILL.md')
+                    if (fs.existsSync(skillFile)) {
+                        engines.push(dir.name as EngineType)
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('[SkillLoader] Failed to list engines:', error)
+        }
+
+        return engines
+    }
+
+    // ============ 向后兼容方法（已废弃）============
+
+    /** @deprecated 使用 loadEngineSkill 代替 */
+    loadSkill(skillId: string): Skill | null {
+        return this.loadEngineSkill(skillId as EngineType)
+    }
+
+    /** @deprecated 不再需要 */
+    listSkills(): Skill[] {
+        return this.listEngines()
+            .map(id => this.loadEngineSkill(id))
+            .filter((s): s is Skill => s !== null)
+    }
+
+    /**
+     * 清除缓存
+     */
+    clearCache(): void {
+        this.cache.clear()
+    }
 }
 
 // 单例实例
@@ -160,19 +136,25 @@ let loaderInstance: SkillLoader | null = null
  * 获取 SkillLoader 单例
  */
 export function getSkillLoader(skillsDir?: string): SkillLoader {
-  if (!loaderInstance && skillsDir) {
-    loaderInstance = new SkillLoader(skillsDir)
-  }
-  if (!loaderInstance) {
-    throw new Error('SkillLoader not initialized. Please provide skillsDir.')
-  }
-  return loaderInstance
+    if (!loaderInstance && skillsDir) {
+        loaderInstance = new SkillLoader(skillsDir)
+    }
+    if (!loaderInstance) {
+        throw new Error('SkillLoader not initialized. Please provide skillsDir.')
+    }
+    return loaderInstance
 }
 
 /**
  * 初始化 SkillLoader
  */
 export function initSkillLoader(skillsDir: string): SkillLoader {
-  loaderInstance = new SkillLoader(skillsDir)
-  return loaderInstance
+    loaderInstance = new SkillLoader(skillsDir)
+    return loaderInstance
+}
+
+/** @deprecated 不再使用 */
+export function filterSkillsByEngine(): Skill[] {
+    console.warn('filterSkillsByEngine is deprecated')
+    return []
 }

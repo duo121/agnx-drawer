@@ -234,39 +234,6 @@ export function needsCanvasSwitch(
 }
 
 /**
- * Get skills to load based on intent
- */
-export function getSkillsToLoad(
-  intent: UserIntent,
-  currentCanvas: CanvasType
-): string[] {
-  const skills: string[] = []
-
-  // Add icon library skills (only for drawio which has rich icon support)
-  const targetCanvas = intent.canvasPreference === 'auto' ? currentCanvas : intent.canvasPreference
-
-  if (targetCanvas === 'drawio') {
-    // Map icon library keywords to skill IDs
-    for (const library of intent.requiredIconLibraries) {
-      if (['aws', 'azure', 'gcp', 'k8s', 'network'].includes(library)) {
-        skills.push(library)
-      }
-      if (library === 'flowchart') {
-        skills.push('flowchart')
-      }
-    }
-  } else if (targetCanvas === 'excalidraw') {
-    // Excalidraw has limited skills
-    skills.push('excalidraw-basics')
-    if (intent.requiredIconLibraries.includes('flowchart')) {
-      skills.push('excalidraw-flowchart')
-    }
-  }
-
-  return skills
-}
-
-/**
  * Format intent for logging/debugging
  */
 export function formatIntent(intent: UserIntent): string {

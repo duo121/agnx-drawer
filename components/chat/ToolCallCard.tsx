@@ -176,8 +176,10 @@ export function ToolCallCard({
         return "Generate Diagram";
       case "edit_drawio":
         return "Edit Diagram";
-      case "get_shape_library":
-        return "Get Shape Library";
+      case "read_file":
+        return "Read File";
+      case "switch_canvas":
+        return "Switch Canvas";
       case "convert_plantuml_to_drawio":
         return "PlantUML → Draw.io";
       case "convert_mermaid_to_excalidraw":
@@ -583,25 +585,47 @@ export function ToolCallCard({
             </div>
           );
         })()}
-      {/* Show get_shape_library output on success */}
-      {toolName === "get_shape_library" && state === "output-available" && isExpanded && (
+      {/* Show read_file output on success */}
+      {toolName === "read_file" && state === "output-available" && isExpanded && (
         <div className="px-4 py-3 border-t border-border/40">
-          <div className="text-xs text-muted-foreground mb-2">
-            Library loaded (
-            {typeof output === "string"
-              ? output.length
-              : typeof output === "object"
-                ? JSON.stringify(output).length
-                : 0}{" "}
-            chars)
+          {(() => {
+            const fileResult = output as { success?: boolean; path?: string; content?: string; lineCount?: number; error?: string } | null;
+            if (fileResult?.success) {
+              return (
+                <>
+                  <div className="text-xs text-muted-foreground mb-2 flex items-center gap-2">
+                    <Check className="w-3 h-3 text-green-600" />
+                    <span>{fileResult.path}</span>
+                    <span className="text-muted-foreground/60">({fileResult.lineCount} lines)</span>
+                  </div>
+                  <pre className="text-xs bg-muted/50 p-2 rounded-md overflow-auto max-h-40 whitespace-pre-wrap font-mono">
+                    {fileResult.content?.substring(0, 1500)}
+                    {(fileResult.content?.length || 0) > 1500 && "\n..."}
+                  </pre>
+                </>
+              );
+            }
+            return (
+              <div className="text-xs text-red-600 flex items-center gap-2">
+                <XCircle className="w-3 h-3" />
+                <span>{fileResult?.error || "Failed to read file"}</span>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+      {/* Show switch_canvas output */}
+      {toolName === "switch_canvas" && state === "output-available" && isExpanded && (
+        <div className="px-4 py-3 border-t border-border/40">
+          <div className="text-xs text-muted-foreground flex items-center gap-2">
+            <Check className="w-3 h-3 text-green-600" />
+            <span>Switching to {(input as { target?: string })?.target || "unknown"} canvas</span>
           </div>
-          <pre className="text-xs bg-muted/50 p-2 rounded-md overflow-auto max-h-32 whitespace-pre-wrap">
-            {typeof output === "string"
-              ? output.substring(0, 800) + (output.length > 800 ? "\n..." : "")
-              : typeof output === "object"
-                ? JSON.stringify(output, null, 2)
-                : String(output)}
-          </pre>
+          {(input as { reason?: string })?.reason && (
+            <div className="text-xs text-muted-foreground/70 mt-1 ml-5">
+              {(input as { reason?: string }).reason}
+            </div>
+          )}
         </div>
       )}
     </div>
