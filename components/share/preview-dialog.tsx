@@ -36,10 +36,21 @@ function getToolParts(message: UIMessage): any[] {
 }
 
 function buildMarkdown(messages: UIMessage[]): string {
-    return messages
+    // Count messages by role
+    const userCount = messages.filter(m => m.role === "user").length
+    const assistantCount = messages.filter(m => m.role === "assistant").length
+    const toolCount = messages.reduce((acc, m) => {
+        const parts = m.parts || []
+        return acc + parts.filter((p: any) => p.type?.startsWith("tool-")).length
+    }, 0)
+    
+    // Header with statistics
+    const header = `# AI-Drawer 会话分享\n\n共 ${messages.length} 条消息（用户: ${userCount}, AI: ${assistantCount}），${toolCount} 次工具调用\n`
+    
+    // Build message content
+    const content = messages
         .map((m) => {
-            const roleLabel =
-                m.role === "user" ? "User" : m.role === "assistant" ? "Assistant" : "System"
+            const roleLabel = m.role === "user" ? "User" : m.role === "assistant" ? "Assistant" : "System"
             const parts = m.parts || []
             
             // Render parts in original order
@@ -51,36 +62,62 @@ function buildMarkdown(messages: UIMessage[]): string {
                     contentParts.push((part as any).text.trim())
                 }
                 
-                // Tool part - include full details
+                // Tool part - include full input and output
                 if (part.type?.startsWith("tool-")) {
                     const p = part as any
                     const toolName = p.type?.replace("tool-", "") || ""
                     const metadata = getToolMetadata(toolName)
                     const status = p.state === "output-available" ? "✅" : p.state === "output-error" ? "❌" : "⏳"
                     
-                    let toolContent = `${status} **${metadata.displayName}**`
+                    let toolContent = `${status} **${metadata.displayName}**\n`
                     
-                    // Include input if available - show full content
+                    // Input
                     if (p.input && typeof p.input === "object" && Object.keys(p.input).length > 0) {
-                        if (p.input.code) {
-                            toolContent += `\n\n\`\`\`\n${p.input.code}\n\`\`\``
-                        } else if (p.input.xml) {
-                            toolContent += `\n\n\`\`\`xml\n${p.input.xml}\n\`\`\``
+                        const inputStr = p.input.code 
+                            ? p.input.code 
+                            : p.input.xml 
+                                ? p.input.xml 
+                                : JSON.stringify(p.input, null, 2)
+                        const lang = p.input.xml ? "xml" : p.input.code ? "" : "json"
+                        toolContent += `\n**Input:**\n\`\`\`${lang}\n${inputStr}\n\`\`\`\n`
+                    }
+                    
+                    // Output
+                    if (p.output !== undefined && p.output !== null) {
+                        let outputStr: string
+                        if (typeof p.output === "string") {
+                            outputStr = p.output
+                        } else if (typeof p.output === "object") {
+                            outputStr = JSON.stringify(p.output, null, 2)
                         } else {
-                            // Show full JSON for all inputs
-                            const inputStr = JSON.stringify(p.input, null, 2)
-                            toolContent += `\n\n\`\`\`json\n${inputStr}\n\`\`\``
+                            outputStr = String(p.output)
                         }
+                        toolContent += `\n**Output:**\n\`\`\`json\n${outputStr}\n\`\`\`\n`
+                    }
+                    
+                    // Result (if different from output)
+                    if (p.result !== undefined && p.result !== null && p.result !== p.output) {
+                        let resultStr: string
+                        if (typeof p.result === "string") {
+                            resultStr = p.result
+                        } else if (typeof p.result === "object") {
+                            resultStr = JSON.stringify(p.result, null, 2)
+                        } else {
+                            resultStr = String(p.result)
+                        }
+                        toolContent += `\n**Result:**\n\`\`\`json\n${resultStr}\n\`\`\`\n`
                     }
                     
                     contentParts.push(toolContent)
                 }
             }
             
-            const content = contentParts.join("\n\n")
-            return `**${roleLabel}:**\n\n${content}`
+            const msgContent = contentParts.join("\n\n")
+            return `## ${roleLabel}\n\n${msgContent}`
         })
         .join("\n\n---\n\n")
+    
+    return header + "\n" + content
 }
 
 export function SharePreviewDialog({
