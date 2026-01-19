@@ -1,0 +1,298 @@
+{
+  "name": "deploy-text",
+  "width": 144.2670038638718,
+  "height": 138.03850877061546,
+  "elements": [
+    {
+      "type": "line",
+      "id": "bAg9AGZq7R8IJw",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 27.586228379103545,
+      "y": 0.9932434502775322,
+      "strokeColor": "#aaa",
+      "backgroundColor": "transparent",
+      "width": 116.41346201192735,
+      "height": 117.21202429245167,
+      "seed": 1685075692,
+      "groupIds": [
+        "m4Ynk4EjYL413Q",
+        "iNv-zQwBqfJOVg"
+      ],
+      "roundness": null,
+      "boundElements": null,
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -45.41825822666448,
+          21.93317786250327
+        ],
+        [
+          -56.008758020263684,
+          73.89921309644683
+        ],
+        [
+          -23.226449164345212,
+          114.8019249876782
+        ],
+        [
+          27.771448817200238,
+          115.98170475270521
+        ],
+        [
+          60.404703991663666,
+          74.07373494971006
+        ],
+        [
+          51.975750469818365,
+          26.413023041480926
+        ],
+        [
+          0.9647884008229255,
+          -1.2303195397464606
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "YBAIypvhSKkg2w",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 28.848332931032644,
+      "y": 0,
+      "strokeColor": "#fff",
+      "backgroundColor": "#228be6",
+      "width": 115.41867093283915,
+      "height": 115.59042490744159,
+      "seed": 50593236,
+      "groupIds": [
+        "m4Ynk4EjYL413Q",
+        "iNv-zQwBqfJOVg"
+      ],
+      "roundness": null,
+      "boundElements": null,
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -46.03006519345368,
+          22.156262723714654
+        ],
+        [
+          -57.194073542612244,
+          73.85420907904887
+        ],
+        [
+          -25.59134221576342,
+          114.90340900903183
+        ],
+        [
+          25.591342215763476,
+          115.59042490744159
+        ],
+        [
+          58.224597390226904,
+          73.68245510444643
+        ],
+        [
+          46.8888350664659,
+          21.984508749112223
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "bujpLIoHBCAibg",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 27.665154224355717,
+      "y": 75.30276113322293,
+      "strokeColor": "#228be6",
+      "backgroundColor": "#fff",
+      "width": 70.66703236148203,
+      "height": 62.735747637392535,
+      "seed": 497187180,
+      "groupIds": [
+        "iNv-zQwBqfJOVg"
+      ],
+      "roundness": null,
+      "boundElements": null,
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          13.004448826885437
+        ],
+        [
+          -8.93162694154222,
+          12.43282470262676
+        ],
+        [
+          -20.435562442248596,
+          6.930942506636768
+        ],
+        [
+          -28.72411224399977,
+          -4.144274900875587
+        ],
+        [
+          -31.86804492742263,
+          -19.649579271392895
+        ],
+        [
+          -29.295736368258474,
+          -32.65402809827839
+        ],
+        [
+          -21.936075768427685,
+          -41.15693694662656
+        ],
+        [
+          -13.218807873482476,
+          -48.23078548432795
+        ],
+        [
+          -3.5011977610845406,
+          -49.7312988105071
+        ],
+        [
+          8.217096786218832,
+          -47.51625532900459
+        ],
+        [
+          17.50598880542273,
+          -43.30052741259669
+        ],
+        [
+          24.79419638972118,
+          -35.72650776616888
+        ],
+        [
+          28.36684716633806,
+          -29.724454461452524
+        ],
+        [
+          28.081035104208723,
+          -21.43590465970135
+        ],
+        [
+          38.7989874340594,
+          -20.72137450437799
+        ],
+        [
+          17.07727071222871,
+          3.3582917300198574
+        ],
+        [
+          6.859489491104426,
+          -20.22120339565157
+        ],
+        [
+          16.00547547924367,
+          -19.86393831798989
+        ],
+        [
+          13.647525966676511,
+          -29.724454461452524
+        ],
+        [
+          2.786667605761153,
+          -37.155568076815655
+        ],
+        [
+          -8.431455832815857,
+          -35.86941379723356
+        ],
+        [
+          -16.434193572437678,
+          -28.724112243999798
+        ],
+        [
+          -18.43487800734313,
+          -17.720347852019756
+        ],
+        [
+          -16.791458650099372,
+          -10.146328205591942
+        ],
+        [
+          -11.289576454109351,
+          -3.4297447455522274
+        ],
+        [
+          -1.3576072951144198,
+          -1.0003422174527827
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "id": "aagKwXCF6KsOdg",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 82.46843069535566,
+      "strokeColor": "#fff",
+      "backgroundColor": "transparent",
+      "width": 57.899932861328125,
+      "height": 25,
+      "seed": 1895252204,
+      "groupIds": [
+        "iNv-zQwBqfJOVg"
+      ],
+      "roundness": null,
+      "boundElements": null,
+      "fontSize": 20,
+      "fontFamily": 1,
+      "text": "deploy",
+      "textAlign": "center",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "deploy",
+      "lineHeight": 1.25
+    }
+  ]
+}

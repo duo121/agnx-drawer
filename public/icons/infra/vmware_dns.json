@@ -1,0 +1,93 @@
+{
+  "name": "DNS",
+  "width": 73.19664924872154,
+  "height": 108.8268602971118,
+  "elements": [
+    {
+      "type": "ellipse",
+      "id": "0KOS7g1BHwJEMg",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 38.534963593301654,
+      "strokeColor": "#228be6",
+      "backgroundColor": "#228be6",
+      "width": 73.19664924872156,
+      "height": 70.29189670381018,
+      "seed": 847564258,
+      "groupIds": [
+        "Eyd__snyXLAnQA",
+        "v7qa1MdLJQdUFA"
+      ],
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": []
+    },
+    {
+      "type": "text",
+      "id": "VRajPz7ofQJ5rQ",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 7.272220805227107,
+      "y": 57.49021548991186,
+      "strokeColor": "#ffffff",
+      "backgroundColor": "#228be6",
+      "width": 59.1171875,
+      "height": 32,
+      "seed": 1063319870,
+      "groupIds": [
+        "Eyd__snyXLAnQA",
+        "v7qa1MdLJQdUFA"
+      ],
+      "roundness": null,
+      "boundElements": [],
+      "fontSize": 28,
+      "fontFamily": 2,
+      "text": "DNS",
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "DNS",
+      "lineHeight": 1.1428571428571428
+    },
+    {
+      "type": "text",
+      "id": "jRlCD5Bjzz_-TA",
+      "fillStyle": "cross-hatch",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 5.204949492316018,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#fab005",
+      "width": 56.89598083496094,
+      "height": 35,
+      "seed": 795432482,
+      "groupIds": [
+        "v7qa1MdLJQdUFA"
+      ],
+      "roundness": null,
+      "boundElements": [],
+      "fontSize": 28,
+      "fontFamily": 1,
+      "text": "DNS",
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "DNS",
+      "lineHeight": 1.25
+    }
+  ]
+}

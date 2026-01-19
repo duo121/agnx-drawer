@@ -3,8 +3,9 @@
 import dynamic from "next/dynamic"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useEngine, EMPTY_EXCALIDRAW_SCENE, sanitizeExcalidrawElements } from "@/hooks/engines/engine-context"
+import { useIconLibrary } from "@/hooks/use-icon-library"
 
-// Use built CSS from package; min.css not published in v0.18
+// Use built CSS from package
 // Use package export map to pick correct env-specific CSS
 import "@excalidraw/excalidraw/index.css"
 
@@ -33,9 +34,12 @@ export function ExcalidrawCanvas() {
         initialDataRef,
         setExcalidrawReady,
     } = useEngine()
+    const { libraryItems, loading: libraryLoading } = useIconLibrary()
 
     // 追踪上次应用的数据版本，防止重复更新
     const lastAppliedVersionRef = useRef<number | null>(null)
+    const libraryLoadedRef = useRef(false)
+    const [apiReady, setApiReady] = useState(false)
     
     // 监听 document dark class 变化，同步到 Excalidraw
     const [theme, setTheme] = useState<"dark" | "light">(getDefaultTheme)
@@ -107,9 +111,25 @@ export function ExcalidrawCanvas() {
         excalidrawApiRef.current = api
         if (api) {
             setExcalidrawReady(true)
+            setApiReady(true)
             console.log('[ExcalidrawCanvas] API ready, theme:', theme)
         }
     }, [excalidrawApiRef, setExcalidrawReady, theme])
+
+    // 当库加载完成且 API 就绪后，更新库
+    useEffect(() => {
+        const api = excalidrawApiRef.current
+        if (!apiReady || !api || libraryLoading || libraryLoadedRef.current) return
+        if (libraryItems.length === 0) return
+        
+        libraryLoadedRef.current = true
+        console.log(`[ExcalidrawCanvas] Updating library with ${libraryItems.length} icons`)
+        api.updateLibrary({
+            libraryItems: libraryItems,
+            merge: true,
+            openLibraryMenu: false,
+        })
+    }, [apiReady, excalidrawApiRef, libraryItems, libraryLoading])
 
     const handleChange = useCallback(
         (elements: any[], appState: any, files: Record<string, any>) => {

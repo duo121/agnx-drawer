@@ -1,0 +1,285 @@
+{
+  "name": "Cloud Trace",
+  "width": 197.84290027618454,
+  "height": 244.5548172915619,
+  "elements": [
+    {
+      "type": "line",
+      "id": "0pfJGoRwmm4rhw",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 98.92145352634725,
+      "y": 118.70574558691987,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 98.92144674983739,
+      "height": 39.568584121142976,
+      "seed": 1400516503,
+      "groupIds": [
+        "y5jCR_dDuLMAOw",
+        "G6Q7QeUKENZGyg",
+        "Gz01-333lqVZJQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          98.92144674983739,
+          0
+        ],
+        [
+          98.92144674983739,
+          -39.568584121142976
+        ],
+        [
+          0,
+          -39.568584121142976
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "3Si-HltRlLjBfg",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 98.92145352634725,
+      "y": 197.84290027618408,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 98.92144674983739,
+      "height": 39.568584121142976,
+      "seed": 1546877273,
+      "groupIds": [
+        "y5jCR_dDuLMAOw",
+        "G6Q7QeUKENZGyg",
+        "Gz01-333lqVZJQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          98.92144674983739,
+          0
+        ],
+        [
+          98.92144674983739,
+          -39.568584121142976
+        ],
+        [
+          0,
+          -39.568584121142976
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "xB-V5ntE81oc0A",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 59.352869405204274,
+      "y": 197.84290027618408,
+      "strokeColor": "#000000",
+      "backgroundColor": "#669df6",
+      "width": 39.568584121142976,
+      "height": 39.568584121142976,
+      "seed": 1306404023,
+      "groupIds": [
+        "Yz-86m7Ctv5dzQ",
+        "G6Q7QeUKENZGyg",
+        "Gz01-333lqVZJQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          39.568584121142976,
+          0
+        ],
+        [
+          39.568584121142976,
+          -39.568584121142976
+        ],
+        [
+          0,
+          -39.568584121142976
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "nXNO576Zed0TMQ",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#669df6",
+      "width": 59.35286940520443,
+      "height": 39.56858073288795,
+      "seed": 571270713,
+      "groupIds": [
+        "Yz-86m7Ctv5dzQ",
+        "G6Q7QeUKENZGyg",
+        "Gz01-333lqVZJQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          59.35286940520443,
+          0
+        ],
+        [
+          59.35286940520443,
+          39.56858073288795
+        ],
+        [
+          0,
+          39.56858073288795
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "KcdMR560EP4xng",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 79.1371614657769,
+      "strokeColor": "#000000",
+      "backgroundColor": "#669df6",
+      "width": 98.9214535263474,
+      "height": 39.568584121142976,
+      "seed": 2118546903,
+      "groupIds": [
+        "Yz-86m7Ctv5dzQ",
+        "G6Q7QeUKENZGyg",
+        "Gz01-333lqVZJQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          98.9214535263474,
+          0
+        ],
+        [
+          98.9214535263474,
+          39.568584121142976
+        ],
+        [
+          0,
+          39.568584121142976
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "id": "JE5DvtrvOrNfFA",
+      "fillStyle": "hachure",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 8.422449443651203,
+      "y": 206.5548172915619,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 181,
+      "height": 38,
+      "seed": 1206236953,
+      "groupIds": [
+        "Idb-HSfF96yTSw",
+        "5aiWPq-yAUUrMA",
+        "Gz01-333lqVZJQ"
+      ],
+      "strokeSharpness": "round",
+      "boundElements": [],
+      "fontSize": 33.4285714285714,
+      "fontFamily": 2,
+      "text": "Cloud Trace",
+      "rawText": "Cloud Trace",
+      "baseline": 30,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Cloud Trace"
+    }
+  ]
+}

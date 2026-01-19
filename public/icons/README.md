@@ -1,0 +1,612 @@
+# Excalidraw Icon Library
+
+Pre-processed icons for AI-assisted diagram generation.
+
+## Statistics
+- **Total Icons:** 572
+- **Categories:** 5
+- **Generated:** 2026-01-19T19:05:16.758Z
+
+## Categories
+
+### aws
+269 icons
+
+- `aws/cloudsearch` — CloudSearch
+- `aws/emr` — EMR
+- `aws/lake_formation` — Lake Formation
+- `aws/data_lake` — Data Lake
+- `aws/kinesis` — Kinesis
+- `aws/kinesis_video_streams` — Kinesis Video Streams
+- `aws/kinesis_data_streams` — Kinesis Data Streams
+- `aws/kinesis_data_firehose` — Kinesis Data Firehose
+- `aws/kinesis_data_analytics` — Kinesis Data Analytics
+- `aws/managed_service_for_apache_flink` — Managed Service for Apache Flink
+- `aws/glue` — Glue
+- `aws/crawler` — Crawler
+- `aws/datacatalog` — DataCatalog
+- `aws/elastic_views` — Elastic Views
+- `aws/opensearch_service` — OpenSearch Service
+- `aws/redshift` — Redshift
+- `aws/quicksight` — QuickSight
+- `aws/data_pipeline` — Data Pipeline
+- `aws/managed_streaming_for_apache_kafka` — Managed Streaming for Apache Kafka
+- `aws/data_exchange` — Data Exchange
+- `aws/glue_databrew` — Glue DataBrew
+- `aws/datazone` — DataZone
+- `aws/business_data_catalog` — Business data catalog
+- `aws/athena` — Athena
+- `aws/comprehend` — Comprehend
+- `aws/elastic_inference` — Elastic Inference
+- `aws/forecast` — Forecast
+- `aws/lex` — Lex
+- `aws/personalize` — Personalize
+- `aws/polly` — Polly
+- `aws/rekognition` — Rekognition
+- `aws/sagemaker` — SageMaker
+- `aws/notebook` — Notebook
+- `aws/canvas` — Canvas
+- `aws/model` — Model
+- `aws/train` — Train
+- `aws/geospatial_ml` — Geospatial ML
+- `aws/ground_truth` — Ground Truth
+- `aws/textract` — Textract
+- `aws/transcribe` — Transcribe
+- `aws/deepcomposer` — DeepComposer
+- `aws/fraud_detector` — Fraud Detector
+- `aws/kendra` — Kendra
+- `aws/codeguru` — CodeGuru
+- `aws/devops_guru` — DevOps Guru
+- `aws/panorama` — Panorama
+- `aws/sagemaker_studio_lab` — SageMaker Studio Lab
+- `aws/comprehend_medical` — Comprehend Medical
+- `aws/codewhisperer` — CodeWhisperer
+- `aws/augmented_ai` — Augmented AI
+- `aws/amazon_bedrock` — Amazon Bedrock
+- `aws/amazon_q` — Amazon Q
+- `aws/aurora` — Aurora
+- `aws/documentdb` — DocumentDB
+- `aws/dynamodb` — DynamoDB
+- `aws/dynamodb_table` — DynamoDB Table
+- `aws/dax` — DAX
+- `aws/stream` — Stream
+- `aws/keyspaces` — Keyspaces
+- `aws/dms` — DMS
+- `aws/neptune` — Neptune
+- `aws/timestream` — Timestream
+- `aws/rds` — RDS
+- `aws/multi_az_db_cluster` — Multi-AZ DB cluster
+- `aws/memorydb_for_redis` — MemoryDB for Redis
+- `aws/elasticache` — ElastiCache
+- `aws/rds_instance` — RDS instance
+- `aws/aurora_instance` — Aurora instance
+- `aws/ebs` — EBS
+- `aws/storage_gateway` — Storage Gateway
+- `aws/efs` — EFS
+- `aws/fsx` — FSx
+- `aws/snowball` — Snowball
+- `aws/backup` — Backup
+- `aws/s3` — S3
+- `aws/glacier` — Glacier
+- `aws/managed_blockchain` — Managed Blockchain
+- `aws/quantum_ledger_database` — Quantum Ledger Database
+- `aws/ec2` — EC2
+- `aws/ami` — AMI
+- `aws/auto_scaling` — Auto scaling
+- `aws/instance` — Instance
+- `aws/db_instance` — DB Instance
+- `aws/instances` — Instances
+- `aws/spot_instance` — Spot instance
+- `aws/instance_with_cloudwatch` — Instance with CloudWatch
+- `aws/elastic_beanstalk` — Elastic Beanstalk
+- `aws/lambda` — Lambda
+- `aws/ec2_auto_scaling` — EC2 Auto Scaling
+- `aws/outposts` — Outposts
+- `aws/ec2_image_builder` — EC2 Image Builder
+- `aws/elastic_fabric_adapter` — Elastic Fabric Adapter
+- `aws/app_runner` — App Runner
+- `aws/batch` — Batch
+- `aws/eks` — EKS
+- `aws/ecr` — ECR
+- `aws/registry` — Registry
+- `aws/image` — Image
+- `aws/ecs` — ECS
+- `aws/container` — Container
+- `aws/container2` — Container2
+- `aws/task` — Task
+- `aws/service` — Service
+- `aws/eks_anywhere` — EKS Anywhere
+- `aws/fargate` — Fargate
+- `aws/sns` — SNS
+- `aws/sqs` — SQS
+- `aws/amazon_mq` — Amazon MQ
+- `aws/appsync` — AppSync
+- `aws/step_functions` — Step Functions
+- `aws/eventbridge` — EventBridge
+- `aws/event` — Event
+- `aws/rule` — Rule
+- `aws/event_bus` — Event bus
+- `aws/scheduler` — Scheduler
+- `aws/appflow` — AppFlow
+- `aws/managed_workflows_for_apache_airflow` — Managed Workflows for Apache Airflow
+- `aws/iot_analytics` — IoT Analytics
+- `aws/iot_core` — IoT Core
+- `aws/iot_greengrass` — Iot Greengrass
+- `aws/iot_sitewise` — IoT SiteWise
+- `aws/iot_expresslink` — IoT ExpressLink
+- `aws/iot_roborunner` — IoT RoboRunner
+- `aws/iot_sensor` — IoT sensor
+- `aws/iot_topic` — IoT topic
+- `aws/cloud9` — Cloud9
+- `aws/codebuild` — CodeBuild
+- `aws/codecommit` — CodeCommit
+- `aws/codedeploy` — CodeDeploy
+- `aws/codepipeline` — CodePipeline
+- `aws/aws_cli` — AWS CLI
+- `aws/tools_and_sdks` — Tools and SDKs
+- `aws/x_ray` — X-Ray
+- `aws/codeartifact` — CodeArtifact
+- `aws/cloudshell` — CloudShell
+- `aws/application_composer` — Application Composer
+- `aws/fault_injection_simulator` — Fault Injection Simulator
+- `aws/amplify` — Amplify
+- `aws/device_farm` — Device Farm
+- `aws/location_service` — Location Service
+- `aws/application_discovery_service` — Application Discovery Service
+- `aws/agentless_collector` — Agentless Collector
+- `aws/discovery_agent` — Discovery Agent
+- `aws/transfer_family` — Transfer Family
+- `aws/datasync` — DataSync
+- `aws/agent` — Agent
+- `aws/discovery` — Discovery
+- `aws/migration_hub` — Migration Hub
+- `aws/application_migration_service` — Application Migration Service
+- `aws/migration_evaluator` — Migration Evaluator
+- `aws/server_migration_service` — Server Migration Service
+- `aws/alexa_for_business` — Alexa for Business
+- `aws/chime` — Chime
+- `aws/connect` — Connect
+- `aws/ses` — SES
+- `aws/cloudwatch` — CloudWatch
+- `aws/alarm` — Alarm
+- `aws/logs` — Logs
+- `aws/dashboard` — Dashboard
+- `aws/cloudformation` — CloudFormation
+- `aws/application_auto_scaling` — Application Auto Scaling
+- `aws/config` — Config
+- `aws/license_manager` — License Manager
+- `aws/personal_health_dashboard` — Personal Health Dashboard
+- `aws/opsworks` — OpsWorks
+- `aws/cloudtrail` — CloudTrail
+- `aws/service_catalog` — Service Catalog
+- `aws/system_manager` — System Manager
+- `aws/automation` — Automation
+- `aws/documents` — Documents
+- `aws/parameter_store` — Parameter Store
+- `aws/incident_manager` — Incident Manager
+- `aws/session_manager` — Session Manager
+- `aws/well_arhitected_tool` — Well-Arhitected Tool
+- `aws/control_tower` — Control Tower
+- `aws/organizations` — Organizations
+- `aws/appconfig` — AppConfig
+- `aws/chatbot` — Chatbot
+- `aws/backint_agent` — Backint Agent
+- `aws/managed_service_for_grafana` — Managed Service for Grafana
+- `aws/managed_service_for_prometheus` — Managed Service for Prometheus
+- `aws/distro_for_open_telemetry` — Distro for Open Telemetry
+- `aws/resilience_hub` — Resilience Hub
+- `aws/cognito` — Cognito
+- `aws/guardduty` — GuardDuty
+- `aws/inspector` — Inspector
+- `aws/macie` — Macie
+- `aws/artifact` — Artifact
+- `aws/certificate_manager` — Certificate Manager
+- `aws/cloudhsm` — CloudHSM
+- `aws/directory_service` — Directory Service
+- `aws/firewall_manager` — Firewall Manager
+- `aws/iam` — IAM
+- `aws/permissions` — Permissions
+- `aws/role` — Role
+- `aws/aws_sts` — AWS STS
+- `aws/kms` — KMS
+- `aws/secrets_manager` — Secrets Manager
+- `aws/security_hub` — Security Hub
+- `aws/shield` — Shield
+- `aws/iam_identity_center` — IAM Identity Center
+- `aws/waf` — WAF
+- `aws/detective` — Detective
+- `aws/resource_access_manager` — Resource Access Manager
+- `aws/audit_manager` — Audit Manager
+- `aws/network_firewall` — Network Firewall
+- `aws/private_certificate_authority` — Private Certificate Authority
+- `aws/transit_gateway` — Transit Gateway
+- `aws/attachment` — Attachment
+- `aws/cloudfront` — CloudFront
+- `aws/edge_location` — Edge location
+- `aws/route_53` — Route 53
+- `aws/resolver` — Resolver
+- `aws/route_table` — Route table
+- `aws/vpc` — VPC
+- `aws/internet_gateway` — Internet gateway
+- `aws/vpn_gateway` — VPN gateway
+- `aws/nat_gateway` — NAT gateway
+- `aws/flow_logs` — Flow logs
+- `aws/interface_endpoint` — Interface Endpoint
+- `aws/eni` — ENI
+- `aws/nacl` — NACL
+- `aws/vpn_connection` — VPN Connection
+- `aws/peering_connection` — Peering connection
+- `aws/direct_connect` — Direct Connect
+- `aws/global_accelerator` — Global Accelerator
+- `aws/client_vpn` — Client VPN
+- `aws/site_to_site_vpn` — Site-to-Site VPN
+- `aws/elb` — ELB
+- `aws/alb` — ALB
+- `aws/nlb` — NLB
+- `aws/glb` — GLB
+- `aws/privatelink` — PrivateLink
+- `aws/api_gateway` — API Gateway
+- `aws/endpoint` — Endpoint
+- `aws/budgets` — Budgets
+- `aws/cost_usage_report` — Cost & Usage Report
+- `aws/cost_explorer` — Cost Explorer
+- `aws/saving_plans` — Saving Plans
+- `aws/support` — Support
+- `aws/aws_cloud` — AWS Cloud
+- `aws/region` — Region
+- `aws/auto_scaling_group` — Auto Scaling group
+- `aws/data_center` — Data center
+- `aws/spot_fleet` — Spot Fleet
+- `aws/ec2_contents` — EC2 contents
+- `aws/aws_account` — AWS account
+- `aws/aws_step_functions_workflow` — AWS Step Functions Workflow
+- `aws/serverless_lambda` — Lambda
+- `aws/serverless_appsync` — AppSync
+- `aws/serverless_apigateway` — APIGateway
+- `aws/serverless_dynamodb` — DynamoDB
+- `aws/serverless_aurora` — Aurora
+- `aws/serverless_eventbridge` — EventBridge
+- `aws/serverless_sqs` — SQS
+- `aws/serverless_sns` — SNS
+- `aws/serverless_s3` — S3
+- `aws/serverless_cloudfront` — CloudFront
+- `aws/serverless_ses` — SES
+- `aws/serverless_cloudwatch` — CloudWatch
+- `aws/serverless_stepfunctions` — StepFunctions
+- `aws/serverless_amplify` — Amplify
+- `aws/serverless_cognito` — Cognito
+- `aws/serverless_kinesis` — Kinesis
+- `aws/serverless_efs` — EFS
+- `aws/serverless_waf` — WAF
+- `aws/serverless_vtl_resolver` — VTL-resolver
+- `aws/serverless_javascript_resolver` — JavaScript-resolver
+- `aws/serverless_unnamed` — unnamed
+
+### gcp
+139 icons
+
+- `gcp/access_context_manager` — Access Context Manager
+- `gcp/access_transparency` — Access Transparency
+- `gcp/anthos` — Anthos
+- `gcp/anthos_service_mesh` — Anthos Service mesh
+- `gcp/anthos_service_mesh_ii` — Anthos Service Mesh II
+- `gcp/api_analytics` — API Analytics
+- `gcp/api_gateway` — API Gateway
+- `gcp/api_monetization` — API Monetization
+- `gcp/apigee_api_management` — Apigee API Management
+- `gcp/apigee_sense` — Apigee Sense
+- `gcp/app_engine` — App Engine
+- `gcp/apps_script` — Apps Script
+- `gcp/appsheet` — AppSheet
+- `gcp/artifact_registry` — Artifact Registry
+- `gcp/assured_workloads` — Assured Workloads
+- `gcp/automl` — AutoML
+- `gcp/bare_metal_solution` — Bare Metal Solution
+- `gcp/beyondcorp_enterprise` — BeyondCorp Enterprise
+- `gcp/bigquery` — Bigquery
+- `gcp/billing` — Billing
+- `gcp/binary_authorization` — Binary Authorization
+- `gcp/calendar_api` — Calendar API
+- `gcp/carrier_peering` — Carrier Peering
+- `gcp/certificate_authority_service` — Certificate Authority Service
+- `gcp/classroom_api` — Classroom API
+- `gcp/cloud_apis` — Cloud APIs
+- `gcp/cloud_armor` — Cloud Armor
+- `gcp/cloud_asset_inventory` — Cloud Asset Inventory
+- `gcp/cloud_audit_logs` — Cloud Audit Logs
+- `gcp/cloud_bigtable` — Cloud Bigtable
+- `gcp/cloud_build` — Cloud Build
+- `gcp/cloud_cdn` — Cloud CDN
+- `gcp/cloud_code` — Cloud Code
+- `gcp/composer` — Composer
+- `gcp/cloud_data_fusion` — Cloud Data Fusion
+- `gcp/cloud_data_loss_prevention` — Cloud Data Loss Prevention
+- `gcp/cloud_data_transfer` — Cloud Data Transfer
+- `gcp/cloud_debugger` — Cloud Debugger
+- `gcp/cloud_deploy` — Cloud Deploy
+- `gcp/cloud_dns` — Cloud DNS
+- `gcp/cloud_domains` — Cloud Domains
+- `gcp/cloud_endpoints` — Cloud Endpoints
+- `gcp/cloud_filestore` — Cloud Filestore
+- `gcp/cloud_firestore` — Cloud Firestore
+- `gcp/cloud_function` — Cloud Function
+- `gcp/cloud_healthcare_api` — Cloud Healthcare API
+- `gcp/cloud_iam` — Cloud IAM
+- `gcp/cloud_identity_aware_proxy` — Cloud Identity Aware Proxy
+- `gcp/cloud_ids` — Cloud IDS
+- `gcp/cloud_iot_core` — Cloud IoT Core
+- `gcp/cloud_kms` — Cloud KMS
+- `gcp/cloud_load_balancing` — Cloud Load Balancing
+- `gcp/cloud_logging` — Cloud Logging
+- `gcp/cloud_memorystore` — Cloud Memorystore
+- `gcp/cloud_monitoring` — Cloud Monitoring
+- `gcp/cloud_nat` — Cloud NAT
+- `gcp/cloud_profiler` — Cloud Profiler
+- `gcp/cloud_router` — Cloud Router
+- `gcp/cloud_run` — Cloud Run
+- `gcp/cloud_run_for_anthos` — Cloud Run for Anthos
+- `gcp/cloud_scheduler` — Cloud Scheduler
+- `gcp/cloud_sdk` — Cloud SDK
+- `gcp/cloud_shell` — Cloud Shell
+- `gcp/cloud_spanner` — Cloud Spanner
+- `gcp/cloud_sql` — Cloud SQL
+- `gcp/cloud_storage` — Cloud Storage
+- `gcp/cloud_storage_for_firebase` — Cloud Storage for Firebase
+- `gcp/cloud_tasks` — Cloud Tasks
+- `gcp/cloud_tpu` — Cloud TPU
+- `gcp/cloud_trace` — Cloud Trace
+- `gcp/cloud_translation` — Cloud Translation
+- `gcp/cloud_vision` — Cloud Vision
+- `gcp/cloud_vpn` — Cloud VPN
+- `gcp/compute_engine` — Compute Engine
+- `gcp/console` — Console
+- `gcp/contact_center_api` — Contact Center API
+- `gcp/container_analysis` — Container Analysis
+- `gcp/container_registry` — Container Registry
+- `gcp/data_catalog` — Data Catalog
+- `gcp/data_studio` — Data Studio
+- `gcp/database_migration_service` — Database Migration Service
+- `gcp/dataflow` — Dataflow
+- `gcp/dataplex` — Dataplex
+- `gcp/dataprep` — Dataprep
+- `gcp/dataproc` — Dataproc
+- `gcp/datastream` — Datastream
+- `gcp/dedicated_interconnect` — Dedicated Interconnect
+- `gcp/deployment_manager` — Deployment Manager
+- `gcp/dialogflow` — Dialogflow
+- `gcp/docs_api` — Docs API
+- `gcp/document_ai` — Document AI
+- `gcp/drive_api` — Drive API
+- `gcp/error_reporting` — Error Reporting
+- `gcp/event_threat_detection` — Event Threat Detection
+- `gcp/eventarc` — Eventarc
+- `gcp/firebase` — Firebase
+- `gcp/gke` — GKE
+- `gcp/gmail_api` — Gmail API
+- `gcp/google_chats_api` — Google Chats API
+- `gcp/google_cloud_game_servers` — Google Cloud Game Servers
+- `gcp/healthcare_natural_language_ai` — Healthcare Natural Language AI
+- `gcp/identity_platform` — Identity Platform
+- `gcp/local_ssd` — Local SSD
+- `gcp/managed_service_for_microsoft` — Managed Service for Microsoft
+- `gcp/maps_sdk` — Maps SDK
+- `gcp/marketplace` — Marketplace
+- `gcp/migrate_for_compute_engine` — Migrate for Compute Engine
+- `gcp/network_connectivity_center` — Network Connectivity Center
+- `gcp/network_intelligence_center` — Network Intelligence Center
+- `gcp/network_service_tiers` — Network Service Tiers
+- `gcp/operations_suite` — Operations Suite
+- `gcp/packet_mirroring` — Packet Mirroring
+- `gcp/partner_interconnect` — Partner Interconnect
+- `gcp/people_api` — People API
+- `gcp/persistent_disk` — Persistent Disk
+- `gcp/private_service_connect` — Private Service Connect
+- `gcp/pub_sub` — Pub Sub
+- `gcp/recaptcha_enterprise` — reCAPTCHA Enterprise
+- `gcp/recommendations_ai` — Recommendations AI
+- `gcp/risk_manager` — Risk Manager
+- `gcp/secret_manager` — Secret Manager
+- `gcp/security_key_enforcement` — Security Key Enforcement
+- `gcp/service_directory` — Service Directory
+- `gcp/sheets_api` — Sheets API
+- `gcp/shielded_vms` — Shielded VMs
+- `gcp/slides_api` — Slides API
+- `gcp/speech_to_text` — Speech to Text
+- `gcp/text_to_speech` — Text to Speech
+- `gcp/traffic_director` — Traffic Director
+- `gcp/transfer_appliance` — Transfer Appliance
+- `gcp/vault_api` — Vault API
+- `gcp/vertex_ai` — Vertex AI
+- `gcp/video_intelligence_api` — Video Intelligence API
+- `gcp/virtual_private_cloud` — Virtual Private Cloud
+- `gcp/vision_product_search` — Vision Product Search
+- `gcp/vm_manager` — VM Manager
+- `gcp/vmware_engine` — VMware Engine
+- `gcp/web_security_scanner` — Web Security Scanner
+- `gcp/workflows` — Workflows
+
+### kubernetes
+74 icons
+
+- `kubernetes/ns` — ns
+- `kubernetes/ns_text` — ns-text
+- `kubernetes/pod` — pod
+- `kubernetes/pod_text` — pod-text
+- `kubernetes/rs` — rs
+- `kubernetes/rs_text` — rs-text
+- `kubernetes/deploy` — deploy
+- `kubernetes/deploy_text` — deploy-text
+- `kubernetes/ds` — ds
+- `kubernetes/ds_text` — ds-text
+- `kubernetes/sts` — sts
+- `kubernetes/sts_text` — sts-text
+- `kubernetes/cron` — cron
+- `kubernetes/cron_text` — cron-text
+- `kubernetes/cronjob` — cronjob
+- `kubernetes/cronjob_text` — cronjob-text
+- `kubernetes/ing` — ing
+- `kubernetes/ing_text` — ing-text
+- `kubernetes/svc` — svc
+- `kubernetes/svc_text` — svc-text
+- `kubernetes/ep` — ep
+- `kubernetes/ep_text` — ep-text
+- `kubernetes/cm` — cm
+- `kubernetes/cm_text` — cm-text
+- `kubernetes/secret` — secret
+- `kubernetes/secret_text` — secret-text
+- `kubernetes/pv` — pv
+- `kubernetes/pv_text` — pv-text
+- `kubernetes/pvc` — pvc
+- `kubernetes/pvc_text` — pvc-text
+- `kubernetes/sc` — sc
+- `kubernetes/sc_text` — sc-text
+- `kubernetes/quota` — quota
+- `kubernetes/quota_text` — quota-text
+- `kubernetes/limits` — limits
+- `kubernetes/limits_text` — limits-text
+- `kubernetes/hpa` — hpa
+- `kubernetes/hpa_text` — hpa-text
+- `kubernetes/netpol` — netpol
+- `kubernetes/netpol_text` — netpol-text
+- `kubernetes/crd` — crd
+- `kubernetes/crd_text` — crd-text
+- `kubernetes/psp` — psp
+- `kubernetes/psp_text` — psp-text
+- `kubernetes/pdb` — pdb
+- `kubernetes/pdb_text` — pdb-text
+- `kubernetes/sa` — sa
+- `kubernetes/sa_text` — sa-text
+- `kubernetes/user` — user
+- `kubernetes/user_text` — user-text
+- `kubernetes/group` — group
+- `kubernetes/group_text` — group-text
+- `kubernetes/role` — role
+- `kubernetes/role_text` — role-text
+- `kubernetes/c_role` — c.role
+- `kubernetes/c_role_text` — c.role-text
+- `kubernetes/crb` — crb
+- `kubernetes/crb_text` — crb-text
+- `kubernetes/rb` — rb
+- `kubernetes/rb_text` — rb-text
+- `kubernetes/kubernetes` — kubernetes
+- `kubernetes/vol_text` — vol-text
+- `kubernetes/kubelet_text` — kubelet-text
+- `kubernetes/api_text` — api-text
+- `kubernetes/c_m_text` — c-m-text
+- `kubernetes/sched_text` — sched-text
+- `kubernetes/k_proxy_text` — k-proxy-text
+- `kubernetes/c_cm_text` — c-cm-text
+- `kubernetes/master` — master
+- `kubernetes/master_text` — master-text
+- `kubernetes/node` — node
+- `kubernetes/node_text` — node-text
+- `kubernetes/etcd` — etcd
+- `kubernetes/etcd_text` — etcd-text
+
+### infra
+57 icons
+
+- `infra/network_computer_w_keyboard_3d` — Computer w/ keyboard (3D)
+- `infra/network_computer_w_keyboard_and_mouse_3d` — Computer w/ keyboard and mouse (3D)
+- `infra/network_computer_3d` — Computer (3D)
+- `infra/network_vpn` — VPN
+- `infra/network_firewall` — Firewall
+- `infra/network_server` — Server
+- `infra/network_switch` — Switch
+- `infra/network_hub` — Hub
+- `infra/network_router` — Router
+- `infra/network_client` — Client
+- `infra/vmware_carbon_black` — Carbon Black
+- `infra/vmware_nat_rules` — NAT Rules
+- `infra/vmware_nsx_edge_node` — NSX Edge node
+- `infra/vmware_cloud_network` — Cloud Network
+- `infra/vmware_router` — Router
+- `infra/vmware_nsx_tier_sr` — NSX Tier SR
+- `infra/vmware_nsx_tier_dr` — NSX Tier DR
+- `infra/vmware_desktop` — Desktop
+- `infra/vmware_shield` — Shield
+- `infra/vmware_key` — Key
+- `infra/vmware_lock` — Lock
+- `infra/vmware_dns` — DNS
+- `infra/vmware_vpn` — VPN
+- `infra/vmware_load_balancer` — Load Balancer
+- `infra/vmware_storage_0` — Storage 0%
+- `infra/vmware_storage_33` — Storage 33%
+- `infra/vmware_storage_67` — Storage 67%
+- `infra/vmware_storage_100` — Storage 100%
+- `infra/vmware_database` — Database
+- `infra/vmware_datacenter` — Datacenter
+- `infra/vmware_building` — Building
+- `infra/vmware_cluster` — Cluster
+- `infra/vmware_host` — Host
+- `infra/vmware_rack_of_servers` — Rack of servers
+- `infra/vmware_baremetal` — Baremetal
+- `infra/vmware_cloud` — Cloud
+- `infra/vmware_tag` — Tag
+- `infra/vmware_namespace` — Namespace
+- `infra/vmware_vapp` — vApp
+- `infra/vmware_firewall` — Firewall
+- `infra/vmware_object_storage` — Object Storage
+- `infra/vmware_docker` — Docker
+- `infra/vmware_kubernetes` — Kubernetes
+- `infra/vmware_tanzu` — Tanzu
+- `infra/vmware_vra_aria_automation` — vRA Aria automation
+- `infra/vmware_vro_orchetrator` — vRO Orchetrator
+- `infra/vmware_network_insight` — Network Insight
+- `infra/vmware_log_insight` — Log Insight
+- `infra/vmware_nsx_alb_service_engine` — NSX-ALB Service Engine
+- `infra/vmware_nsx_alb_controller` — NSX-ALB Controller
+- `infra/vmware_nsx_manager` — NSX Manager
+- `infra/vmware_vcenter` — vcenter
+- `infra/vmware_cloud_director` — Cloud Director
+- `infra/vmware_esxi` — ESXi
+- `infra/vmware_trunk` — Trunk
+- `infra/vmware_vapp_with_2_vms` — vApp with 2 VMs
+- `infra/vmware_nsx_edge` — NSX Edge
+
+### data
+33 icons
+
+- `data/scala` — Scala
+- `data/alluxio` — Alluxio
+- `data/databricks` — Databricks
+- `data/oracle` — Oracle
+- `data/cassandra` — Cassandra
+- `data/jupyter` — Jupyter
+- `data/seldon_core` — Seldon Core
+- `data/mlflow` — MLflow
+- `data/schema_registry` — Schema Registry
+- `data/kafka` — Kafka
+- `data/elasticsearch` — Elasticsearch
+- `data/datahub` — DataHub
+- `data/powerbi` — PowerBI
+- `data/metabase` — Metabase
+- `data/superset` — Superset
+- `data/dbt` — dbt
+- `data/duckdb` — DuckDB
+- `data/dagster` — Dagster
+- `data/airflow` — Airflow
+- `data/airbyte` — Airbyte
+- `data/delta_lake` — Delta Lake
+- `data/iceberg` — Iceberg
+- `data/parquet` — Parquet
+- `data/avro` — Avro
+- `data/s3_bucket` — S3 Bucket
+- `data/ceph` — Ceph
+- `data/minio` — MinIO
+- `data/hadoop` — Hadoop
+- `data/hive` — Hive
+- `data/kyuubi` — Kyuubi
+- `data/impala` — Impala
+- `data/trino` — Trino
+- `data/spark` — Spark
+
+## Usage
+
+### For AI (via $icon placeholder)
+```json
+{"$icon": "aws/lambda", "x": 100, "y": 200}
+```
+
+### For UI (library panel)
+The `library.excalidrawlib` file can be loaded into Excalidraw's library panel for manual drag-and-drop.

@@ -1,0 +1,252 @@
+{
+  "name": "ESXi",
+  "width": 76.10325865006655,
+  "height": 103.62750701437716,
+  "elements": [
+    {
+      "type": "rectangle",
+      "id": "nQoYJ0ffhDrASw",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 33.41263060161555,
+      "strokeColor": "#15aabf",
+      "backgroundColor": "#15aabf",
+      "width": 76.10325865006655,
+      "height": 70.21487641276161,
+      "seed": 1223491479,
+      "groupIds": [
+        "N3UBDNYEaJP7gQ",
+        "Xnl1O8gJuV8J2A"
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": []
+    },
+    {
+      "type": "rectangle",
+      "id": "xn2zJUSot8NNvA",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 8.369092541313648,
+      "y": 38.03537672497464,
+      "strokeColor": "#1864ab",
+      "backgroundColor": "transparent",
+      "width": 40.48093840110589,
+      "height": 41.89799895688916,
+      "seed": 1209379161,
+      "groupIds": [
+        "N3UBDNYEaJP7gQ",
+        "Xnl1O8gJuV8J2A"
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": []
+    },
+    {
+      "type": "rectangle",
+      "id": "v7acZV2OY4CvKw",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 19.691505519673683,
+      "y": 51.46155961679381,
+      "strokeColor": "#15aabf",
+      "backgroundColor": "#15aabf",
+      "width": 44.28802857442599,
+      "height": 40.773083463032464,
+      "seed": 745993399,
+      "groupIds": [
+        "N3UBDNYEaJP7gQ",
+        "Xnl1O8gJuV8J2A"
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": []
+    },
+    {
+      "type": "rectangle",
+      "id": "ONABNc3EPQP04A",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 22.902253350286173,
+      "y": 54.80819310944503,
+      "strokeColor": "#1864ab",
+      "backgroundColor": "transparent",
+      "width": 40.48093840110589,
+      "height": 41.89799895688916,
+      "seed": 841553465,
+      "groupIds": [
+        "N3UBDNYEaJP7gQ",
+        "Xnl1O8gJuV8J2A"
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": []
+    },
+    {
+      "type": "rectangle",
+      "id": "lMmC0NiZQsPdzg",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 34.26516049874431,
+      "y": 65.77693417556065,
+      "strokeColor": "#15aabf",
+      "backgroundColor": "#15aabf",
+      "width": 36.393499978072896,
+      "height": 33.50510871406672,
+      "seed": 826623447,
+      "groupIds": [
+        "N3UBDNYEaJP7gQ",
+        "Xnl1O8gJuV8J2A"
+      ],
+      "roundness": null,
+      "boundElements": []
+    },
+    {
+      "type": "rectangle",
+      "id": "nSm7_CUxgv8zYA",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 57.31205799291206,
+      "y": 68.85717272689794,
+      "strokeColor": "#ffffff",
+      "backgroundColor": "transparent",
+      "width": 12.086415246777195,
+      "height": 11.3224864034305,
+      "seed": 1694230297,
+      "groupIds": [
+        "N3UBDNYEaJP7gQ",
+        "Xnl1O8gJuV8J2A"
+      ],
+      "roundness": null,
+      "boundElements": []
+    },
+    {
+      "type": "ellipse",
+      "id": "7aV4wozNy3cYEw",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 37.151772647463986,
+      "y": 69.16897291908458,
+      "strokeColor": "#ffffff",
+      "backgroundColor": "transparent",
+      "width": 12.460637498432394,
+      "height": 12.081787330467577,
+      "seed": 1718383351,
+      "groupIds": [
+        "N3UBDNYEaJP7gQ",
+        "Xnl1O8gJuV8J2A"
+      ],
+      "roundness": null,
+      "boundElements": []
+    },
+    {
+      "type": "rectangle",
+      "id": "MBaF-tHouVc5vQ",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 3.133150665914263,
+      "x": 37.24726841517895,
+      "y": 88.32155642938756,
+      "strokeColor": "#ffffff",
+      "backgroundColor": "transparent",
+      "width": 12.086415246777195,
+      "height": 11.3224864034305,
+      "seed": 1526832121,
+      "groupIds": [
+        "N3UBDNYEaJP7gQ",
+        "Xnl1O8gJuV8J2A"
+      ],
+      "roundness": null,
+      "boundElements": []
+    },
+    {
+      "type": "ellipse",
+      "id": "9x7a4WWaI8bzXg",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 3.133150665914263,
+      "x": 56.90628470533875,
+      "y": 87.70415700713761,
+      "strokeColor": "#ffffff",
+      "backgroundColor": "transparent",
+      "width": 12.500584854130079,
+      "height": 11.797054924430444,
+      "seed": 74513431,
+      "groupIds": [
+        "N3UBDNYEaJP7gQ",
+        "Xnl1O8gJuV8J2A"
+      ],
+      "roundness": null,
+      "boundElements": []
+    },
+    {
+      "type": "text",
+      "id": "_3BWl8oXR6WqCw",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 13.79151806438199,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#fa5252",
+      "width": 41.97996520996094,
+      "height": 25,
+      "seed": 1194112695,
+      "groupIds": [
+        "Xnl1O8gJuV8J2A"
+      ],
+      "roundness": null,
+      "boundElements": [],
+      "fontSize": 20,
+      "fontFamily": 1,
+      "text": "ESXi",
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "ESXi",
+      "lineHeight": 1.25
+    }
+  ]
+}

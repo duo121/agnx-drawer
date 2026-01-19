@@ -1,0 +1,200 @@
+{
+  "name": "Lambda",
+  "width": 102.40595503063054,
+  "height": 92.34378445538209,
+  "elements": [
+    {
+      "type": "rectangle",
+      "id": "Q9vsEl7v3PeppA",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 20.474619754859305,
+      "y": 0,
+      "strokeColor": "#00000000",
+      "backgroundColor": "#fd7e14",
+      "width": 64.46115236495699,
+      "height": 64.39942473426015,
+      "seed": 191175543,
+      "groupIds": [
+        "fJPmjC3PD6j-HQ",
+        "Ysq9v72EXTe3jg",
+        "5YiXHdZtUTqmLA"
+      ],
+      "roundness": null,
+      "boundElements": []
+    },
+    {
+      "type": "rectangle",
+      "id": "zloJ-AtmLzwZww",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 18.064227880183353,
+      "y": 4.760010558965064,
+      "strokeColor": "#000000",
+      "backgroundColor": "#fd7e14",
+      "width": 64.46115236495699,
+      "height": 64.39942473426015,
+      "seed": 173099257,
+      "groupIds": [
+        "PwRQ30vMfWrg-A",
+        "Ysq9v72EXTe3jg",
+        "5YiXHdZtUTqmLA"
+      ],
+      "roundness": null,
+      "boundElements": []
+    },
+    {
+      "type": "line",
+      "id": "06Xp9BAjIJ6pDg",
+      "fillStyle": "cross-hatch",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 43.055435430630496,
+      "y": 31.537040054907038,
+      "strokeColor": "#ffffff",
+      "backgroundColor": "transparent",
+      "width": 19.307143399999998,
+      "height": 26.897,
+      "seed": 1962843927,
+      "groupIds": [
+        "UHKtpNWepfeBww",
+        "Ysq9v72EXTe3jg",
+        "5YiXHdZtUTqmLA"
+      ],
+      "roundness": null,
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -12.730345799999998,
+          25.466
+        ],
+        [
+          -0.5178580999999962,
+          26.897
+        ],
+        [
+          6.576797599999999,
+          13.180999999999997
+        ],
+        [
+          0.8992804999999997,
+          0.5640000000000001
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "g7Q9SvPLhfqdlg",
+      "fillStyle": "cross-hatch",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 67.54215563063053,
+      "y": 47.43404005490697,
+      "strokeColor": "#ffffff",
+      "backgroundColor": "transparent",
+      "width": 34.863799400000005,
+      "height": 44,
+      "seed": 1460650457,
+      "groupIds": [
+        "UHKtpNWepfeBww",
+        "Ysq9v72EXTe3jg",
+        "5YiXHdZtUTqmLA"
+      ],
+      "roundness": null,
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -14.960123300000012,
+          -32.42
+        ],
+        [
+          -29.1743317,
+          -33
+        ],
+        [
+          -30.178179700000005,
+          -23.001
+        ],
+        [
+          -22.897294200000005,
+          -22
+        ],
+        [
+          -7.866463500000002,
+          10.421999999999997
+        ],
+        [
+          3.689738799999993,
+          11
+        ],
+        [
+          4.685619699999997,
+          1.0000000000000002
+        ],
+        [
+          3.6897387999999935,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "id": "Gcf2cJOrGeHoew",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 2,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 72.34378445538209,
+      "strokeColor": "#000000",
+      "backgroundColor": "#e64980",
+      "width": 99,
+      "height": 20,
+      "seed": 384420439,
+      "groupIds": [
+        "5YiXHdZtUTqmLA"
+      ],
+      "roundness": null,
+      "boundElements": [],
+      "fontSize": 16,
+      "fontFamily": 1,
+      "text": "AWS Lambda",
+      "textAlign": "center",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "AWS Lambda",
+      "lineHeight": 1.25,
+      "baseline": 14
+    }
+  ]
+}

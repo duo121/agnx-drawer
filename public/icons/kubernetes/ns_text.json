@@ -1,0 +1,184 @@
+{
+  "name": "ns-text",
+  "width": 142.93963353050322,
+  "height": 116.97494820298286,
+  "elements": [
+    {
+      "type": "line",
+      "id": "O5cwlHLtOxGvsw",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 27.520962597664067,
+      "y": 1.3845232955412712,
+      "strokeColor": "#aaa",
+      "backgroundColor": "transparent",
+      "width": 115.41867093283915,
+      "height": 115.59042490744159,
+      "seed": 1051600084,
+      "groupIds": [
+        "62TUJb1dDxFZqA",
+        "BwjpdZz5z2M2yw"
+      ],
+      "roundness": null,
+      "boundElements": null,
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -46.03006519345368,
+          22.156262723714654
+        ],
+        [
+          -57.194073542612244,
+          73.85420907904887
+        ],
+        [
+          -25.59134221576342,
+          114.90340900903183
+        ],
+        [
+          25.591342215763476,
+          115.59042490744159
+        ],
+        [
+          58.224597390226904,
+          73.68245510444643
+        ],
+        [
+          46.8888350664659,
+          21.984508749112223
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "G67nWeKssCFYJQ",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 26.199237103445796,
+      "y": 0,
+      "strokeColor": "#fff",
+      "backgroundColor": "#228be6",
+      "width": 115.41867093283915,
+      "height": 115.59042490744159,
+      "seed": 1716666988,
+      "groupIds": [
+        "62TUJb1dDxFZqA",
+        "BwjpdZz5z2M2yw"
+      ],
+      "roundness": null,
+      "boundElements": null,
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -46.03006519345368,
+          22.156262723714654
+        ],
+        [
+          -57.194073542612244,
+          73.85420907904887
+        ],
+        [
+          -25.59134221576342,
+          114.90340900903183
+        ],
+        [
+          25.591342215763476,
+          115.59042490744159
+        ],
+        [
+          58.224597390226904,
+          73.68245510444643
+        ],
+        [
+          46.8888350664659,
+          21.984508749112223
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "rectangle",
+      "id": "CDT7tk2QM4XSyg",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "dotted",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 33.676041986635184,
+      "strokeColor": "#fff",
+      "backgroundColor": "#228be6",
+      "width": 53.09542871702132,
+      "height": 47.31768975719534,
+      "seed": 280652372,
+      "groupIds": [
+        "62TUJb1dDxFZqA",
+        "BwjpdZz5z2M2yw"
+      ],
+      "roundness": null,
+      "boundElements": null
+    },
+    {
+      "type": "text",
+      "id": "9SUZG3UEbwHVCg",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 14.785201290523332,
+      "y": 80.65261581880839,
+      "strokeColor": "#fff",
+      "backgroundColor": "transparent",
+      "width": 20.199981689453125,
+      "height": 25,
+      "seed": 1043797228,
+      "groupIds": [
+        "BwjpdZz5z2M2yw"
+      ],
+      "roundness": null,
+      "boundElements": null,
+      "fontSize": 20,
+      "fontFamily": 1,
+      "text": "ns",
+      "textAlign": "center",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "ns",
+      "lineHeight": 1.25
+    }
+  ]
+}

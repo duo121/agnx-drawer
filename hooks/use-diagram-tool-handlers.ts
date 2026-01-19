@@ -4,6 +4,7 @@ import {
     convertPlantUMLToDrawio,
     encodePlantUML,
 } from "@/shared/script-convertor"
+import { resolveIconPlaceholders, hasIconPlaceholders } from "@/shared/excalidraw-icon-resolver"
 
 const DEBUG = process.env.NODE_ENV === "development"
 
@@ -796,7 +797,15 @@ Please check cell IDs and retry, or use display_drawio to regenerate.`,
         }
 
         const { elements = [], appState, files } = toolCall.input as any
-        const safeElements = ensureExcalidrawElements(elements || [])
+        
+        // Resolve $icon placeholders if present
+        let resolvedElements = elements || []
+        if (hasIconPlaceholders(resolvedElements)) {
+            console.log(`[handleDisplayExcalidraw] Resolving ${resolvedElements.filter((e: any) => e?.$icon).length} icon placeholders`)
+            resolvedElements = await resolveIconPlaceholders(resolvedElements)
+        }
+        
+        const safeElements = ensureExcalidrawElements(resolvedElements)
         await setExcalidrawScene({
             elements: safeElements,
             appState,

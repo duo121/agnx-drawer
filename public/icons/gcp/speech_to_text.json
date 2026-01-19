@@ -1,0 +1,283 @@
+{
+  "name": "Speech to Text",
+  "width": 243,
+  "height": 248.08333361148834,
+  "elements": [
+    {
+      "type": "line",
+      "id": "f3b_WtVGLqZl2A",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 111.41666907072158,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 20.16666907072063,
+      "height": 201.66667087376078,
+      "seed": 180014873,
+      "groupIds": [
+        "YFM9jN923CWoqg",
+        "geX3sHCiX3O7dw"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          20.16666907072063,
+          0
+        ],
+        [
+          20.16666907072063,
+          201.66667087376078
+        ],
+        [
+          0,
+          201.66667087376078
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "3l2AZ4HlXBqHsQ",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 71.08333814144135,
+      "y": 60.50000180304028,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 20.166661858558612,
+      "height": 80.6666690707205,
+      "seed": 779094775,
+      "groupIds": [
+        "YFM9jN923CWoqg",
+        "geX3sHCiX3O7dw"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          20.166661858558612,
+          0
+        ],
+        [
+          20.166661858558612,
+          80.6666690707205
+        ],
+        [
+          0,
+          80.6666690707205
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "etgthvSQWxs3Og",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 151.7500000000009,
+      "y": 60.50000180304028,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 20.16667628288265,
+      "height": 80.6666690707205,
+      "seed": 950240249,
+      "groupIds": [
+        "YFM9jN923CWoqg",
+        "geX3sHCiX3O7dw"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          20.16667628288265,
+          0
+        ],
+        [
+          20.16667628288265,
+          80.6666690707205
+        ],
+        [
+          0,
+          80.6666690707205
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "3_u1Kn8RyuCA3g",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 30.75,
+      "y": 30.250001803039822,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 20.16666907072063,
+      "height": 141.1666690707204,
+      "seed": 943821847,
+      "groupIds": [
+        "YFM9jN923CWoqg",
+        "geX3sHCiX3O7dw"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          20.16666907072063,
+          0
+        ],
+        [
+          20.16666907072063,
+          141.1666690707204
+        ],
+        [
+          0,
+          141.1666690707204
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "5Wmf6nhV_5Z4Ag",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 192.08333814144135,
+      "y": 30.250001803039822,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 20.166661858558612,
+      "height": 141.1666690707204,
+      "seed": 358784217,
+      "groupIds": [
+        "YFM9jN923CWoqg",
+        "geX3sHCiX3O7dw"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          20.166661858558612,
+          0
+        ],
+        [
+          20.166661858558612,
+          141.1666690707204
+        ],
+        [
+          0,
+          141.1666690707204
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "id": "7Q2DbSagqQS65w",
+      "fillStyle": "hachure",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 206.08333361148834,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 243,
+      "height": 42,
+      "seed": 1564801335,
+      "groupIds": [
+        "xQyNZ1quZjjs7w",
+        "3cxUt_TeUhYXCQ",
+        "VSQIykJqZq0b8g",
+        "fbswxlUREW8W3w",
+        "ToGkXFj1ydYxkA",
+        "geX3sHCiX3O7dw"
+      ],
+      "strokeSharpness": "round",
+      "boundElements": [],
+      "fontSize": 35.99999999999998,
+      "fontFamily": 2,
+      "text": "Speech-to-Text",
+      "rawText": "Speech-to-Text",
+      "baseline": 33,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Speech-to-Text"
+    }
+  ]
+}

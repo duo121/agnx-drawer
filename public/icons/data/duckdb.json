@@ -1,0 +1,136 @@
+{
+  "name": "DuckDB",
+  "width": 227.13057182376633,
+  "height": 47.25220650414826,
+  "elements": [
+    {
+      "type": "ellipse",
+      "id": "k6t9Gl-IGOaH6w",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#000000",
+      "width": 41.65134876230392,
+      "height": 41.65134876230392,
+      "seed": 1305870643,
+      "groupIds": [
+        "nGMh8ah-CGVsgg"
+      ],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": []
+    },
+    {
+      "type": "line",
+      "id": "2TRxwMNcATxhsQ",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 47.92763594666667,
+      "y": 13.007269917282201,
+      "strokeColor": "#000000",
+      "backgroundColor": "#000000",
+      "width": 17.199337641961968,
+      "height": 14.907986534152162,
+      "seed": 57732339,
+      "groupIds": [
+        "nGMh8ah-CGVsgg"
+      ],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          8.881784197001252e-16,
+          14.528992154457459
+        ],
+        [
+          10.865991803718911,
+          14.798091278033057
+        ],
+        [
+          14.235238725213156,
+          13.70779395181089
+        ],
+        [
+          16.486985576044432,
+          11.240527426005649
+        ],
+        [
+          17.163330943145365,
+          8.190737358814872
+        ],
+        [
+          17.199337641961968,
+          5.5073522386370275
+        ],
+        [
+          16.427185770805092,
+          3.239942956656967
+        ],
+        [
+          13.967713280722668,
+          0.9213891044066811
+        ],
+        [
+          10.260125355902519,
+          -0.10989525611910267
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "id": "dDk0WdwrLbgW4w",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 83.51875541751633,
+      "y": 0.5406748271121842,
+      "strokeColor": "#000000",
+      "backgroundColor": "#000000",
+      "width": 143.61181640625,
+      "height": 46.71153167703612,
+      "seed": 493613115,
+      "groupIds": [
+        "nGMh8ah-CGVsgg"
+      ],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "fontSize": 37.3692253416289,
+      "fontFamily": 1,
+      "text": "DuckDB",
+      "textAlign": "center",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "DuckDB",
+      "lineHeight": 1.25,
+      "baseline": 32
+    }
+  ]
+}

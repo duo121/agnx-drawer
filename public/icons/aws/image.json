@@ -1,0 +1,180 @@
+{
+  "name": "Image",
+  "width": 58.86000061035156,
+  "height": 70.79220307174569,
+  "elements": [
+    {
+      "type": "rectangle",
+      "index": "c1aE",
+      "id": "6OpVHlHUNaAVGQ",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 7.980452560432241,
+      "y": 0,
+      "strokeColor": "#f08c00",
+      "backgroundColor": "transparent",
+      "width": 42.89909548948708,
+      "height": 42.89909548948708,
+      "seed": 2088390099,
+      "groupIds": [
+        "ZPJyaBQ3IfcblQ",
+        "Fqr2jMCbcMARiQ"
+      ],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": []
+    },
+    {
+      "type": "ellipse",
+      "index": "c1aF",
+      "id": "Q0rBRr3bRqeZuw",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 21.22870263806817,
+      "y": 11.986511975003623,
+      "strokeColor": "#f08c00",
+      "backgroundColor": "transparent",
+      "width": 7.885863141449818,
+      "height": 7.885863141449818,
+      "seed": 1408411581,
+      "groupIds": [
+        "ZPJyaBQ3IfcblQ",
+        "Fqr2jMCbcMARiQ"
+      ],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": []
+    },
+    {
+      "type": "line",
+      "index": "c1aG",
+      "id": "NaMpN7YKuEGMaQ",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 8.61132161174828,
+      "y": 30.91258351448323,
+      "strokeColor": "#f08c00",
+      "backgroundColor": "transparent",
+      "width": 24.288458475665493,
+      "height": 14.825422705925803,
+      "seed": 3934451,
+      "groupIds": [
+        "ZPJyaBQ3IfcblQ",
+        "Fqr2jMCbcMARiQ"
+      ],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          8.516732192765858,
+          -7.885863141449818
+        ],
+        [
+          24.288458475665493,
+          6.939559564475985
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "index": "c1aH",
+      "id": "Nmp3eSujn3A1GQ",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 24.698482420305936,
+      "y": 29.96627993750917,
+      "strokeColor": "#f08c00",
+      "backgroundColor": "transparent",
+      "width": 25.865631103955593,
+      "height": 13.248250077635703,
+      "seed": 2007115261,
+      "groupIds": [
+        "ZPJyaBQ3IfcblQ",
+        "Fqr2jMCbcMARiQ"
+      ],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          12.93281555197791,
+          -12.617381026319663
+        ],
+        [
+          25.865631103955593,
+          0.63086905131604
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "index": "c1aI",
+      "id": "JPh183f7HxzPNg",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 46.79220307174569,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 58.86000061035156,
+      "height": 24,
+      "seed": 1574298355,
+      "groupIds": [
+        "BVneY9uWBSGh-g",
+        "w3jJNm05GZ4zHQ",
+        "Fqr2jMCbcMARiQ"
+      ],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "fontSize": 20,
+      "fontFamily": 1,
+      "text": "Image",
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Image",
+      "autoResize": true,
+      "lineHeight": 1.2
+    }
+  ]
+}

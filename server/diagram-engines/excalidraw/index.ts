@@ -9,6 +9,6 @@ export const ExcalidrawEngine: DiagramEngine = {
     dataFormat: "json",
     getSystemPrompt: (modelId?: string, minimalStyle?: boolean, canvasTheme?: string) =>
         getExcalidrawSystemPrompt(modelId, minimalStyle, canvasTheme),
-    getTools: () => mergeWithSharedTools(getExcalidrawTools()),
+    getTools: () => mergeWithSharedTools(getExcalidrawTools(), "excalidraw"),
     supportedExports: ["json", "png", "svg"],
 }

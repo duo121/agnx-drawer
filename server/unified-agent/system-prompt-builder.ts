@@ -32,18 +32,22 @@ You are inside a web-based diagram editor. The interface has:
 Before creating or editing diagrams, analyze the user's request to determine:
 
 1. **Canvas preference**: Does the user explicitly request a specific engine?
-   - Draw.io keywords: "draw.io", "drawio", "professional", "icons", "PlantUML", "专业"
+   - Draw.io keywords: "draw.io", "drawio", "PlantUML", "专业"
    - Excalidraw keywords: "excalidraw", "hand-drawn", "sketch", "whiteboard", "Mermaid", "手绘", "草图", "白板"
 
 2. **DSL preference**: Is the user providing or requesting DSL code?
-   - PlantUML: @startuml/@enduml, /plantuml, "用 PlantUML", "PlantUML 画" → requires Draw.io
-   - Mermaid: flowchart TD, sequenceDiagram, /mermaid, "用 Mermaid", "Mermaid 画", "用mermaid" → requires Excalidraw
+   - PlantUML: @startuml/@enduml, /plantuml → requires Draw.io
+   - Mermaid: flowchart TD, sequenceDiagram, /mermaid → requires Excalidraw
 
-3. **Icon requirements**: Does the diagram need specific icon libraries?
-   - Cloud: AWS, Azure, GCP keywords
-   - Infrastructure: Kubernetes, network, Cisco keywords
+3. **Icon support**: BOTH engines support cloud icons (AWS, GCP, K8s, etc.)
+   - Draw.io: Uses mxgraph shape styles (read skills/drawio/shape-libraries/*.md)
+   - Excalidraw: Uses $icon placeholder syntax (see SKILL.md Icon Library section)
+   - **DO NOT switch canvas just for icons** - use the current engine's icon system
 
-**IMPORTANT**: If the current canvas doesn't match the requirement, you MUST call switch_canvas tool FIRST before generating any diagram content. The switch_canvas tool will wait until the new canvas is ready.`
+**IMPORTANT**: Only call switch_canvas when:
+- User explicitly requests a different engine
+- User wants to use PlantUML (requires Draw.io) or Mermaid (requires Excalidraw)
+- Do NOT switch just because the diagram has cloud/tech icons`
 
 // ============================================================================
 // Part 3: Shared Tools (~150 tokens, fixed)
@@ -58,14 +62,12 @@ Switch to a different diagram engine when needed.
 
 ### read_file
 Read any file from the project. Use this to read documentation for icons, DSL syntax, etc.
-- Common paths for Draw.io:
-  - skills/drawio/shape-libraries/aws4.md - AWS icons
-  - skills/drawio/shape-libraries/azure2.md - Azure icons
-  - skills/drawio/shape-libraries/kubernetes.md - K8s icons
-  - skills/drawio/dsl/plantuml.md - PlantUML syntax
-- Common paths for Excalidraw:
-  - skills/excalidraw/dsl/mermaid.md - Mermaid syntax
-  - skills/excalidraw/flowchart.md - Flowchart patterns`
+
+**IMPORTANT**: Use paths for the CURRENT active engine only!
+- Draw.io icon paths: skills/drawio/shape-libraries/*.md
+- Excalidraw icon paths: skills/excalidraw/icons/index.json (use $icon placeholder syntax)
+
+See each engine's reference section below for specific usage.`
 
 // ============================================================================
 // Part 4: Engine Section (动态加载双引擎提示词)
@@ -77,30 +79,24 @@ Read any file from the project. Use this to read documentation for icons, DSL sy
 // ============================================================================
 const WORKFLOW_EXAMPLES = `## Workflow Examples
 
-### Example 1: User requests AWS architecture diagram (on Excalidraw)
-1. Recognize "AWS" keyword → need Draw.io for icons
-2. Call switch_canvas(target="drawio", reason="AWS icons require Draw.io")
-3. Wait for canvas to be ready, then use display_drawio to create diagram
-
-### Example 2: User says "用 Mermaid 画一个流程图" (on Draw.io)
+### Example 1: User says "用 Mermaid 画一个流程图" (on Draw.io)
 1. Recognize "Mermaid" keyword → need Excalidraw
 2. Call switch_canvas(target="excalidraw", reason="Mermaid requires Excalidraw")
 3. Wait for canvas to be ready, then use convert_mermaid_to_excalidraw
 
-### Example 3: User provides Mermaid code directly (on Draw.io)
-1. Detect Mermaid syntax (flowchart TD, graph LR, sequenceDiagram, etc.)
-2. Call switch_canvas(target="excalidraw", reason="Mermaid code detected")
-3. Wait for canvas to be ready, then use convert_mermaid_to_excalidraw
-
-### Example 4: User says "用 PlantUML 画时序图" (on Excalidraw)
+### Example 2: User says "用 PlantUML 画时序图" (on Excalidraw)
 1. Recognize "PlantUML" keyword → need Draw.io
 2. Call switch_canvas(target="drawio", reason="PlantUML requires Draw.io")
 3. Wait for canvas to be ready, then use convert_plantuml_to_drawio
 
-### Example 5: User asks for AWS architecture diagram
-1. Read icon documentation: read_file("skills/drawio/shape-libraries/aws4.md")
-2. Learn the correct XML syntax for AWS icons
-3. Generate diagram with proper icon styles`
+### Example 3: AWS diagram on Draw.io
+1. Read icon docs: read_file("skills/drawio/shape-libraries/aws4.md")
+2. Generate XML with proper mxgraph.aws4 shape styles
+
+### Example 4: AWS diagram on Excalidraw
+1. Do NOT read any files - use the color-coded shape patterns from SKILL.md directly
+2. Use styled rectangles/ellipses with service-specific colors
+3. Example: AWS Compute uses strokeColor #f59e0b, backgroundColor #fef3c7`
 
 // ============================================================================
 // System Prompt Builder

@@ -1,0 +1,135 @@
+{
+  "name": "Macie",
+  "width": 64.46115236495689,
+  "height": 93.53623753118154,
+  "elements": [
+    {
+      "type": "text",
+      "index": "c1Sy",
+      "id": "1J7lrp2gN1LXJw",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 5.22057595359729,
+      "y": 69.53623753118154,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 54.02000045776367,
+      "height": 24,
+      "seed": 1654437687,
+      "groupIds": [
+        "g8cdFeOmpVl3mQ"
+      ],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "fontSize": 20,
+      "fontFamily": 1,
+      "text": "Macie",
+      "textAlign": "center",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Macie",
+      "autoResize": true,
+      "lineHeight": 1.2
+    },
+    {
+      "type": "rectangle",
+      "index": "c1Sz",
+      "id": "9Mr2JP4Zm0qTIA",
+      "fillStyle": "cross-hatch",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#e6498088",
+      "width": 64.46115236495699,
+      "height": 64.39942473426015,
+      "seed": 1385085015,
+      "groupIds": [
+        "3ctdaQDiG57m8A",
+        "g8cdFeOmpVl3mQ"
+      ],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": []
+    },
+    {
+      "type": "line",
+      "index": "c1T0",
+      "id": "9omUUhT0oBX3aA",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 4.879531607455192,
+      "y": 41.4370344553754,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 54.53117065337267,
+      "height": 21.909845351801522,
+      "seed": 853775735,
+      "groupIds": [
+        "3ctdaQDiG57m8A",
+        "g8cdFeOmpVl3mQ"
+      ],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          11.928693580425271,
+          -20.205746268883622
+        ],
+        [
+          26.778699874424074,
+          1.7040990829178981
+        ],
+        [
+          40.65493526389837,
+          -19.9623035427525
+        ],
+        [
+          54.53117065337267,
+          1.7040990829178981
+        ],
+        [
+          30.673783492522126,
+          -14.850006293998803
+        ],
+        [
+          18.501647185965727,
+          0.97377090452451
+        ],
+        [
+          12.415579032687528,
+          -8.277052688458358
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    }
+  ]
+}

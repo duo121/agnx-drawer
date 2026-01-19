@@ -1,0 +1,296 @@
+{
+  "name": "Cloud Firestore",
+  "width": 245.12500007040893,
+  "height": 229.4351859940416,
+  "elements": [
+    {
+      "type": "line",
+      "id": "EMWpFLn43u9qPg",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 163.4166667136053,
+      "y": 63.55093027324176,
+      "strokeColor": "#000000",
+      "backgroundColor": "#669df6",
+      "width": 81.70833335680364,
+      "height": 72.62963830861872,
+      "seed": 406026551,
+      "groupIds": [
+        "qte06c2p8b-T0Q",
+        "EWTMyetMomSrxQ",
+        "yWabN7ZPyDDBFA"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -81.70833335680362,
+          -36.3148191543094
+        ],
+        [
+          -81.70833335680362,
+          0
+        ],
+        [
+          0,
+          36.314819154309326
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "q89fk_qXrYuphg",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 163.4166667136053,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#669df6",
+      "width": 81.70833335680364,
+      "height": 72.62963343842252,
+      "seed": 1371871673,
+      "groupIds": [
+        "qte06c2p8b-T0Q",
+        "EWTMyetMomSrxQ",
+        "yWabN7ZPyDDBFA"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -81.70833335680362,
+          -36.31481428411318
+        ],
+        [
+          -81.70833335680362,
+          0
+        ],
+        [
+          0,
+          36.31481915430933
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "AMhUAN2tMoyLrA",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#aecbfa",
+      "width": 81.70833335680364,
+      "height": 72.62963343842252,
+      "seed": 1811757655,
+      "groupIds": [
+        "rcxztfEr9bKQqQ",
+        "EWTMyetMomSrxQ",
+        "yWabN7ZPyDDBFA"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          81.70833335680364,
+          -36.31481428411318
+        ],
+        [
+          81.70833335680364,
+          0
+        ],
+        [
+          0,
+          36.31481915430933
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "3a5YfAzMH2lH0w",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 63.55093027324176,
+      "strokeColor": "#000000",
+      "backgroundColor": "#aecbfa",
+      "width": 81.70833335680364,
+      "height": 72.62963830861872,
+      "seed": 1229683353,
+      "groupIds": [
+        "4NafeUdqMSu_sA",
+        "EWTMyetMomSrxQ",
+        "yWabN7ZPyDDBFA"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          81.70833335680364,
+          -36.3148191543094
+        ],
+        [
+          81.70833335680364,
+          0
+        ],
+        [
+          0,
+          36.314819154309326
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "4ueDA87vHws8Fw",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 81.70833335680186,
+      "y": 108.94444447573653,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 71.54018191564664,
+      "height": 49.932874713776634,
+      "seed": 1597101943,
+      "groupIds": [
+        "14e4RkDbvSzH8w",
+        "EWTMyetMomSrxQ",
+        "yWabN7ZPyDDBFA"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          30.59523478035789,
+          -13.618055559467276
+        ],
+        [
+          71.54018191564664,
+          4.539360511282304
+        ],
+        [
+          0,
+          36.31481915430936
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "id": "1qAGHkf-mMnCMQ",
+      "fillStyle": "hachure",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 10.583333380272052,
+      "y": 147.43518599404172,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 142,
+      "height": 82,
+      "seed": 1192411001,
+      "groupIds": [
+        "OjgEelixf4ZfCw",
+        "yWabN7ZPyDDBFA"
+      ],
+      "strokeSharpness": "round",
+      "boundElements": [],
+      "fontSize": 35.62781954887215,
+      "fontFamily": 2,
+      "text": "Cloud \nFirestore",
+      "rawText": "Cloud \nFirestore",
+      "baseline": 73,
+      "textAlign": "center",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Cloud \nFirestore"
+    }
+  ]
+}

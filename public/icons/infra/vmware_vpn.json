@@ -1,0 +1,93 @@
+{
+  "name": "VPN",
+  "width": 73.19664924872154,
+  "height": 107.88673141334289,
+  "elements": [
+    {
+      "type": "ellipse",
+      "id": "_JGH7kP68WkS7A",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 37.59483470953273,
+      "strokeColor": "#228be6",
+      "backgroundColor": "#228be6",
+      "width": 73.19664924872156,
+      "height": 70.29189670381018,
+      "seed": 506773922,
+      "groupIds": [
+        "Sgp7gRX-wosexQ",
+        "vUXgZcQHTKMd4A"
+      ],
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": []
+    },
+    {
+      "type": "text",
+      "id": "lt0yQTBnl3uV1Q",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 8.60553271641038,
+      "y": 57.24557035609223,
+      "strokeColor": "#ffffff",
+      "backgroundColor": "#228be6",
+      "width": 57.572265625,
+      "height": 32,
+      "seed": 497754494,
+      "groupIds": [
+        "Sgp7gRX-wosexQ",
+        "vUXgZcQHTKMd4A"
+      ],
+      "roundness": null,
+      "boundElements": [],
+      "fontSize": 28,
+      "fontFamily": 2,
+      "text": "VPN",
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "VPN",
+      "lineHeight": 1.1428571428571428
+    },
+    {
+      "type": "text",
+      "id": "LuzhgWRwlOZIww",
+      "fillStyle": "cross-hatch",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 10.938799463179066,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#fab005",
+      "width": 51.0159912109375,
+      "height": 35,
+      "seed": 649249058,
+      "groupIds": [
+        "vUXgZcQHTKMd4A"
+      ],
+      "roundness": null,
+      "boundElements": [],
+      "fontSize": 28,
+      "fontFamily": 1,
+      "text": "VPN",
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "VPN",
+      "lineHeight": 1.25
+    }
+  ]
+}

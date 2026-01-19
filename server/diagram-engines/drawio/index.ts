@@ -9,6 +9,6 @@ export const DrawioEngine: DiagramEngine = {
     dataFormat: "xml",
     getSystemPrompt: (modelId?: string, minimalStyle?: boolean, canvasTheme?: string) =>
         getSystemPrompt(modelId, minimalStyle),
-    getTools: () => mergeWithSharedTools(getDrawioTools()),
+    getTools: () => mergeWithSharedTools(getDrawioTools(), "drawio"),
     supportedExports: ["drawio", "svg", "png"],
 }

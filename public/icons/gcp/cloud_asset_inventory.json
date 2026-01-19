@@ -1,0 +1,232 @@
+{
+  "name": "Cloud Asset Inventory",
+  "width": 310.991350300131,
+  "height": 281.70578604990374,
+  "elements": [
+    {
+      "type": "line",
+      "id": "UrW_fAHstc2EVw",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 114.71639100796801,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 196.27495929216295,
+      "height": 196.27497450510674,
+      "seed": 321626551,
+      "groupIds": [
+        "u_ngD84DEBAcBA",
+        "g2xOWxjMQvQyYQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -11.905345562767309,
+          11.86456346366256
+        ],
+        [
+          74.57143167310797,
+          98.13748344931741
+        ],
+        [
+          0,
+          172.70892272889725
+        ],
+        [
+          -74.57144688605175,
+          98.13748344931741
+        ],
+        [
+          -38.97775269182813,
+          62.50301856569691
+        ],
+        [
+          -50.72000789053596,
+          50.71999267759216
+        ],
+        [
+          -98.13749105578931,
+          98.13748344931741
+        ],
+        [
+          0,
+          196.27497450510674
+        ],
+        [
+          98.13746823637364,
+          98.13748344931741
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "O4Cr-CJ-puusEw",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 90.41645160967346,
+      "y": 119.7057181997759,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 43.13645428797351,
+      "height": 43.1364695009173,
+      "seed": 1075951929,
+      "groupIds": [
+        "u_ngD84DEBAcBA",
+        "g2xOWxjMQvQyYQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -21.56822714398676,
+          -21.56823475045865
+        ],
+        [
+          0,
+          -43.1364695009173
+        ],
+        [
+          21.568227143986746,
+          -21.56823475045865
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "53KbFcjoRiF43g",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 65.09722215703732,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 196.23418456182785,
+      "height": 196.27497450510674,
+      "seed": 383537879,
+      "groupIds": [
+        "u_ngD84DEBAcBA",
+        "g2xOWxjMQvQyYQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -98.13747940837925,
+          98.13748344931741
+        ],
+        [
+          0,
+          196.27497450510674
+        ],
+        [
+          11.742255198707866,
+          184.49194101053007
+        ],
+        [
+          -74.5714373779619,
+          98.13748344931741
+        ],
+        [
+          0,
+          23.56604416973756
+        ],
+        [
+          74.57143927957986,
+          98.13748344931741
+        ],
+        [
+          38.936974395959325,
+          133.77195593940982
+        ],
+        [
+          50.71999267759216,
+          145.51418831870203
+        ],
+        [
+          98.0967051534486,
+          98.13748344931741
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "id": "-hiOiPnJDQFR_w",
+      "fillStyle": "hachure",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 205.70578604990374,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 178,
+      "height": 76,
+      "seed": 300427801,
+      "groupIds": [
+        "zm3a47LdyCe3og",
+        "uLsPA4hMwneK9A",
+        "g2xOWxjMQvQyYQ"
+      ],
+      "strokeSharpness": "round",
+      "boundElements": [],
+      "fontSize": 33.4285714285714,
+      "fontFamily": 2,
+      "text": "Cloud Asset\nInventory",
+      "rawText": "Cloud Asset\nInventory",
+      "baseline": 68,
+      "textAlign": "center",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Cloud Asset\nInventory"
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "name": "Access Context Manager",
+  "width": 289.6745071121245,
+  "height": 346.81939672870146,
+  "elements": [
+    {
+      "type": "line",
+      "id": "uL867VSPeGFThw",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 121.3605611864466,
+      "y": 122.4007914606999,
+      "strokeColor": "#000000",
+      "backgroundColor": "#aecbfa",
+      "width": 168.31394592567793,
+      "height": 224.41860526800158,
+      "seed": 1527348343,
+      "groupIds": [
+        "gOsZW3NpV2faEQ",
+        "E4Oh8PTxh9OUBw"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -81.70346871838987,
+          -81.56621590224209
+        ],
+        [
+          0,
+          -163.269684620632
+        ],
+        [
+          40.8345755584578,
+          -122.40079146069986
+        ],
+        [
+          56.104645270523974,
+          -137.6708682086659
+        ],
+        [
+          0,
+          -193.77551655739606
+        ],
+        [
+          -112.20930065515395,
+          -81.56621590224209
+        ],
+        [
+          0,
+          30.643088710605525
+        ],
+        [
+          56.104645270523974,
+          -25.461570631718132
+        ],
+        [
+          40.8345755584578,
+          -40.73164034378429
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "GN54D8un3pIWWQ",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 192.73529024083678,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 40.834575558457765,
+      "height": 81.66915111691553,
+      "seed": 1370745465,
+      "groupIds": [
+        "gOsZW3NpV2faEQ",
+        "E4Oh8PTxh9OUBw"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          40.834575558457765,
+          40.834575558457765
+        ],
+        [
+          0,
+          81.66915111691553
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "Gac90e6-DxeTPA",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 121.36056118644706,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#669df6",
+      "width": 40.834575558457765,
+      "height": 81.66915111691553,
+      "seed": 1135662487,
+      "groupIds": [
+        "gOsZW3NpV2faEQ",
+        "E4Oh8PTxh9OUBw"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          40.834575558457765,
+          40.834575558457765
+        ],
+        [
+          0,
+          81.66915111691553
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "id": "oSNvpCavjZKosQ",
+      "fillStyle": "hachure",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 160.92965514972417,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 241,
+      "height": 76,
+      "seed": 748827481,
+      "groupIds": [
+        "32j6YG-Uis-8nA",
+        "ttMwqKKseOSXzA",
+        "E4Oh8PTxh9OUBw"
+      ],
+      "strokeSharpness": "round",
+      "boundElements": [],
+      "fontSize": 33.4285714285714,
+      "fontFamily": 2,
+      "text": "Access Context \nManager",
+      "rawText": "Access Context \nManager",
+      "baseline": 68,
+      "textAlign": "center",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Access Context \nManager"
+    }
+  ]
+}

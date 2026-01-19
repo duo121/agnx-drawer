@@ -1,0 +1,4020 @@
+{
+  "categories": {
+    "aws": [
+      {
+        "name": "cloudsearch",
+        "displayName": "CloudSearch",
+        "width": 117,
+        "height": 89,
+        "elementCount": 6
+      },
+      {
+        "name": "emr",
+        "displayName": "EMR",
+        "width": 64,
+        "height": 92,
+        "elementCount": 15
+      },
+      {
+        "name": "lake_formation",
+        "displayName": "Lake Formation",
+        "width": 149,
+        "height": 91,
+        "elementCount": 15
+      },
+      {
+        "name": "data_lake",
+        "displayName": "Data Lake",
+        "width": 104,
+        "height": 70,
+        "elementCount": 11
+      },
+      {
+        "name": "kinesis",
+        "displayName": "Kinesis",
+        "width": 106,
+        "height": 93,
+        "elementCount": 8
+      },
+      {
+        "name": "kinesis_video_streams",
+        "displayName": "Kinesis Video Streams",
+        "width": 142,
+        "height": 117,
+        "elementCount": 10
+      },
+      {
+        "name": "kinesis_data_streams",
+        "displayName": "Kinesis Data Streams",
+        "width": 145,
+        "height": 117,
+        "elementCount": 18
+      },
+      {
+        "name": "kinesis_data_firehose",
+        "displayName": "Kinesis Data Firehose",
+        "width": 142,
+        "height": 116,
+        "elementCount": 14
+      },
+      {
+        "name": "kinesis_data_analytics",
+        "displayName": "Kinesis Data Analytics",
+        "width": 151,
+        "height": 118,
+        "elementCount": 12
+      },
+      {
+        "name": "managed_service_for_apache_flink",
+        "displayName": "Managed Service for Apache Flink",
+        "width": 161,
+        "height": 113,
+        "elementCount": 7
+      },
+      {
+        "name": "glue",
+        "displayName": "Glue",
+        "width": 64,
+        "height": 91,
+        "elementCount": 11
+      },
+      {
+        "name": "crawler",
+        "displayName": "Crawler",
+        "width": 106,
+        "height": 74,
+        "elementCount": 21
+      },
+      {
+        "name": "datacatalog",
+        "displayName": "DataCatalog",
+        "width": 131,
+        "height": 75,
+        "elementCount": 9
+      },
+      {
+        "name": "elastic_views",
+        "displayName": "Elastic Views",
+        "width": 127,
+        "height": 91,
+        "elementCount": 15
+      },
+      {
+        "name": "opensearch_service",
+        "displayName": "OpenSearch Service",
+        "width": 120,
+        "height": 114,
+        "elementCount": 11
+      },
+      {
+        "name": "redshift",
+        "displayName": "Redshift",
+        "width": 82,
+        "height": 92,
+        "elementCount": 11
+      },
+      {
+        "name": "quicksight",
+        "displayName": "QuickSight",
+        "width": 108,
+        "height": 92,
+        "elementCount": 11
+      },
+      {
+        "name": "data_pipeline",
+        "displayName": "Data Pipeline",
+        "width": 132,
+        "height": 90,
+        "elementCount": 15
+      },
+      {
+        "name": "managed_streaming_for_apache_kafka",
+        "displayName": "Managed Streaming for Apache Kafka",
+        "width": 186,
+        "height": 115,
+        "elementCount": 12
+      },
+      {
+        "name": "data_exchange",
+        "displayName": "Data Exchange",
+        "width": 152,
+        "height": 91,
+        "elementCount": 11
+      },
+      {
+        "name": "glue_databrew",
+        "displayName": "Glue DataBrew",
+        "width": 153,
+        "height": 92,
+        "elementCount": 11
+      },
+      {
+        "name": "datazone",
+        "displayName": "DataZone",
+        "width": 101,
+        "height": 89,
+        "elementCount": 11
+      },
+      {
+        "name": "business_data_catalog",
+        "displayName": "Business data catalog",
+        "width": 144,
+        "height": 108,
+        "elementCount": 15
+      },
+      {
+        "name": "athena",
+        "displayName": "Athena",
+        "width": 68,
+        "height": 93,
+        "elementCount": 9
+      },
+      {
+        "name": "comprehend",
+        "displayName": "Comprehend",
+        "width": 108,
+        "height": 93,
+        "elementCount": 16
+      },
+      {
+        "name": "elastic_inference",
+        "displayName": "Elastic Inference",
+        "width": 169,
+        "height": 93,
+        "elementCount": 23
+      },
+      {
+        "name": "forecast",
+        "displayName": "Forecast",
+        "width": 104,
+        "height": 93,
+        "elementCount": 7
+      },
+      {
+        "name": "lex",
+        "displayName": "Lex",
+        "width": 83,
+        "height": 93,
+        "elementCount": 12
+      },
+      {
+        "name": "personalize",
+        "displayName": "Personalize",
+        "width": 109,
+        "height": 93,
+        "elementCount": 9
+      },
+      {
+        "name": "polly",
+        "displayName": "Polly",
+        "width": 65,
+        "height": 93,
+        "elementCount": 21
+      },
+      {
+        "name": "rekognition",
+        "displayName": "Rekognition",
+        "width": 105,
+        "height": 94,
+        "elementCount": 9
+      },
+      {
+        "name": "sagemaker",
+        "displayName": "SageMaker",
+        "width": 104,
+        "height": 94,
+        "elementCount": 20
+      },
+      {
+        "name": "notebook",
+        "displayName": "Notebook",
+        "width": 88,
+        "height": 91,
+        "elementCount": 13
+      },
+      {
+        "name": "canvas",
+        "displayName": "Canvas",
+        "width": 77,
+        "height": 83,
+        "elementCount": 17
+      },
+      {
+        "name": "model",
+        "displayName": "Model",
+        "width": 75,
+        "height": 87,
+        "elementCount": 22
+      },
+      {
+        "name": "train",
+        "displayName": "Train",
+        "width": 59,
+        "height": 81,
+        "elementCount": 10
+      },
+      {
+        "name": "geospatial_ml",
+        "displayName": "Geospatial ML",
+        "width": 121,
+        "height": 115,
+        "elementCount": 10
+      },
+      {
+        "name": "ground_truth",
+        "displayName": "Ground Truth",
+        "width": 135,
+        "height": 93,
+        "elementCount": 19
+      },
+      {
+        "name": "textract",
+        "displayName": "Textract",
+        "width": 93,
+        "height": 93,
+        "elementCount": 19
+      },
+      {
+        "name": "transcribe",
+        "displayName": "Transcribe",
+        "width": 102,
+        "height": 93,
+        "elementCount": 20
+      },
+      {
+        "name": "deepcomposer",
+        "displayName": "DeepComposer",
+        "width": 135,
+        "height": 93,
+        "elementCount": 9
+      },
+      {
+        "name": "fraud_detector",
+        "displayName": "Fraud Detector",
+        "width": 156,
+        "height": 93,
+        "elementCount": 22
+      },
+      {
+        "name": "kendra",
+        "displayName": "Kendra",
+        "width": 79,
+        "height": 98,
+        "elementCount": 14
+      },
+      {
+        "name": "codeguru",
+        "displayName": "CodeGuru",
+        "width": 93,
+        "height": 94,
+        "elementCount": 12
+      },
+      {
+        "name": "devops_guru",
+        "displayName": "DevOps Guru",
+        "width": 129,
+        "height": 110,
+        "elementCount": 6
+      },
+      {
+        "name": "panorama",
+        "displayName": "Panorama",
+        "width": 95,
+        "height": 93,
+        "elementCount": 11
+      },
+      {
+        "name": "sagemaker_studio_lab",
+        "displayName": "SageMaker Studio Lab",
+        "width": 107,
+        "height": 117,
+        "elementCount": 15
+      },
+      {
+        "name": "comprehend_medical",
+        "displayName": "Comprehend Medical",
+        "width": 108,
+        "height": 117,
+        "elementCount": 12
+      },
+      {
+        "name": "codewhisperer",
+        "displayName": "CodeWhisperer",
+        "width": 136,
+        "height": 94,
+        "elementCount": 13
+      },
+      {
+        "name": "augmented_ai",
+        "displayName": "Augmented AI",
+        "width": 135,
+        "height": 93,
+        "elementCount": 14
+      },
+      {
+        "name": "amazon_bedrock",
+        "displayName": "Amazon Bedrock",
+        "width": 157,
+        "height": 93,
+        "elementCount": 20
+      },
+      {
+        "name": "amazon_q",
+        "displayName": "Amazon Q",
+        "width": 96,
+        "height": 93,
+        "elementCount": 5
+      },
+      {
+        "name": "aurora",
+        "displayName": "Aurora",
+        "width": 66,
+        "height": 91,
+        "elementCount": 11
+      },
+      {
+        "name": "documentdb",
+        "displayName": "DocumentDB",
+        "width": 122,
+        "height": 93,
+        "elementCount": 12
+      },
+      {
+        "name": "dynamodb",
+        "displayName": "DynamoDB",
+        "width": 102,
+        "height": 93,
+        "elementCount": 15
+      },
+      {
+        "name": "dynamodb_table",
+        "displayName": "DynamoDB Table",
+        "width": 59,
+        "height": 73,
+        "elementCount": 9
+      },
+      {
+        "name": "dax",
+        "displayName": "DAX",
+        "width": 60,
+        "height": 70,
+        "elementCount": 10
+      },
+      {
+        "name": "stream",
+        "displayName": "Stream",
+        "width": 69,
+        "height": 74,
+        "elementCount": 6
+      },
+      {
+        "name": "keyspaces",
+        "displayName": "Keyspaces",
+        "width": 98,
+        "height": 93,
+        "elementCount": 10
+      },
+      {
+        "name": "dms",
+        "displayName": "DMS",
+        "width": 65,
+        "height": 94,
+        "elementCount": 10
+      },
+      {
+        "name": "neptune",
+        "displayName": "Neptune",
+        "width": 77,
+        "height": 93,
+        "elementCount": 19
+      },
+      {
+        "name": "timestream",
+        "displayName": "Timestream",
+        "width": 112,
+        "height": 93,
+        "elementCount": 13
+      },
+      {
+        "name": "rds",
+        "displayName": "RDS",
+        "width": 66,
+        "height": 94,
+        "elementCount": 16
+      },
+      {
+        "name": "multi_az_db_cluster",
+        "displayName": "Multi-AZ DB cluster",
+        "width": 110,
+        "height": 100,
+        "elementCount": 19
+      },
+      {
+        "name": "memorydb_for_redis",
+        "displayName": "MemoryDB for Redis",
+        "width": 104,
+        "height": 117,
+        "elementCount": 13
+      },
+      {
+        "name": "elasticache",
+        "displayName": "ElastiCache",
+        "width": 116,
+        "height": 94,
+        "elementCount": 19
+      },
+      {
+        "name": "rds_instance",
+        "displayName": "RDS instance",
+        "width": 132,
+        "height": 101,
+        "elementCount": 9
+      },
+      {
+        "name": "aurora_instance",
+        "displayName": "Aurora instance",
+        "width": 157,
+        "height": 101,
+        "elementCount": 9
+      },
+      {
+        "name": "ebs",
+        "displayName": "EBS",
+        "width": 66,
+        "height": 94,
+        "elementCount": 12
+      },
+      {
+        "name": "storage_gateway",
+        "displayName": "Storage Gateway",
+        "width": 105,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "efs",
+        "displayName": "EFS",
+        "width": 93,
+        "height": 94,
+        "elementCount": 13
+      },
+      {
+        "name": "fsx",
+        "displayName": "FSx",
+        "width": 65,
+        "height": 94,
+        "elementCount": 3
+      },
+      {
+        "name": "snowball",
+        "displayName": "Snowball",
+        "width": 79,
+        "height": 91,
+        "elementCount": 6
+      },
+      {
+        "name": "backup",
+        "displayName": "Backup",
+        "width": 75,
+        "height": 94,
+        "elementCount": 18
+      },
+      {
+        "name": "s3",
+        "displayName": "S3",
+        "width": 65,
+        "height": 93,
+        "elementCount": 6
+      },
+      {
+        "name": "glacier",
+        "displayName": "Glacier",
+        "width": 70,
+        "height": 95,
+        "elementCount": 15
+      },
+      {
+        "name": "managed_blockchain",
+        "displayName": "Managed Blockchain",
+        "width": 128,
+        "height": 117,
+        "elementCount": 10
+      },
+      {
+        "name": "quantum_ledger_database",
+        "displayName": "Quantum Ledger Database",
+        "width": 158,
+        "height": 117,
+        "elementCount": 13
+      },
+      {
+        "name": "ec2",
+        "displayName": "EC2",
+        "width": 73,
+        "height": 93,
+        "elementCount": 5
+      },
+      {
+        "name": "ami",
+        "displayName": "AMI",
+        "width": 63,
+        "height": 88,
+        "elementCount": 8
+      },
+      {
+        "name": "auto_scaling",
+        "displayName": "Auto scaling",
+        "width": 120,
+        "height": 89,
+        "elementCount": 30
+      },
+      {
+        "name": "instance",
+        "displayName": "Instance",
+        "width": 86,
+        "height": 87,
+        "elementCount": 22
+      },
+      {
+        "name": "db_instance",
+        "displayName": "DB Instance",
+        "width": 113,
+        "height": 84,
+        "elementCount": 24
+      },
+      {
+        "name": "instances",
+        "displayName": "Instances",
+        "width": 97,
+        "height": 75,
+        "elementCount": 4
+      },
+      {
+        "name": "spot_instance",
+        "displayName": "Spot instance",
+        "width": 134,
+        "height": 91,
+        "elementCount": 16
+      },
+      {
+        "name": "instance_with_cloudwatch",
+        "displayName": "Instance with CloudWatch",
+        "width": 143,
+        "height": 117,
+        "elementCount": 7
+      },
+      {
+        "name": "elastic_beanstalk",
+        "displayName": "Elastic Beanstalk",
+        "width": 113,
+        "height": 116,
+        "elementCount": 9
+      },
+      {
+        "name": "lambda",
+        "displayName": "Lambda",
+        "width": 89,
+        "height": 93,
+        "elementCount": 4
+      },
+      {
+        "name": "ec2_auto_scaling",
+        "displayName": "EC2 Auto Scaling",
+        "width": 121,
+        "height": 117,
+        "elementCount": 31
+      },
+      {
+        "name": "outposts",
+        "displayName": "Outposts",
+        "width": 91,
+        "height": 91,
+        "elementCount": 12
+      },
+      {
+        "name": "ec2_image_builder",
+        "displayName": "EC2 Image Builder",
+        "width": 108,
+        "height": 115,
+        "elementCount": 7
+      },
+      {
+        "name": "elastic_fabric_adapter",
+        "displayName": "Elastic Fabric Adapter",
+        "width": 137,
+        "height": 120,
+        "elementCount": 9
+      },
+      {
+        "name": "app_runner",
+        "displayName": "App Runner",
+        "width": 106,
+        "height": 91,
+        "elementCount": 8
+      },
+      {
+        "name": "batch",
+        "displayName": "Batch",
+        "width": 64,
+        "height": 91,
+        "elementCount": 17
+      },
+      {
+        "name": "eks",
+        "displayName": "EKS",
+        "width": 75,
+        "height": 93,
+        "elementCount": 5
+      },
+      {
+        "name": "ecr",
+        "displayName": "ECR",
+        "width": 64,
+        "height": 91,
+        "elementCount": 4
+      },
+      {
+        "name": "registry",
+        "displayName": "Registry",
+        "width": 80,
+        "height": 71,
+        "elementCount": 26
+      },
+      {
+        "name": "image",
+        "displayName": "Image",
+        "width": 59,
+        "height": 71,
+        "elementCount": 5
+      },
+      {
+        "name": "ecs",
+        "displayName": "ECS",
+        "width": 75,
+        "height": 91,
+        "elementCount": 4
+      },
+      {
+        "name": "container",
+        "displayName": "Container",
+        "width": 92,
+        "height": 60,
+        "elementCount": 9
+      },
+      {
+        "name": "container2",
+        "displayName": "Container2",
+        "width": 105,
+        "height": 60,
+        "elementCount": 27
+      },
+      {
+        "name": "task",
+        "displayName": "Task",
+        "width": 52,
+        "height": 72,
+        "elementCount": 8
+      },
+      {
+        "name": "service",
+        "displayName": "Service",
+        "width": 74,
+        "height": 70,
+        "elementCount": 10
+      },
+      {
+        "name": "eks_anywhere",
+        "displayName": "EKS Anywhere",
+        "width": 133,
+        "height": 92,
+        "elementCount": 11
+      },
+      {
+        "name": "fargate",
+        "displayName": "Fargate",
+        "width": 84,
+        "height": 92,
+        "elementCount": 15
+      },
+      {
+        "name": "sns",
+        "displayName": "SNS",
+        "width": 65,
+        "height": 93,
+        "elementCount": 15
+      },
+      {
+        "name": "sqs",
+        "displayName": "SQS",
+        "width": 65,
+        "height": 93,
+        "elementCount": 12
+      },
+      {
+        "name": "amazon_mq",
+        "displayName": "Amazon MQ",
+        "width": 110,
+        "height": 92,
+        "elementCount": 20
+      },
+      {
+        "name": "appsync",
+        "displayName": "AppSync",
+        "width": 77,
+        "height": 92,
+        "elementCount": 12
+      },
+      {
+        "name": "step_functions",
+        "displayName": "Step Functions",
+        "width": 143,
+        "height": 93,
+        "elementCount": 16
+      },
+      {
+        "name": "eventbridge",
+        "displayName": "EventBridge",
+        "width": 115,
+        "height": 92,
+        "elementCount": 13
+      },
+      {
+        "name": "event",
+        "displayName": "Event",
+        "width": 56,
+        "height": 69,
+        "elementCount": 14
+      },
+      {
+        "name": "rule",
+        "displayName": "Rule",
+        "width": 49,
+        "height": 69,
+        "elementCount": 13
+      },
+      {
+        "name": "event_bus",
+        "displayName": "Event bus",
+        "width": 98,
+        "height": 56,
+        "elementCount": 10
+      },
+      {
+        "name": "scheduler",
+        "displayName": "Scheduler",
+        "width": 92,
+        "height": 68,
+        "elementCount": 19
+      },
+      {
+        "name": "appflow",
+        "displayName": "AppFlow",
+        "width": 73,
+        "height": 91,
+        "elementCount": 4
+      },
+      {
+        "name": "managed_workflows_for_apache_airflow",
+        "displayName": "Managed Workflows for Apache Airflow",
+        "width": 187,
+        "height": 117,
+        "elementCount": 10
+      },
+      {
+        "name": "iot_analytics",
+        "displayName": "IoT Analytics",
+        "width": 135,
+        "height": 94,
+        "elementCount": 12
+      },
+      {
+        "name": "iot_core",
+        "displayName": "IoT Core",
+        "width": 92,
+        "height": 94,
+        "elementCount": 12
+      },
+      {
+        "name": "iot_greengrass",
+        "displayName": "Iot Greengrass",
+        "width": 157,
+        "height": 94,
+        "elementCount": 8
+      },
+      {
+        "name": "iot_sitewise",
+        "displayName": "IoT SiteWise",
+        "width": 128,
+        "height": 94,
+        "elementCount": 12
+      },
+      {
+        "name": "iot_expresslink",
+        "displayName": "IoT ExpressLink",
+        "width": 159,
+        "height": 94,
+        "elementCount": 20
+      },
+      {
+        "name": "iot_roborunner",
+        "displayName": "IoT RoboRunner",
+        "width": 157,
+        "height": 94,
+        "elementCount": 13
+      },
+      {
+        "name": "iot_sensor",
+        "displayName": "IoT sensor",
+        "width": 111,
+        "height": 51,
+        "elementCount": 6
+      },
+      {
+        "name": "iot_topic",
+        "displayName": "IoT topic",
+        "width": 95,
+        "height": 71,
+        "elementCount": 6
+      },
+      {
+        "name": "cloud9",
+        "displayName": "Cloud9",
+        "width": 85,
+        "height": 92,
+        "elementCount": 4
+      },
+      {
+        "name": "codebuild",
+        "displayName": "CodeBuild",
+        "width": 93,
+        "height": 96,
+        "elementCount": 9
+      },
+      {
+        "name": "codecommit",
+        "displayName": "CodeCommit",
+        "width": 111,
+        "height": 94,
+        "elementCount": 14
+      },
+      {
+        "name": "codedeploy",
+        "displayName": "CodeDeploy",
+        "width": 108,
+        "height": 93,
+        "elementCount": 12
+      },
+      {
+        "name": "codepipeline",
+        "displayName": "CodePipeline",
+        "width": 115,
+        "height": 92,
+        "elementCount": 8
+      },
+      {
+        "name": "aws_cli",
+        "displayName": "AWS CLI",
+        "width": 102,
+        "height": 93,
+        "elementCount": 9
+      },
+      {
+        "name": "tools_and_sdks",
+        "displayName": "Tools and SDKs",
+        "width": 110,
+        "height": 116,
+        "elementCount": 9
+      },
+      {
+        "name": "x_ray",
+        "displayName": "X-Ray",
+        "width": 65,
+        "height": 92,
+        "elementCount": 8
+      },
+      {
+        "name": "codeartifact",
+        "displayName": "CodeArtifact",
+        "width": 128,
+        "height": 92,
+        "elementCount": 6
+      },
+      {
+        "name": "cloudshell",
+        "displayName": "CloudShell",
+        "width": 95,
+        "height": 92,
+        "elementCount": 6
+      },
+      {
+        "name": "application_composer",
+        "displayName": "Application Composer",
+        "width": 102,
+        "height": 116,
+        "elementCount": 15
+      },
+      {
+        "name": "fault_injection_simulator",
+        "displayName": "Fault Injection Simulator",
+        "width": 147,
+        "height": 117,
+        "elementCount": 13
+      },
+      {
+        "name": "amplify",
+        "displayName": "Amplify",
+        "width": 80,
+        "height": 94,
+        "elementCount": 5
+      },
+      {
+        "name": "device_farm",
+        "displayName": "Device Farm",
+        "width": 118,
+        "height": 94,
+        "elementCount": 19
+      },
+      {
+        "name": "location_service",
+        "displayName": "Location Service",
+        "width": 83,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "application_discovery_service",
+        "displayName": "Application Discovery Service",
+        "width": 169,
+        "height": 118,
+        "elementCount": 10
+      },
+      {
+        "name": "agentless_collector",
+        "displayName": "Agentless Collector",
+        "width": 93,
+        "height": 98,
+        "elementCount": 12
+      },
+      {
+        "name": "discovery_agent",
+        "displayName": "Discovery Agent",
+        "width": 156,
+        "height": 63,
+        "elementCount": 5
+      },
+      {
+        "name": "transfer_family",
+        "displayName": "Transfer Family",
+        "width": 154,
+        "height": 94,
+        "elementCount": 9
+      },
+      {
+        "name": "datasync",
+        "displayName": "DataSync",
+        "width": 112,
+        "height": 94,
+        "elementCount": 8
+      },
+      {
+        "name": "agent",
+        "displayName": "Agent",
+        "width": 68,
+        "height": 76,
+        "elementCount": 7
+      },
+      {
+        "name": "discovery",
+        "displayName": "Discovery",
+        "width": 92,
+        "height": 76,
+        "elementCount": 11
+      },
+      {
+        "name": "migration_hub",
+        "displayName": "Migration Hub",
+        "width": 130,
+        "height": 94,
+        "elementCount": 20
+      },
+      {
+        "name": "application_migration_service",
+        "displayName": "Application Migration Service",
+        "width": 165,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "migration_evaluator",
+        "displayName": "Migration Evaluator",
+        "width": 98,
+        "height": 117,
+        "elementCount": 8
+      },
+      {
+        "name": "server_migration_service",
+        "displayName": "Server Migration Service",
+        "width": 159,
+        "height": 118,
+        "elementCount": 10
+      },
+      {
+        "name": "alexa_for_business",
+        "displayName": "Alexa for Business",
+        "width": 93,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "chime",
+        "displayName": "Chime",
+        "width": 65,
+        "height": 91,
+        "elementCount": 11
+      },
+      {
+        "name": "connect",
+        "displayName": "Connect",
+        "width": 84,
+        "height": 103,
+        "elementCount": 10
+      },
+      {
+        "name": "ses",
+        "displayName": "SES",
+        "width": 64,
+        "height": 92,
+        "elementCount": 14
+      },
+      {
+        "name": "cloudwatch",
+        "displayName": "CloudWatch",
+        "width": 132,
+        "height": 93,
+        "elementCount": 6
+      },
+      {
+        "name": "alarm",
+        "displayName": "Alarm",
+        "width": 53,
+        "height": 78,
+        "elementCount": 6
+      },
+      {
+        "name": "logs",
+        "displayName": "Logs",
+        "width": 53,
+        "height": 69,
+        "elementCount": 9
+      },
+      {
+        "name": "dashboard",
+        "displayName": "Dashboard",
+        "width": 105,
+        "height": 83,
+        "elementCount": 14
+      },
+      {
+        "name": "cloudformation",
+        "displayName": "CloudFormation",
+        "width": 145,
+        "height": 93,
+        "elementCount": 11
+      },
+      {
+        "name": "application_auto_scaling",
+        "displayName": "Application Auto Scaling",
+        "width": 121,
+        "height": 118,
+        "elementCount": 14
+      },
+      {
+        "name": "config",
+        "displayName": "Config",
+        "width": 75,
+        "height": 94,
+        "elementCount": 17
+      },
+      {
+        "name": "license_manager",
+        "displayName": "License Manager",
+        "width": 160,
+        "height": 93,
+        "elementCount": 12
+      },
+      {
+        "name": "personal_health_dashboard",
+        "displayName": "Personal Health Dashboard",
+        "width": 154,
+        "height": 118,
+        "elementCount": 6
+      },
+      {
+        "name": "opsworks",
+        "displayName": "OpsWorks",
+        "width": 90,
+        "height": 92,
+        "elementCount": 11
+      },
+      {
+        "name": "cloudtrail",
+        "displayName": "CloudTrail",
+        "width": 100,
+        "height": 94,
+        "elementCount": 11
+      },
+      {
+        "name": "service_catalog",
+        "displayName": "Service Catalog",
+        "width": 155,
+        "height": 93,
+        "elementCount": 17
+      },
+      {
+        "name": "system_manager",
+        "displayName": "System Manager",
+        "width": 158,
+        "height": 94,
+        "elementCount": 10
+      },
+      {
+        "name": "automation",
+        "displayName": "Automation",
+        "width": 109,
+        "height": 83,
+        "elementCount": 4
+      },
+      {
+        "name": "documents",
+        "displayName": "Documents",
+        "width": 104,
+        "height": 80,
+        "elementCount": 8
+      },
+      {
+        "name": "parameter_store",
+        "displayName": "Parameter Store",
+        "width": 168,
+        "height": 78,
+        "elementCount": 11
+      },
+      {
+        "name": "incident_manager",
+        "displayName": "Incident Manager",
+        "width": 170,
+        "height": 65,
+        "elementCount": 10
+      },
+      {
+        "name": "session_manager",
+        "displayName": "Session Manager",
+        "width": 162,
+        "height": 72,
+        "elementCount": 11
+      },
+      {
+        "name": "well_arhitected_tool",
+        "displayName": "Well-Arhitected Tool",
+        "width": 157,
+        "height": 118,
+        "elementCount": 10
+      },
+      {
+        "name": "control_tower",
+        "displayName": "Control Tower",
+        "width": 138,
+        "height": 93,
+        "elementCount": 25
+      },
+      {
+        "name": "organizations",
+        "displayName": "Organizations",
+        "width": 132,
+        "height": 93,
+        "elementCount": 12
+      },
+      {
+        "name": "appconfig",
+        "displayName": "AppConfig",
+        "width": 90,
+        "height": 97,
+        "elementCount": 7
+      },
+      {
+        "name": "chatbot",
+        "displayName": "Chatbot",
+        "width": 80,
+        "height": 92,
+        "elementCount": 13
+      },
+      {
+        "name": "backint_agent",
+        "displayName": "Backint Agent",
+        "width": 137,
+        "height": 93,
+        "elementCount": 8
+      },
+      {
+        "name": "managed_service_for_grafana",
+        "displayName": "Managed Service for Grafana",
+        "width": 161,
+        "height": 117,
+        "elementCount": 7
+      },
+      {
+        "name": "managed_service_for_prometheus",
+        "displayName": "Managed Service for Prometheus",
+        "width": 161,
+        "height": 116,
+        "elementCount": 11
+      },
+      {
+        "name": "distro_for_open_telemetry",
+        "displayName": "Distro for Open Telemetry",
+        "width": 151,
+        "height": 116,
+        "elementCount": 12
+      },
+      {
+        "name": "resilience_hub",
+        "displayName": "Resilience Hub",
+        "width": 148,
+        "height": 94,
+        "elementCount": 6
+      },
+      {
+        "name": "cognito",
+        "displayName": "Cognito",
+        "width": 117,
+        "height": 93,
+        "elementCount": 11
+      },
+      {
+        "name": "guardduty",
+        "displayName": "GuardDuty",
+        "width": 108,
+        "height": 115,
+        "elementCount": 9
+      },
+      {
+        "name": "inspector",
+        "displayName": "Inspector",
+        "width": 93,
+        "height": 94,
+        "elementCount": 11
+      },
+      {
+        "name": "macie",
+        "displayName": "Macie",
+        "width": 64,
+        "height": 94,
+        "elementCount": 3
+      },
+      {
+        "name": "artifact",
+        "displayName": "Artifact",
+        "width": 88,
+        "height": 111,
+        "elementCount": 11
+      },
+      {
+        "name": "certificate_manager",
+        "displayName": "Certificate Manager",
+        "width": 118,
+        "height": 118,
+        "elementCount": 9
+      },
+      {
+        "name": "cloudhsm",
+        "displayName": "CloudHSM",
+        "width": 90,
+        "height": 94,
+        "elementCount": 12
+      },
+      {
+        "name": "directory_service",
+        "displayName": "Directory Service",
+        "width": 125,
+        "height": 118,
+        "elementCount": 12
+      },
+      {
+        "name": "firewall_manager",
+        "displayName": "Firewall Manager",
+        "width": 162,
+        "height": 94,
+        "elementCount": 13
+      },
+      {
+        "name": "iam",
+        "displayName": "IAM",
+        "width": 64,
+        "height": 92,
+        "elementCount": 14
+      },
+      {
+        "name": "permissions",
+        "displayName": "Permissions",
+        "width": 107,
+        "height": 79,
+        "elementCount": 6
+      },
+      {
+        "name": "role",
+        "displayName": "Role",
+        "width": 54,
+        "height": 59,
+        "elementCount": 7
+      },
+      {
+        "name": "aws_sts",
+        "displayName": "AWS STS",
+        "width": 91,
+        "height": 69,
+        "elementCount": 6
+      },
+      {
+        "name": "kms",
+        "displayName": "KMS",
+        "width": 67,
+        "height": 94,
+        "elementCount": 12
+      },
+      {
+        "name": "secrets_manager",
+        "displayName": "Secrets Manager",
+        "width": 166,
+        "height": 96,
+        "elementCount": 20
+      },
+      {
+        "name": "security_hub",
+        "displayName": "Security Hub",
+        "width": 121,
+        "height": 94,
+        "elementCount": 19
+      },
+      {
+        "name": "shield",
+        "displayName": "Shield",
+        "width": 64,
+        "height": 96,
+        "elementCount": 10
+      },
+      {
+        "name": "iam_identity_center",
+        "displayName": "IAM Identity Center",
+        "width": 130,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "waf",
+        "displayName": "WAF",
+        "width": 64,
+        "height": 94,
+        "elementCount": 16
+      },
+      {
+        "name": "detective",
+        "displayName": "Detective",
+        "width": 96,
+        "height": 94,
+        "elementCount": 11
+      },
+      {
+        "name": "resource_access_manager",
+        "displayName": "Resource Access Manager",
+        "width": 163,
+        "height": 118,
+        "elementCount": 11
+      },
+      {
+        "name": "audit_manager",
+        "displayName": "Audit Manager",
+        "width": 142,
+        "height": 106,
+        "elementCount": 16
+      },
+      {
+        "name": "network_firewall",
+        "displayName": "Network Firewall",
+        "width": 158,
+        "height": 94,
+        "elementCount": 8
+      },
+      {
+        "name": "private_certificate_authority",
+        "displayName": "Private Certificate Authority",
+        "width": 191,
+        "height": 117,
+        "elementCount": 9
+      },
+      {
+        "name": "transit_gateway",
+        "displayName": "Transit Gateway",
+        "width": 170,
+        "height": 94,
+        "elementCount": 12
+      },
+      {
+        "name": "attachment",
+        "displayName": "Attachment",
+        "width": 113,
+        "height": 84,
+        "elementCount": 5
+      },
+      {
+        "name": "cloudfront",
+        "displayName": "CloudFront",
+        "width": 104,
+        "height": 92,
+        "elementCount": 15
+      },
+      {
+        "name": "edge_location",
+        "displayName": "Edge location",
+        "width": 132,
+        "height": 80,
+        "elementCount": 5
+      },
+      {
+        "name": "route_53",
+        "displayName": "Route 53",
+        "width": 98,
+        "height": 103,
+        "elementCount": 9
+      },
+      {
+        "name": "resolver",
+        "displayName": "Resolver",
+        "width": 92,
+        "height": 88,
+        "elementCount": 10
+      },
+      {
+        "name": "route_table",
+        "displayName": "Route table",
+        "width": 120,
+        "height": 77,
+        "elementCount": 7
+      },
+      {
+        "name": "vpc",
+        "displayName": "VPC",
+        "width": 114,
+        "height": 94,
+        "elementCount": 9
+      },
+      {
+        "name": "internet_gateway",
+        "displayName": "Internet gateway",
+        "width": 173,
+        "height": 98,
+        "elementCount": 6
+      },
+      {
+        "name": "vpn_gateway",
+        "displayName": "VPN gateway",
+        "width": 127,
+        "height": 95,
+        "elementCount": 6
+      },
+      {
+        "name": "nat_gateway",
+        "displayName": "NAT gateway",
+        "width": 133,
+        "height": 95,
+        "elementCount": 8
+      },
+      {
+        "name": "flow_logs",
+        "displayName": "Flow logs",
+        "width": 87,
+        "height": 94,
+        "elementCount": 9
+      },
+      {
+        "name": "interface_endpoint",
+        "displayName": "Interface Endpoint",
+        "width": 105,
+        "height": 119,
+        "elementCount": 8
+      },
+      {
+        "name": "eni",
+        "displayName": "ENI",
+        "width": 63,
+        "height": 94,
+        "elementCount": 6
+      },
+      {
+        "name": "nacl",
+        "displayName": "NACL",
+        "width": 66,
+        "height": 93,
+        "elementCount": 8
+      },
+      {
+        "name": "vpn_connection",
+        "displayName": "VPN Connection",
+        "width": 100,
+        "height": 114,
+        "elementCount": 9
+      },
+      {
+        "name": "peering_connection",
+        "displayName": "Peering connection",
+        "width": 174,
+        "height": 95,
+        "elementCount": 7
+      },
+      {
+        "name": "direct_connect",
+        "displayName": "Direct Connect",
+        "width": 146,
+        "height": 94,
+        "elementCount": 12
+      },
+      {
+        "name": "global_accelerator",
+        "displayName": "Global Accelerator",
+        "width": 113,
+        "height": 123,
+        "elementCount": 14
+      },
+      {
+        "name": "client_vpn",
+        "displayName": "Client VPN",
+        "width": 101,
+        "height": 94,
+        "elementCount": 9
+      },
+      {
+        "name": "site_to_site_vpn",
+        "displayName": "Site-to-Site VPN",
+        "width": 126,
+        "height": 118,
+        "elementCount": 9
+      },
+      {
+        "name": "elb",
+        "displayName": "ELB",
+        "width": 65,
+        "height": 94,
+        "elementCount": 9
+      },
+      {
+        "name": "alb",
+        "displayName": "ALB",
+        "width": 66,
+        "height": 93,
+        "elementCount": 11
+      },
+      {
+        "name": "nlb",
+        "displayName": "NLB",
+        "width": 66,
+        "height": 93,
+        "elementCount": 9
+      },
+      {
+        "name": "glb",
+        "displayName": "GLB",
+        "width": 66,
+        "height": 93,
+        "elementCount": 13
+      },
+      {
+        "name": "privatelink",
+        "displayName": "PrivateLink",
+        "width": 139,
+        "height": 94,
+        "elementCount": 5
+      },
+      {
+        "name": "api_gateway",
+        "displayName": "API Gateway",
+        "width": 134,
+        "height": 92,
+        "elementCount": 9
+      },
+      {
+        "name": "endpoint",
+        "displayName": "Endpoint",
+        "width": 90,
+        "height": 98,
+        "elementCount": 7
+      },
+      {
+        "name": "budgets",
+        "displayName": "Budgets",
+        "width": 80,
+        "height": 94,
+        "elementCount": 8
+      },
+      {
+        "name": "cost_usage_report",
+        "displayName": "Cost & Usage Report",
+        "width": 140,
+        "height": 118,
+        "elementCount": 16
+      },
+      {
+        "name": "cost_explorer",
+        "displayName": "Cost Explorer",
+        "width": 135,
+        "height": 94,
+        "elementCount": 20
+      },
+      {
+        "name": "saving_plans",
+        "displayName": "Saving Plans",
+        "width": 122,
+        "height": 94,
+        "elementCount": 10
+      },
+      {
+        "name": "support",
+        "displayName": "Support",
+        "width": 83,
+        "height": 105,
+        "elementCount": 7
+      },
+      {
+        "name": "aws_cloud",
+        "displayName": "AWS Cloud",
+        "width": 270,
+        "height": 165,
+        "elementCount": 4
+      },
+      {
+        "name": "region",
+        "displayName": "Region",
+        "width": 270,
+        "height": 165,
+        "elementCount": 7
+      },
+      {
+        "name": "auto_scaling_group",
+        "displayName": "Auto Scaling group",
+        "width": 270,
+        "height": 165,
+        "elementCount": 7
+      },
+      {
+        "name": "data_center",
+        "displayName": "Data center",
+        "width": 270,
+        "height": 165,
+        "elementCount": 15
+      },
+      {
+        "name": "spot_fleet",
+        "displayName": "Spot Fleet",
+        "width": 270,
+        "height": 165,
+        "elementCount": 18
+      },
+      {
+        "name": "ec2_contents",
+        "displayName": "EC2 contents",
+        "width": 270,
+        "height": 165,
+        "elementCount": 24
+      },
+      {
+        "name": "aws_account",
+        "displayName": "AWS account",
+        "width": 270,
+        "height": 165,
+        "elementCount": 7
+      },
+      {
+        "name": "aws_step_functions_workflow",
+        "displayName": "AWS Step Functions Workflow",
+        "width": 270,
+        "height": 165,
+        "elementCount": 17
+      },
+      {
+        "name": "serverless_lambda",
+        "displayName": "Lambda",
+        "width": 102,
+        "height": 92,
+        "elementCount": 5
+      },
+      {
+        "name": "serverless_appsync",
+        "displayName": "AppSync",
+        "width": 100,
+        "height": 90,
+        "elementCount": 13
+      },
+      {
+        "name": "serverless_apigateway",
+        "displayName": "APIGateway",
+        "width": 108,
+        "height": 106,
+        "elementCount": 10
+      },
+      {
+        "name": "serverless_dynamodb",
+        "displayName": "DynamoDB",
+        "width": 82,
+        "height": 112,
+        "elementCount": 16
+      },
+      {
+        "name": "serverless_aurora",
+        "displayName": "Aurora",
+        "width": 72,
+        "height": 112,
+        "elementCount": 15
+      },
+      {
+        "name": "serverless_eventbridge",
+        "displayName": "EventBridge",
+        "width": 93,
+        "height": 111,
+        "elementCount": 14
+      },
+      {
+        "name": "serverless_sqs",
+        "displayName": "SQS",
+        "width": 96,
+        "height": 89,
+        "elementCount": 13
+      },
+      {
+        "name": "serverless_sns",
+        "displayName": "SNS",
+        "width": 96,
+        "height": 94,
+        "elementCount": 16
+      },
+      {
+        "name": "serverless_s3",
+        "displayName": "S3",
+        "width": 86,
+        "height": 93,
+        "elementCount": 7
+      },
+      {
+        "name": "serverless_cloudfront",
+        "displayName": "CloudFront",
+        "width": 84,
+        "height": 109,
+        "elementCount": 16
+      },
+      {
+        "name": "serverless_ses",
+        "displayName": "SES",
+        "width": 96,
+        "height": 93,
+        "elementCount": 15
+      },
+      {
+        "name": "serverless_cloudwatch",
+        "displayName": "CloudWatch",
+        "width": 121,
+        "height": 110,
+        "elementCount": 7
+      },
+      {
+        "name": "serverless_stepfunctions",
+        "displayName": "StepFunctions",
+        "width": 116,
+        "height": 112,
+        "elementCount": 17
+      },
+      {
+        "name": "serverless_amplify",
+        "displayName": "Amplify",
+        "width": 94,
+        "height": 91,
+        "elementCount": 6
+      },
+      {
+        "name": "serverless_cognito",
+        "displayName": "Cognito",
+        "width": 114,
+        "height": 114,
+        "elementCount": 12
+      },
+      {
+        "name": "serverless_kinesis",
+        "displayName": "Kinesis",
+        "width": 131,
+        "height": 88,
+        "elementCount": 9
+      },
+      {
+        "name": "serverless_efs",
+        "displayName": "EFS",
+        "width": 123,
+        "height": 85,
+        "elementCount": 11
+      },
+      {
+        "name": "serverless_waf",
+        "displayName": "WAF",
+        "width": 73,
+        "height": 92,
+        "elementCount": 17
+      },
+      {
+        "name": "serverless_vtl_resolver",
+        "displayName": "VTL-resolver",
+        "width": 65,
+        "height": 104,
+        "elementCount": 8
+      },
+      {
+        "name": "serverless_javascript_resolver",
+        "displayName": "JavaScript-resolver",
+        "width": 85,
+        "height": 104,
+        "elementCount": 4
+      },
+      {
+        "name": "serverless_unnamed",
+        "displayName": "unnamed",
+        "width": 92,
+        "height": 113,
+        "elementCount": 9
+      }
+    ],
+    "gcp": [
+      {
+        "name": "access_context_manager",
+        "displayName": "Access Context Manager",
+        "width": 290,
+        "height": 347,
+        "elementCount": 4
+      },
+      {
+        "name": "access_transparency",
+        "displayName": "Access Transparency",
+        "width": 402,
+        "height": 220,
+        "elementCount": 7
+      },
+      {
+        "name": "anthos",
+        "displayName": "Anthos",
+        "width": 411,
+        "height": 261,
+        "elementCount": 8
+      },
+      {
+        "name": "anthos_service_mesh",
+        "displayName": "Anthos Service mesh",
+        "width": 381,
+        "height": 258,
+        "elementCount": 8
+      },
+      {
+        "name": "anthos_service_mesh_ii",
+        "displayName": "Anthos Service Mesh II",
+        "width": 324,
+        "height": 301,
+        "elementCount": 5
+      },
+      {
+        "name": "api_analytics",
+        "displayName": "API Analytics",
+        "width": 270,
+        "height": 173,
+        "elementCount": 10
+      },
+      {
+        "name": "api_gateway",
+        "displayName": "API Gateway",
+        "width": 320,
+        "height": 183,
+        "elementCount": 6
+      },
+      {
+        "name": "api_monetization",
+        "displayName": "API Monetization",
+        "width": 228,
+        "height": 295,
+        "elementCount": 11
+      },
+      {
+        "name": "apigee_api_management",
+        "displayName": "Apigee API Management",
+        "width": 381,
+        "height": 288,
+        "elementCount": 10
+      },
+      {
+        "name": "apigee_sense",
+        "displayName": "Apigee Sense",
+        "width": 388,
+        "height": 221,
+        "elementCount": 6
+      },
+      {
+        "name": "app_engine",
+        "displayName": "App Engine",
+        "width": 210,
+        "height": 191,
+        "elementCount": 11
+      },
+      {
+        "name": "apps_script",
+        "displayName": "Apps Script",
+        "width": 242,
+        "height": 181,
+        "elementCount": 13
+      },
+      {
+        "name": "appsheet",
+        "displayName": "AppSheet",
+        "width": 188,
+        "height": 204,
+        "elementCount": 6
+      },
+      {
+        "name": "artifact_registry",
+        "displayName": "Artifact Registry",
+        "width": 164,
+        "height": 266,
+        "elementCount": 12
+      },
+      {
+        "name": "assured_workloads",
+        "displayName": "Assured Workloads",
+        "width": 240,
+        "height": 321,
+        "elementCount": 5
+      },
+      {
+        "name": "automl",
+        "displayName": "AutoML",
+        "width": 224,
+        "height": 215,
+        "elementCount": 5
+      },
+      {
+        "name": "bare_metal_solution",
+        "displayName": "Bare Metal Solution",
+        "width": 296,
+        "height": 265,
+        "elementCount": 6
+      },
+      {
+        "name": "beyondcorp_enterprise",
+        "displayName": "BeyondCorp Enterprise",
+        "width": 383,
+        "height": 284,
+        "elementCount": 4
+      },
+      {
+        "name": "bigquery",
+        "displayName": "Bigquery",
+        "width": 226,
+        "height": 272,
+        "elementCount": 8
+      },
+      {
+        "name": "billing",
+        "displayName": "Billing",
+        "width": 345,
+        "height": 276,
+        "elementCount": 12
+      },
+      {
+        "name": "binary_authorization",
+        "displayName": "Binary Authorization",
+        "width": 229,
+        "height": 317,
+        "elementCount": 6
+      },
+      {
+        "name": "calendar_api",
+        "displayName": "Calendar API",
+        "width": 274,
+        "height": 203,
+        "elementCount": 9
+      },
+      {
+        "name": "carrier_peering",
+        "displayName": "Carrier Peering",
+        "width": 352,
+        "height": 178,
+        "elementCount": 3
+      },
+      {
+        "name": "certificate_authority_service",
+        "displayName": "Certificate Authority Service",
+        "width": 267,
+        "height": 333,
+        "elementCount": 6
+      },
+      {
+        "name": "classroom_api",
+        "displayName": "Classroom API",
+        "width": 362,
+        "height": 281,
+        "elementCount": 12
+      },
+      {
+        "name": "cloud_apis",
+        "displayName": "Cloud APIs",
+        "width": 237,
+        "height": 251,
+        "elementCount": 12
+      },
+      {
+        "name": "cloud_armor",
+        "displayName": "Cloud Armor",
+        "width": 251,
+        "height": 239,
+        "elementCount": 10
+      },
+      {
+        "name": "cloud_asset_inventory",
+        "displayName": "Cloud Asset Inventory",
+        "width": 311,
+        "height": 282,
+        "elementCount": 4
+      },
+      {
+        "name": "cloud_audit_logs",
+        "displayName": "Cloud Audit Logs",
+        "width": 243,
+        "height": 388,
+        "elementCount": 7
+      },
+      {
+        "name": "cloud_bigtable",
+        "displayName": "Cloud Bigtable",
+        "width": 203,
+        "height": 262,
+        "elementCount": 20
+      },
+      {
+        "name": "cloud_build",
+        "displayName": "Cloud Build",
+        "width": 238,
+        "height": 264,
+        "elementCount": 6
+      },
+      {
+        "name": "cloud_cdn",
+        "displayName": "Cloud CDN",
+        "width": 224,
+        "height": 265,
+        "elementCount": 12
+      },
+      {
+        "name": "cloud_code",
+        "displayName": "Cloud Code",
+        "width": 220,
+        "height": 158,
+        "elementCount": 7
+      },
+      {
+        "name": "composer",
+        "displayName": "Composer",
+        "width": 214,
+        "height": 217,
+        "elementCount": 5
+      },
+      {
+        "name": "cloud_data_fusion",
+        "displayName": "Cloud Data Fusion",
+        "width": 205,
+        "height": 243,
+        "elementCount": 6
+      },
+      {
+        "name": "cloud_data_loss_prevention",
+        "displayName": "Cloud Data Loss Prevention",
+        "width": 373,
+        "height": 301,
+        "elementCount": 18
+      },
+      {
+        "name": "cloud_data_transfer",
+        "displayName": "Cloud Data Transfer",
+        "width": 282,
+        "height": 259,
+        "elementCount": 4
+      },
+      {
+        "name": "cloud_debugger",
+        "displayName": "Cloud Debugger",
+        "width": 274,
+        "height": 238,
+        "elementCount": 10
+      },
+      {
+        "name": "cloud_deploy",
+        "displayName": "Cloud Deploy",
+        "width": 322,
+        "height": 197,
+        "elementCount": 4
+      },
+      {
+        "name": "cloud_dns",
+        "displayName": "Cloud DNS",
+        "width": 176,
+        "height": 229,
+        "elementCount": 10
+      },
+      {
+        "name": "cloud_domains",
+        "displayName": "Cloud Domains",
+        "width": 318,
+        "height": 217,
+        "elementCount": 9
+      },
+      {
+        "name": "cloud_endpoints",
+        "displayName": "Cloud Endpoints",
+        "width": 292,
+        "height": 220,
+        "elementCount": 7
+      },
+      {
+        "name": "cloud_filestore",
+        "displayName": "Cloud Filestore",
+        "width": 312,
+        "height": 212,
+        "elementCount": 5
+      },
+      {
+        "name": "cloud_firestore",
+        "displayName": "Cloud Firestore",
+        "width": 245,
+        "height": 229,
+        "elementCount": 6
+      },
+      {
+        "name": "cloud_function",
+        "displayName": "Cloud Function",
+        "width": 181,
+        "height": 244,
+        "elementCount": 14
+      },
+      {
+        "name": "cloud_healthcare_api",
+        "displayName": "Cloud Healthcare API",
+        "width": 364,
+        "height": 329,
+        "elementCount": 11
+      },
+      {
+        "name": "cloud_iam",
+        "displayName": "Cloud IAM",
+        "width": 273,
+        "height": 273,
+        "elementCount": 7
+      },
+      {
+        "name": "cloud_identity_aware_proxy",
+        "displayName": "Cloud Identity Aware Proxy",
+        "width": 346,
+        "height": 278,
+        "elementCount": 10
+      },
+      {
+        "name": "cloud_ids",
+        "displayName": "Cloud IDS",
+        "width": 225,
+        "height": 235,
+        "elementCount": 28
+      },
+      {
+        "name": "cloud_iot_core",
+        "displayName": "Cloud IoT Core",
+        "width": 282,
+        "height": 188,
+        "elementCount": 14
+      },
+      {
+        "name": "cloud_kms",
+        "displayName": "Cloud KMS",
+        "width": 287,
+        "height": 433,
+        "elementCount": 8
+      },
+      {
+        "name": "cloud_load_balancing",
+        "displayName": "Cloud Load Balancing",
+        "width": 202,
+        "height": 288,
+        "elementCount": 11
+      },
+      {
+        "name": "cloud_logging",
+        "displayName": "Cloud Logging",
+        "width": 228,
+        "height": 182,
+        "elementCount": 6
+      },
+      {
+        "name": "cloud_memorystore",
+        "displayName": "Cloud Memorystore",
+        "width": 199,
+        "height": 326,
+        "elementCount": 17
+      },
+      {
+        "name": "cloud_monitoring",
+        "displayName": "Cloud Monitoring",
+        "width": 364,
+        "height": 150,
+        "elementCount": 5
+      },
+      {
+        "name": "cloud_nat",
+        "displayName": "Cloud NAT",
+        "width": 260,
+        "height": 384,
+        "elementCount": 15
+      },
+      {
+        "name": "cloud_profiler",
+        "displayName": "Cloud Profiler",
+        "width": 348,
+        "height": 327,
+        "elementCount": 9
+      },
+      {
+        "name": "cloud_router",
+        "displayName": "Cloud Router",
+        "width": 244,
+        "height": 190,
+        "elementCount": 5
+      },
+      {
+        "name": "cloud_run",
+        "displayName": "Cloud Run",
+        "width": 282,
+        "height": 258,
+        "elementCount": 5
+      },
+      {
+        "name": "cloud_run_for_anthos",
+        "displayName": "Cloud Run for Anthos",
+        "width": 358,
+        "height": 319,
+        "elementCount": 10
+      },
+      {
+        "name": "cloud_scheduler",
+        "displayName": "Cloud Scheduler",
+        "width": 312,
+        "height": 326,
+        "elementCount": 11
+      },
+      {
+        "name": "cloud_sdk",
+        "displayName": "Cloud SDK",
+        "width": 252,
+        "height": 238,
+        "elementCount": 7
+      },
+      {
+        "name": "cloud_shell",
+        "displayName": "Cloud Shell",
+        "width": 376,
+        "height": 240,
+        "elementCount": 6
+      },
+      {
+        "name": "cloud_spanner",
+        "displayName": "Cloud Spanner",
+        "width": 253,
+        "height": 252,
+        "elementCount": 9
+      },
+      {
+        "name": "cloud_sql",
+        "displayName": "Cloud SQL",
+        "width": 241,
+        "height": 281,
+        "elementCount": 9
+      },
+      {
+        "name": "cloud_storage",
+        "displayName": "Cloud Storage",
+        "width": 177,
+        "height": 213,
+        "elementCount": 13
+      },
+      {
+        "name": "cloud_storage_for_firebase",
+        "displayName": "Cloud Storage for Firebase",
+        "width": 328,
+        "height": 257,
+        "elementCount": 4
+      },
+      {
+        "name": "cloud_tasks",
+        "displayName": "Cloud Tasks",
+        "width": 238,
+        "height": 243,
+        "elementCount": 6
+      },
+      {
+        "name": "cloud_tpu",
+        "displayName": "Cloud TPU",
+        "width": 360,
+        "height": 181,
+        "elementCount": 7
+      },
+      {
+        "name": "cloud_trace",
+        "displayName": "Cloud Trace",
+        "width": 198,
+        "height": 245,
+        "elementCount": 6
+      },
+      {
+        "name": "cloud_translation",
+        "displayName": "Cloud Translation",
+        "width": 248,
+        "height": 200,
+        "elementCount": 5
+      },
+      {
+        "name": "cloud_vision",
+        "displayName": "Cloud Vision",
+        "width": 216,
+        "height": 194,
+        "elementCount": 6
+      },
+      {
+        "name": "cloud_vpn",
+        "displayName": "Cloud VPN",
+        "width": 183,
+        "height": 236,
+        "elementCount": 9
+      },
+      {
+        "name": "compute_engine",
+        "displayName": "Compute Engine",
+        "width": 196,
+        "height": 243,
+        "elementCount": 19
+      },
+      {
+        "name": "console",
+        "displayName": "Console",
+        "width": 327,
+        "height": 220,
+        "elementCount": 4
+      },
+      {
+        "name": "contact_center_api",
+        "displayName": "Contact Center API",
+        "width": 274,
+        "height": 279,
+        "elementCount": 4
+      },
+      {
+        "name": "container_analysis",
+        "displayName": "Container Analysis",
+        "width": 371,
+        "height": 310,
+        "elementCount": 5
+      },
+      {
+        "name": "container_registry",
+        "displayName": "Container Registry",
+        "width": 215,
+        "height": 276,
+        "elementCount": 18
+      },
+      {
+        "name": "data_catalog",
+        "displayName": "Data Catalog",
+        "width": 212,
+        "height": 218,
+        "elementCount": 10
+      },
+      {
+        "name": "data_studio",
+        "displayName": "Data Studio",
+        "width": 247,
+        "height": 213,
+        "elementCount": 7
+      },
+      {
+        "name": "database_migration_service",
+        "displayName": "Database Migration Service",
+        "width": 197,
+        "height": 235,
+        "elementCount": 9
+      },
+      {
+        "name": "dataflow",
+        "displayName": "Dataflow",
+        "width": 217,
+        "height": 227,
+        "elementCount": 12
+      },
+      {
+        "name": "dataplex",
+        "displayName": "Dataplex",
+        "width": 189,
+        "height": 232,
+        "elementCount": 8
+      },
+      {
+        "name": "dataprep",
+        "displayName": "Dataprep",
+        "width": 228,
+        "height": 221,
+        "elementCount": 17
+      },
+      {
+        "name": "dataproc",
+        "displayName": "Dataproc",
+        "width": 267,
+        "height": 192,
+        "elementCount": 16
+      },
+      {
+        "name": "datastream",
+        "displayName": "Datastream",
+        "width": 185,
+        "height": 202,
+        "elementCount": 8
+      },
+      {
+        "name": "dedicated_interconnect",
+        "displayName": "Dedicated Interconnect",
+        "width": 223,
+        "height": 261,
+        "elementCount": 6
+      },
+      {
+        "name": "deployment_manager",
+        "displayName": "Deployment Manager",
+        "width": 384,
+        "height": 260,
+        "elementCount": 12
+      },
+      {
+        "name": "dialogflow",
+        "displayName": "Dialogflow",
+        "width": 227,
+        "height": 154,
+        "elementCount": 3
+      },
+      {
+        "name": "docs_api",
+        "displayName": "Docs API",
+        "width": 207,
+        "height": 175,
+        "elementCount": 8
+      },
+      {
+        "name": "document_ai",
+        "displayName": "Document AI",
+        "width": 241,
+        "height": 242,
+        "elementCount": 8
+      },
+      {
+        "name": "drive_api",
+        "displayName": "Drive API",
+        "width": 230,
+        "height": 216,
+        "elementCount": 8
+      },
+      {
+        "name": "error_reporting",
+        "displayName": "Error Reporting",
+        "width": 239,
+        "height": 250,
+        "elementCount": 5
+      },
+      {
+        "name": "event_threat_detection",
+        "displayName": "Event Threat Detection",
+        "width": 201,
+        "height": 217,
+        "elementCount": 6
+      },
+      {
+        "name": "eventarc",
+        "displayName": "Eventarc",
+        "width": 212,
+        "height": 242,
+        "elementCount": 18
+      },
+      {
+        "name": "firebase",
+        "displayName": "Firebase",
+        "width": 359,
+        "height": 363,
+        "elementCount": 9
+      },
+      {
+        "name": "gke",
+        "displayName": "GKE",
+        "width": 183,
+        "height": 207,
+        "elementCount": 9
+      },
+      {
+        "name": "gmail_api",
+        "displayName": "Gmail API",
+        "width": 332,
+        "height": 160,
+        "elementCount": 2
+      },
+      {
+        "name": "google_chats_api",
+        "displayName": "Google Chats API",
+        "width": 285,
+        "height": 283,
+        "elementCount": 6
+      },
+      {
+        "name": "google_cloud_game_servers",
+        "displayName": "Google Cloud Game Servers",
+        "width": 338,
+        "height": 274,
+        "elementCount": 22
+      },
+      {
+        "name": "healthcare_natural_language_ai",
+        "displayName": "Healthcare Natural Language AI",
+        "width": 391,
+        "height": 294,
+        "elementCount": 11
+      },
+      {
+        "name": "identity_platform",
+        "displayName": "Identity Platform",
+        "width": 195,
+        "height": 225,
+        "elementCount": 8
+      },
+      {
+        "name": "local_ssd",
+        "displayName": "Local SSD",
+        "width": 277,
+        "height": 267,
+        "elementCount": 3
+      },
+      {
+        "name": "managed_service_for_microsoft",
+        "displayName": "Managed Service for Microsoft",
+        "width": 260,
+        "height": 422,
+        "elementCount": 11
+      },
+      {
+        "name": "maps_sdk",
+        "displayName": "Maps SDK",
+        "width": 201,
+        "height": 321,
+        "elementCount": 6
+      },
+      {
+        "name": "marketplace",
+        "displayName": "Marketplace",
+        "width": 286,
+        "height": 323,
+        "elementCount": 8
+      },
+      {
+        "name": "migrate_for_compute_engine",
+        "displayName": "Migrate for Compute Engine",
+        "width": 293,
+        "height": 267,
+        "elementCount": 7
+      },
+      {
+        "name": "network_connectivity_center",
+        "displayName": "Network Connectivity Center",
+        "width": 319,
+        "height": 292,
+        "elementCount": 43
+      },
+      {
+        "name": "network_intelligence_center",
+        "displayName": "Network Intelligence Center",
+        "width": 394,
+        "height": 278,
+        "elementCount": 4
+      },
+      {
+        "name": "network_service_tiers",
+        "displayName": "Network Service Tiers",
+        "width": 247,
+        "height": 203,
+        "elementCount": 9
+      },
+      {
+        "name": "operations_suite",
+        "displayName": "Operations Suite",
+        "width": 450,
+        "height": 308,
+        "elementCount": 7
+      },
+      {
+        "name": "packet_mirroring",
+        "displayName": "Packet Mirroring",
+        "width": 178,
+        "height": 262,
+        "elementCount": 17
+      },
+      {
+        "name": "partner_interconnect",
+        "displayName": "Partner Interconnect",
+        "width": 192,
+        "height": 185,
+        "elementCount": 6
+      },
+      {
+        "name": "people_api",
+        "displayName": "People API",
+        "width": 170,
+        "height": 208,
+        "elementCount": 6
+      },
+      {
+        "name": "persistent_disk",
+        "displayName": "Persistent Disk",
+        "width": 258,
+        "height": 214,
+        "elementCount": 4
+      },
+      {
+        "name": "private_service_connect",
+        "displayName": "Private Service Connect",
+        "width": 228,
+        "height": 207,
+        "elementCount": 12
+      },
+      {
+        "name": "pub_sub",
+        "displayName": "Pub Sub",
+        "width": 161,
+        "height": 219,
+        "elementCount": 11
+      },
+      {
+        "name": "recaptcha_enterprise",
+        "displayName": "reCAPTCHA Enterprise",
+        "width": 396,
+        "height": 332,
+        "elementCount": 10
+      },
+      {
+        "name": "recommendations_ai",
+        "displayName": "Recommendations AI",
+        "width": 319,
+        "height": 275,
+        "elementCount": 17
+      },
+      {
+        "name": "risk_manager",
+        "displayName": "Risk Manager",
+        "width": 277,
+        "height": 225,
+        "elementCount": 24
+      },
+      {
+        "name": "secret_manager",
+        "displayName": "Secret Manager",
+        "width": 280,
+        "height": 182,
+        "elementCount": 6
+      },
+      {
+        "name": "security_key_enforcement",
+        "displayName": "Security Key Enforcement",
+        "width": 218,
+        "height": 257,
+        "elementCount": 4
+      },
+      {
+        "name": "service_directory",
+        "displayName": "Service Directory",
+        "width": 274,
+        "height": 196,
+        "elementCount": 13
+      },
+      {
+        "name": "sheets_api",
+        "displayName": "Sheets API",
+        "width": 264,
+        "height": 275,
+        "elementCount": 17
+      },
+      {
+        "name": "shielded_vms",
+        "displayName": "Shielded VMs",
+        "width": 242,
+        "height": 206,
+        "elementCount": 11
+      },
+      {
+        "name": "slides_api",
+        "displayName": "Slides API",
+        "width": 264,
+        "height": 170,
+        "elementCount": 7
+      },
+      {
+        "name": "speech_to_text",
+        "displayName": "Speech to Text",
+        "width": 243,
+        "height": 248,
+        "elementCount": 6
+      },
+      {
+        "name": "text_to_speech",
+        "displayName": "Text to Speech",
+        "width": 251,
+        "height": 176,
+        "elementCount": 5
+      },
+      {
+        "name": "traffic_director",
+        "displayName": "Traffic Director",
+        "width": 281,
+        "height": 265,
+        "elementCount": 6
+      },
+      {
+        "name": "transfer_appliance",
+        "displayName": "Transfer Appliance",
+        "width": 333,
+        "height": 207,
+        "elementCount": 13
+      },
+      {
+        "name": "vault_api",
+        "displayName": "Vault API",
+        "width": 333,
+        "height": 272,
+        "elementCount": 12
+      },
+      {
+        "name": "vertex_ai",
+        "displayName": "Vertex AI",
+        "width": 226,
+        "height": 233,
+        "elementCount": 26
+      },
+      {
+        "name": "video_intelligence_api",
+        "displayName": "Video Intelligence API",
+        "width": 306,
+        "height": 224,
+        "elementCount": 3
+      },
+      {
+        "name": "virtual_private_cloud",
+        "displayName": "Virtual Private Cloud",
+        "width": 211,
+        "height": 241,
+        "elementCount": 17
+      },
+      {
+        "name": "vision_product_search",
+        "displayName": "Vision Product Search",
+        "width": 345,
+        "height": 273,
+        "elementCount": 5
+      },
+      {
+        "name": "vm_manager",
+        "displayName": "VM Manager",
+        "width": 368,
+        "height": 244,
+        "elementCount": 6
+      },
+      {
+        "name": "vmware_engine",
+        "displayName": "VMware Engine",
+        "width": 281,
+        "height": 255,
+        "elementCount": 6
+      },
+      {
+        "name": "web_security_scanner",
+        "displayName": "Web Security Scanner",
+        "width": 394,
+        "height": 286,
+        "elementCount": 8
+      },
+      {
+        "name": "workflows",
+        "displayName": "Workflows",
+        "width": 209,
+        "height": 224,
+        "elementCount": 23
+      }
+    ],
+    "kubernetes": [
+      {
+        "name": "ns",
+        "displayName": "ns",
+        "width": 143,
+        "height": 117,
+        "elementCount": 3
+      },
+      {
+        "name": "ns_text",
+        "displayName": "ns-text",
+        "width": 143,
+        "height": 117,
+        "elementCount": 4
+      },
+      {
+        "name": "pod",
+        "displayName": "pod",
+        "width": 140,
+        "height": 117,
+        "elementCount": 5
+      },
+      {
+        "name": "pod_text",
+        "displayName": "pod-text",
+        "width": 140,
+        "height": 117,
+        "elementCount": 6
+      },
+      {
+        "name": "rs",
+        "displayName": "rs",
+        "width": 151,
+        "height": 117,
+        "elementCount": 5
+      },
+      {
+        "name": "rs_text",
+        "displayName": "rs-text",
+        "width": 151,
+        "height": 117,
+        "elementCount": 6
+      },
+      {
+        "name": "deploy",
+        "displayName": "deploy",
+        "width": 117,
+        "height": 138,
+        "elementCount": 3
+      },
+      {
+        "name": "deploy_text",
+        "displayName": "deploy-text",
+        "width": 144,
+        "height": 138,
+        "elementCount": 4
+      },
+      {
+        "name": "ds",
+        "displayName": "ds",
+        "width": 156,
+        "height": 118,
+        "elementCount": 6
+      },
+      {
+        "name": "ds_text",
+        "displayName": "ds-text",
+        "width": 156,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "sts",
+        "displayName": "sts",
+        "width": 151,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "sts_text",
+        "displayName": "sts-text",
+        "width": 151,
+        "height": 118,
+        "elementCount": 8
+      },
+      {
+        "name": "cron",
+        "displayName": "cron",
+        "width": 147,
+        "height": 118,
+        "elementCount": 9
+      },
+      {
+        "name": "cron_text",
+        "displayName": "cron-text",
+        "width": 147,
+        "height": 118,
+        "elementCount": 10
+      },
+      {
+        "name": "cronjob",
+        "displayName": "cronjob",
+        "width": 149,
+        "height": 118,
+        "elementCount": 12
+      },
+      {
+        "name": "cronjob_text",
+        "displayName": "cronjob-text",
+        "width": 149,
+        "height": 118,
+        "elementCount": 13
+      },
+      {
+        "name": "ing",
+        "displayName": "ing",
+        "width": 163,
+        "height": 118,
+        "elementCount": 4
+      },
+      {
+        "name": "ing_text",
+        "displayName": "ing-text",
+        "width": 163,
+        "height": 118,
+        "elementCount": 5
+      },
+      {
+        "name": "svc",
+        "displayName": "svc",
+        "width": 151,
+        "height": 118,
+        "elementCount": 8
+      },
+      {
+        "name": "svc_text",
+        "displayName": "svc-text",
+        "width": 151,
+        "height": 118,
+        "elementCount": 9
+      },
+      {
+        "name": "ep",
+        "displayName": "ep",
+        "width": 151,
+        "height": 118,
+        "elementCount": 9
+      },
+      {
+        "name": "ep_text",
+        "displayName": "ep-text",
+        "width": 151,
+        "height": 118,
+        "elementCount": 10
+      },
+      {
+        "name": "cm",
+        "displayName": "cm",
+        "width": 145,
+        "height": 118,
+        "elementCount": 10
+      },
+      {
+        "name": "cm_text",
+        "displayName": "cm-text",
+        "width": 145,
+        "height": 118,
+        "elementCount": 11
+      },
+      {
+        "name": "secret",
+        "displayName": "secret",
+        "width": 143,
+        "height": 118,
+        "elementCount": 14
+      },
+      {
+        "name": "secret_text",
+        "displayName": "secret-text",
+        "width": 144,
+        "height": 118,
+        "elementCount": 15
+      },
+      {
+        "name": "pv",
+        "displayName": "pv",
+        "width": 147,
+        "height": 118,
+        "elementCount": 4
+      },
+      {
+        "name": "pv_text",
+        "displayName": "pv-text",
+        "width": 147,
+        "height": 118,
+        "elementCount": 5
+      },
+      {
+        "name": "pvc",
+        "displayName": "pvc",
+        "width": 147,
+        "height": 118,
+        "elementCount": 4
+      },
+      {
+        "name": "pvc_text",
+        "displayName": "pvc-text",
+        "width": 147,
+        "height": 118,
+        "elementCount": 5
+      },
+      {
+        "name": "sc",
+        "displayName": "sc",
+        "width": 147,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "sc_text",
+        "displayName": "sc-text",
+        "width": 147,
+        "height": 118,
+        "elementCount": 8
+      },
+      {
+        "name": "quota",
+        "displayName": "quota",
+        "width": 147,
+        "height": 118,
+        "elementCount": 14
+      },
+      {
+        "name": "quota_text",
+        "displayName": "quota-text",
+        "width": 147,
+        "height": 118,
+        "elementCount": 15
+      },
+      {
+        "name": "limits",
+        "displayName": "limits",
+        "width": 151,
+        "height": 118,
+        "elementCount": 4
+      },
+      {
+        "name": "limits_text",
+        "displayName": "limits-text",
+        "width": 151,
+        "height": 118,
+        "elementCount": 5
+      },
+      {
+        "name": "hpa",
+        "displayName": "hpa",
+        "width": 147,
+        "height": 118,
+        "elementCount": 8
+      },
+      {
+        "name": "hpa_text",
+        "displayName": "hpa-text",
+        "width": 147,
+        "height": 118,
+        "elementCount": 9
+      },
+      {
+        "name": "netpol",
+        "displayName": "netpol",
+        "width": 143,
+        "height": 118,
+        "elementCount": 9
+      },
+      {
+        "name": "netpol_text",
+        "displayName": "netpol-text",
+        "width": 145,
+        "height": 118,
+        "elementCount": 10
+      },
+      {
+        "name": "crd",
+        "displayName": "crd",
+        "width": 153,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "crd_text",
+        "displayName": "crd-text",
+        "width": 153,
+        "height": 118,
+        "elementCount": 8
+      },
+      {
+        "name": "psp",
+        "displayName": "psp",
+        "width": 145,
+        "height": 118,
+        "elementCount": 9
+      },
+      {
+        "name": "psp_text",
+        "displayName": "psp-text",
+        "width": 145,
+        "height": 118,
+        "elementCount": 10
+      },
+      {
+        "name": "pdb",
+        "displayName": "pdb",
+        "width": 148,
+        "height": 118,
+        "elementCount": 11
+      },
+      {
+        "name": "pdb_text",
+        "displayName": "pdb-text",
+        "width": 148,
+        "height": 118,
+        "elementCount": 12
+      },
+      {
+        "name": "sa",
+        "displayName": "sa",
+        "width": 141,
+        "height": 118,
+        "elementCount": 6
+      },
+      {
+        "name": "sa_text",
+        "displayName": "sa-text",
+        "width": 141,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "user",
+        "displayName": "user",
+        "width": 144,
+        "height": 118,
+        "elementCount": 5
+      },
+      {
+        "name": "user_text",
+        "displayName": "user-text",
+        "width": 144,
+        "height": 118,
+        "elementCount": 6
+      },
+      {
+        "name": "group",
+        "displayName": "group",
+        "width": 148,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "group_text",
+        "displayName": "group-text",
+        "width": 148,
+        "height": 118,
+        "elementCount": 8
+      },
+      {
+        "name": "role",
+        "displayName": "role",
+        "width": 146,
+        "height": 118,
+        "elementCount": 8
+      },
+      {
+        "name": "role_text",
+        "displayName": "role-text",
+        "width": 146,
+        "height": 118,
+        "elementCount": 9
+      },
+      {
+        "name": "c_role",
+        "displayName": "c.role",
+        "width": 136,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "c_role_text",
+        "displayName": "c.role-text",
+        "width": 142,
+        "height": 118,
+        "elementCount": 8
+      },
+      {
+        "name": "crb",
+        "displayName": "crb",
+        "width": 125,
+        "height": 118,
+        "elementCount": 5
+      },
+      {
+        "name": "crb_text",
+        "displayName": "crb-text",
+        "width": 133,
+        "height": 118,
+        "elementCount": 6
+      },
+      {
+        "name": "rb",
+        "displayName": "rb",
+        "width": 149,
+        "height": 118,
+        "elementCount": 6
+      },
+      {
+        "name": "rb_text",
+        "displayName": "rb-text",
+        "width": 149,
+        "height": 118,
+        "elementCount": 7
+      },
+      {
+        "name": "kubernetes",
+        "displayName": "kubernetes",
+        "width": 156,
+        "height": 128,
+        "elementCount": 11
+      },
+      {
+        "name": "vol_text",
+        "displayName": "vol-text",
+        "width": 147,
+        "height": 118,
+        "elementCount": 5
+      },
+      {
+        "name": "kubelet_text",
+        "displayName": "kubelet-text",
+        "width": 149,
+        "height": 118,
+        "elementCount": 31
+      },
+      {
+        "name": "api_text",
+        "displayName": "api-text",
+        "width": 130,
+        "height": 118,
+        "elementCount": 31
+      },
+      {
+        "name": "c_m_text",
+        "displayName": "c-m-text",
+        "width": 130,
+        "height": 118,
+        "elementCount": 31
+      },
+      {
+        "name": "sched_text",
+        "displayName": "sched-text",
+        "width": 140,
+        "height": 118,
+        "elementCount": 31
+      },
+      {
+        "name": "k_proxy_text",
+        "displayName": "k-proxy-text",
+        "width": 148,
+        "height": 118,
+        "elementCount": 31
+      },
+      {
+        "name": "c_cm_text",
+        "displayName": "c-cm-text",
+        "width": 134,
+        "height": 118,
+        "elementCount": 31
+      },
+      {
+        "name": "master",
+        "displayName": "master",
+        "width": 130,
+        "height": 118,
+        "elementCount": 30
+      },
+      {
+        "name": "master_text",
+        "displayName": "master-text",
+        "width": 147,
+        "height": 118,
+        "elementCount": 31
+      },
+      {
+        "name": "node",
+        "displayName": "node",
+        "width": 130,
+        "height": 118,
+        "elementCount": 30
+      },
+      {
+        "name": "node_text",
+        "displayName": "node-text",
+        "width": 136,
+        "height": 118,
+        "elementCount": 31
+      },
+      {
+        "name": "etcd",
+        "displayName": "etcd",
+        "width": 141,
+        "height": 118,
+        "elementCount": 11
+      },
+      {
+        "name": "etcd_text",
+        "displayName": "etcd-text",
+        "width": 141,
+        "height": 118,
+        "elementCount": 12
+      }
+    ],
+    "infra": [
+      {
+        "name": "network_computer_w_keyboard_3d",
+        "displayName": "Computer w/ keyboard (3D)",
+        "width": 74,
+        "height": 91,
+        "elementCount": 11
+      },
+      {
+        "name": "network_computer_w_keyboard_and_mouse_3d",
+        "displayName": "Computer w/ keyboard and mouse (3D)",
+        "width": 83,
+        "height": 94,
+        "elementCount": 14
+      },
+      {
+        "name": "network_computer_3d",
+        "displayName": "Computer (3D)",
+        "width": 63,
+        "height": 85,
+        "elementCount": 8
+      },
+      {
+        "name": "network_vpn",
+        "displayName": "VPN",
+        "width": 229,
+        "height": 38,
+        "elementCount": 6
+      },
+      {
+        "name": "network_firewall",
+        "displayName": "Firewall",
+        "width": 54,
+        "height": 154,
+        "elementCount": 20
+      },
+      {
+        "name": "network_server",
+        "displayName": "Server",
+        "width": 69,
+        "height": 107,
+        "elementCount": 16
+      },
+      {
+        "name": "network_switch",
+        "displayName": "Switch",
+        "width": 78,
+        "height": 77,
+        "elementCount": 8
+      },
+      {
+        "name": "network_hub",
+        "displayName": "Hub",
+        "width": 82,
+        "height": 79,
+        "elementCount": 5
+      },
+      {
+        "name": "network_router",
+        "displayName": "Router",
+        "width": 72,
+        "height": 60,
+        "elementCount": 6
+      },
+      {
+        "name": "network_client",
+        "displayName": "Client",
+        "width": 68,
+        "height": 52,
+        "elementCount": 5
+      },
+      {
+        "name": "vmware_carbon_black",
+        "displayName": "Carbon Black",
+        "width": 118,
+        "height": 116,
+        "elementCount": 7
+      },
+      {
+        "name": "vmware_nat_rules",
+        "displayName": "NAT Rules",
+        "width": 260,
+        "height": 148,
+        "elementCount": 10
+      },
+      {
+        "name": "vmware_nsx_edge_node",
+        "displayName": "NSX Edge node",
+        "width": 259,
+        "height": 213,
+        "elementCount": 31
+      },
+      {
+        "name": "vmware_cloud_network",
+        "displayName": "Cloud Network",
+        "width": 187,
+        "height": 153,
+        "elementCount": 7
+      },
+      {
+        "name": "vmware_router",
+        "displayName": "Router",
+        "width": 94,
+        "height": 132,
+        "elementCount": 4
+      },
+      {
+        "name": "vmware_nsx_tier_sr",
+        "displayName": "NSX Tier SR",
+        "width": 137,
+        "height": 110,
+        "elementCount": 9
+      },
+      {
+        "name": "vmware_nsx_tier_dr",
+        "displayName": "NSX Tier DR",
+        "width": 132,
+        "height": 104,
+        "elementCount": 10
+      },
+      {
+        "name": "vmware_desktop",
+        "displayName": "Desktop",
+        "width": 111,
+        "height": 109,
+        "elementCount": 7
+      },
+      {
+        "name": "vmware_shield",
+        "displayName": "Shield",
+        "width": 76,
+        "height": 148,
+        "elementCount": 10
+      },
+      {
+        "name": "vmware_key",
+        "displayName": "Key",
+        "width": 73,
+        "height": 109,
+        "elementCount": 8
+      },
+      {
+        "name": "vmware_lock",
+        "displayName": "Lock",
+        "width": 73,
+        "height": 109,
+        "elementCount": 5
+      },
+      {
+        "name": "vmware_dns",
+        "displayName": "DNS",
+        "width": 73,
+        "height": 109,
+        "elementCount": 3
+      },
+      {
+        "name": "vmware_vpn",
+        "displayName": "VPN",
+        "width": 73,
+        "height": 108,
+        "elementCount": 3
+      },
+      {
+        "name": "vmware_load_balancer",
+        "displayName": "Load Balancer",
+        "width": 186,
+        "height": 106,
+        "elementCount": 9
+      },
+      {
+        "name": "vmware_storage_0",
+        "displayName": "Storage 0%",
+        "width": 77,
+        "height": 124,
+        "elementCount": 18
+      },
+      {
+        "name": "vmware_storage_33",
+        "displayName": "Storage 33%",
+        "width": 77,
+        "height": 124,
+        "elementCount": 19
+      },
+      {
+        "name": "vmware_storage_67",
+        "displayName": "Storage 67%",
+        "width": 77,
+        "height": 124,
+        "elementCount": 20
+      },
+      {
+        "name": "vmware_storage_100",
+        "displayName": "Storage 100%",
+        "width": 77,
+        "height": 124,
+        "elementCount": 21
+      },
+      {
+        "name": "vmware_database",
+        "displayName": "Database",
+        "width": 99,
+        "height": 102,
+        "elementCount": 12
+      },
+      {
+        "name": "vmware_datacenter",
+        "displayName": "Datacenter",
+        "width": 115,
+        "height": 111,
+        "elementCount": 27
+      },
+      {
+        "name": "vmware_building",
+        "displayName": "Building",
+        "width": 71,
+        "height": 109,
+        "elementCount": 17
+      },
+      {
+        "name": "vmware_cluster",
+        "displayName": "Cluster",
+        "width": 90,
+        "height": 111,
+        "elementCount": 13
+      },
+      {
+        "name": "vmware_host",
+        "displayName": "Host",
+        "width": 45,
+        "height": 111,
+        "elementCount": 6
+      },
+      {
+        "name": "vmware_rack_of_servers",
+        "displayName": "Rack of servers",
+        "width": 117,
+        "height": 123,
+        "elementCount": 13
+      },
+      {
+        "name": "vmware_baremetal",
+        "displayName": "Baremetal",
+        "width": 101,
+        "height": 62,
+        "elementCount": 5
+      },
+      {
+        "name": "vmware_cloud",
+        "displayName": "Cloud",
+        "width": 100,
+        "height": 99,
+        "elementCount": 10
+      },
+      {
+        "name": "vmware_tag",
+        "displayName": "Tag",
+        "width": 79,
+        "height": 87,
+        "elementCount": 6
+      },
+      {
+        "name": "vmware_namespace",
+        "displayName": "Namespace",
+        "width": 105,
+        "height": 102,
+        "elementCount": 7
+      },
+      {
+        "name": "vmware_vapp",
+        "displayName": "vApp",
+        "width": 73,
+        "height": 96,
+        "elementCount": 10
+      },
+      {
+        "name": "vmware_firewall",
+        "displayName": "Firewall",
+        "width": 159,
+        "height": 84,
+        "elementCount": 9
+      },
+      {
+        "name": "vmware_object_storage",
+        "displayName": "Object Storage",
+        "width": 102,
+        "height": 160,
+        "elementCount": 9
+      },
+      {
+        "name": "vmware_docker",
+        "displayName": "Docker",
+        "width": 94,
+        "height": 100,
+        "elementCount": 15
+      },
+      {
+        "name": "vmware_kubernetes",
+        "displayName": "Kubernetes",
+        "width": 107,
+        "height": 99,
+        "elementCount": 18
+      },
+      {
+        "name": "vmware_tanzu",
+        "displayName": "Tanzu",
+        "width": 95,
+        "height": 125,
+        "elementCount": 9
+      },
+      {
+        "name": "vmware_vra_aria_automation",
+        "displayName": "vRA Aria automation",
+        "width": 109,
+        "height": 158,
+        "elementCount": 8
+      },
+      {
+        "name": "vmware_vro_orchetrator",
+        "displayName": "vRO Orchetrator",
+        "width": 118,
+        "height": 155,
+        "elementCount": 9
+      },
+      {
+        "name": "vmware_network_insight",
+        "displayName": "Network Insight",
+        "width": 77,
+        "height": 158,
+        "elementCount": 20
+      },
+      {
+        "name": "vmware_log_insight",
+        "displayName": "Log Insight",
+        "width": 100,
+        "height": 134,
+        "elementCount": 8
+      },
+      {
+        "name": "vmware_nsx_alb_service_engine",
+        "displayName": "NSX-ALB Service Engine",
+        "width": 135,
+        "height": 139,
+        "elementCount": 16
+      },
+      {
+        "name": "vmware_nsx_alb_controller",
+        "displayName": "NSX-ALB Controller",
+        "width": 97,
+        "height": 135,
+        "elementCount": 9
+      },
+      {
+        "name": "vmware_nsx_manager",
+        "displayName": "NSX Manager",
+        "width": 80,
+        "height": 132,
+        "elementCount": 17
+      },
+      {
+        "name": "vmware_vcenter",
+        "displayName": "vcenter",
+        "width": 80,
+        "height": 135,
+        "elementCount": 10
+      },
+      {
+        "name": "vmware_cloud_director",
+        "displayName": "Cloud Director",
+        "width": 142,
+        "height": 181,
+        "elementCount": 12
+      },
+      {
+        "name": "vmware_esxi",
+        "displayName": "ESXi",
+        "width": 76,
+        "height": 104,
+        "elementCount": 10
+      },
+      {
+        "name": "vmware_trunk",
+        "displayName": "Trunk",
+        "width": 215,
+        "height": 121,
+        "elementCount": 8
+      },
+      {
+        "name": "vmware_vapp_with_2_vms",
+        "displayName": "vApp with 2 VMs",
+        "width": 295,
+        "height": 189,
+        "elementCount": 26
+      },
+      {
+        "name": "vmware_nsx_edge",
+        "displayName": "NSX Edge",
+        "width": 79,
+        "height": 107,
+        "elementCount": 9
+      }
+    ],
+    "data": [
+      {
+        "name": "scala",
+        "displayName": "Scala",
+        "width": 208,
+        "height": 81,
+        "elementCount": 6
+      },
+      {
+        "name": "alluxio",
+        "displayName": "Alluxio",
+        "width": 272,
+        "height": 65,
+        "elementCount": 11
+      },
+      {
+        "name": "databricks",
+        "displayName": "Databricks",
+        "width": 347,
+        "height": 81,
+        "elementCount": 2
+      },
+      {
+        "name": "oracle",
+        "displayName": "Oracle",
+        "width": 308,
+        "height": 72,
+        "elementCount": 14
+      },
+      {
+        "name": "cassandra",
+        "displayName": "Cassandra",
+        "width": 169,
+        "height": 105,
+        "elementCount": 7
+      },
+      {
+        "name": "jupyter",
+        "displayName": "Jupyter",
+        "width": 109,
+        "height": 130,
+        "elementCount": 6
+      },
+      {
+        "name": "seldon_core",
+        "displayName": "Seldon Core",
+        "width": 221,
+        "height": 78,
+        "elementCount": 7
+      },
+      {
+        "name": "mlflow",
+        "displayName": "MLflow",
+        "width": 212,
+        "height": 90,
+        "elementCount": 7
+      },
+      {
+        "name": "schema_registry",
+        "displayName": "Schema Registry",
+        "width": 181,
+        "height": 82,
+        "elementCount": 14
+      },
+      {
+        "name": "kafka",
+        "displayName": "Kafka",
+        "width": 231,
+        "height": 127,
+        "elementCount": 7
+      },
+      {
+        "name": "elasticsearch",
+        "displayName": "Elasticsearch",
+        "width": 374,
+        "height": 71,
+        "elementCount": 7
+      },
+      {
+        "name": "datahub",
+        "displayName": "DataHub",
+        "width": 253,
+        "height": 88,
+        "elementCount": 4
+      },
+      {
+        "name": "powerbi",
+        "displayName": "PowerBI",
+        "width": 278,
+        "height": 91,
+        "elementCount": 6
+      },
+      {
+        "name": "metabase",
+        "displayName": "Metabase",
+        "width": 272,
+        "height": 98,
+        "elementCount": 23
+      },
+      {
+        "name": "superset",
+        "displayName": "Superset",
+        "width": 327,
+        "height": 123,
+        "elementCount": 5
+      },
+      {
+        "name": "dbt",
+        "displayName": "dbt",
+        "width": 134,
+        "height": 93,
+        "elementCount": 3
+      },
+      {
+        "name": "duckdb",
+        "displayName": "DuckDB",
+        "width": 227,
+        "height": 47,
+        "elementCount": 3
+      },
+      {
+        "name": "dagster",
+        "displayName": "Dagster",
+        "width": 316,
+        "height": 97,
+        "elementCount": 10
+      },
+      {
+        "name": "airflow",
+        "displayName": "Airflow",
+        "width": 191,
+        "height": 97,
+        "elementCount": 11
+      },
+      {
+        "name": "airbyte",
+        "displayName": "Airbyte",
+        "width": 257,
+        "height": 114,
+        "elementCount": 4
+      },
+      {
+        "name": "delta_lake",
+        "displayName": "Delta Lake",
+        "width": 320,
+        "height": 71,
+        "elementCount": 2
+      },
+      {
+        "name": "iceberg",
+        "displayName": "Iceberg",
+        "width": 337,
+        "height": 67,
+        "elementCount": 19
+      },
+      {
+        "name": "parquet",
+        "displayName": "Parquet",
+        "width": 111,
+        "height": 118,
+        "elementCount": 13
+      },
+      {
+        "name": "avro",
+        "displayName": "Avro",
+        "width": 235,
+        "height": 103,
+        "elementCount": 14
+      },
+      {
+        "name": "s3_bucket",
+        "displayName": "S3 Bucket",
+        "width": 71,
+        "height": 69,
+        "elementCount": 5
+      },
+      {
+        "name": "ceph",
+        "displayName": "Ceph",
+        "width": 205,
+        "height": 127,
+        "elementCount": 4
+      },
+      {
+        "name": "minio",
+        "displayName": "MinIO",
+        "width": 301,
+        "height": 244,
+        "elementCount": 8
+      },
+      {
+        "name": "hadoop",
+        "displayName": "Hadoop",
+        "width": 341,
+        "height": 98,
+        "elementCount": 8
+      },
+      {
+        "name": "hive",
+        "displayName": "Hive",
+        "width": 106,
+        "height": 104,
+        "elementCount": 2
+      },
+      {
+        "name": "kyuubi",
+        "displayName": "Kyuubi",
+        "width": 272,
+        "height": 95,
+        "elementCount": 4
+      },
+      {
+        "name": "impala",
+        "displayName": "Impala",
+        "width": 203,
+        "height": 133,
+        "elementCount": 6
+      },
+      {
+        "name": "trino",
+        "displayName": "Trino",
+        "width": 210,
+        "height": 137,
+        "elementCount": 18
+      },
+      {
+        "name": "spark",
+        "displayName": "Spark",
+        "width": 180,
+        "height": 111,
+        "elementCount": 12
+      }
+    ]
+  },
+  "totalIcons": 572,
+  "generatedAt": "2026-01-19T19:05:16.758Z"
+}

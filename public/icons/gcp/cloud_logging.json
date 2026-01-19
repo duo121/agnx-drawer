@@ -1,0 +1,309 @@
+{
+  "name": "Cloud Logging",
+  "width": 228,
+  "height": 181.77050915303835,
+  "elements": [
+    {
+      "type": "line",
+      "id": "b3VUN-eVUq0-Kg",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 91.72047782066215,
+      "y": 54.53115455596617,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 54.531151539208814,
+      "height": 127.23935459707214,
+      "seed": 1952548887,
+      "groupIds": [
+        "3mrAEx79eoyDxw",
+        "tXagg7U4hxYxbQ",
+        "UKof1BDp7npSxQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -18.177057552164058
+        ],
+        [
+          -36.354100020554284,
+          -18.177057552164058
+        ],
+        [
+          -36.354100020554284,
+          -63.60154056896147
+        ],
+        [
+          -54.531151539208814,
+          -63.60154056896147
+        ],
+        [
+          -54.531151539208814,
+          63.637814028110654
+        ],
+        [
+          0,
+          63.637814028110654
+        ],
+        [
+          0,
+          45.46075647594665
+        ],
+        [
+          -36.354100020554284,
+          45.46075647594665
+        ],
+        [
+          -36.354100020554284,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "uhEYwsjDcLl16g",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 82.61381231500422,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#669df6",
+      "width": 118.13269512492504,
+      "height": 36.31782203627291,
+      "seed": 577497305,
+      "groupIds": [
+        "rFHYRSJG3bDd8w",
+        "tXagg7U4hxYxbQ",
+        "UKof1BDp7npSxQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          118.13269512492504,
+          0
+        ],
+        [
+          118.13269512492504,
+          -36.317822036272915
+        ],
+        [
+          0,
+          -36.317822036272915
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "lWYMb4h3CO_oeA",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 82.61381231500422,
+      "y": 63.63782006162273,
+      "strokeColor": "#000000",
+      "backgroundColor": "#669df6",
+      "width": 118.13269512492504,
+      "height": 36.354109070818545,
+      "seed": 2034658615,
+      "groupIds": [
+        "rFHYRSJG3bDd8w",
+        "tXagg7U4hxYxbQ",
+        "UKof1BDp7npSxQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          118.13269512492504,
+          0
+        ],
+        [
+          118.13269512492504,
+          -36.35410907081855
+        ],
+        [
+          0,
+          -36.35410907081855
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "AaN8YNkpH_Sgyg",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 82.61381231500422,
+      "y": 127.23934856355754,
+      "strokeColor": "#000000",
+      "backgroundColor": "#669df6",
+      "width": 118.13269512492504,
+      "height": 36.35410303730903,
+      "seed": 1988847033,
+      "groupIds": [
+        "rFHYRSJG3bDd8w",
+        "tXagg7U4hxYxbQ",
+        "UKof1BDp7npSxQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          118.13269512492504,
+          0
+        ],
+        [
+          118.13269512492504,
+          -36.35410303730904
+        ],
+        [
+          0,
+          -36.35410303730904
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "6W58j72vk9YIbw",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 19.012275516986847,
+      "y": 9.10665947214602,
+      "strokeColor": "#000000",
+      "backgroundColor": "#aecbfa",
+      "width": 54.53115681852963,
+      "height": 54.53114852245406,
+      "seed": 378646103,
+      "groupIds": [
+        "QOP9MdZfbAICHQ",
+        "tXagg7U4hxYxbQ",
+        "UKof1BDp7npSxQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          54.53115681852963,
+          0
+        ],
+        [
+          54.53115681852963,
+          -54.53114852245406
+        ],
+        [
+          0,
+          -54.53114852245406
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "id": "I7kWHzdfjF4s2w",
+      "fillStyle": "hachure",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 129.5963887878279,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 228,
+      "height": 40,
+      "seed": 392709785,
+      "groupIds": [
+        "qcrk3s1wC4S5eg",
+        "X0KGZAJM1xoZCg",
+        "UKof1BDp7npSxQ"
+      ],
+      "strokeSharpness": "round",
+      "boundElements": [],
+      "fontSize": 35.25925925925926,
+      "fontFamily": 2,
+      "text": "Cloud Logging",
+      "rawText": "Cloud Logging",
+      "baseline": 32,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Cloud Logging"
+    }
+  ]
+}

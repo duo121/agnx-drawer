@@ -1,0 +1,197 @@
+{
+  "name": "Dialogflow",
+  "width": 226.7060948159716,
+  "height": 153.58244217802837,
+  "elements": [
+    {
+      "type": "line",
+      "id": "FYomZZE1YubVDA",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 80.35816831419652,
+      "y": 18.2934854971395,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 146.34792650177505,
+      "height": 126.6374688795546,
+      "seed": 1342257977,
+      "groupIds": [
+        "C0G6-h72Ct8gkw",
+        "8wZF-CkhLNbEgQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -73.17395834419126,
+          -36.58697753653017
+        ],
+        [
+          -73.17395834419126,
+          25.245018098449776
+        ],
+        [
+          -73.17395834419126,
+          25.245018098449776
+        ],
+        [
+          -71.43607519386237,
+          28.812251761170614
+        ],
+        [
+          -28.995179943034977,
+          53.965795955295604
+        ],
+        [
+          -28.995179943034977,
+          53.965795955295604
+        ],
+        [
+          -27.4402347879631,
+          56.618355997385834
+        ],
+        [
+          -27.4402347879631,
+          88.72343279282644
+        ],
+        [
+          -27.4402347879631,
+          88.72343279282644
+        ],
+        [
+          -26.62980556666829,
+          90.05049134302443
+        ],
+        [
+          -25.075337996706928,
+          90.01215368894466
+        ],
+        [
+          -25.062076832061933,
+          90.00397586170926
+        ],
+        [
+          71.07021228787194,
+          28.812251761170614
+        ],
+        [
+          71.07021228787194,
+          28.812251761170614
+        ],
+        [
+          73.17396815758379,
+          24.970609469998777
+        ],
+        [
+          73.17396815758379,
+          -36.58697753653017
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "xnXDJUh5Z6RZPg",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 80.35816831419652,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#669df6",
+      "width": 146.34792650177505,
+      "height": 72.62515907850926,
+      "seed": 405663959,
+      "groupIds": [
+        "LshLUApsBGdVQQ",
+        "8wZF-CkhLNbEgQ"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          73.17396815758379,
+          -36.58698407879197
+        ],
+        [
+          1.0976083447566438,
+          -72.62515907850926
+        ],
+        [
+          1.0976083447566438,
+          -72.62515907850926
+        ],
+        [
+          -1.0976083447566722,
+          -72.62515907850926
+        ],
+        [
+          -73.17395834419126,
+          -36.58698407879197
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "id": "gTjbRdBc8WNbig",
+      "fillStyle": "hachure",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 111.58244217802837,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 167,
+      "height": 42,
+      "seed": 1049062425,
+      "groupIds": [
+        "HH2GtMT5TM0i9A",
+        "bXdFDnagODFpRA",
+        "xkZaMxOSVTHREQ",
+        "8wZF-CkhLNbEgQ"
+      ],
+      "strokeSharpness": "round",
+      "boundElements": [],
+      "fontSize": 35.99999999999998,
+      "fontFamily": 2,
+      "text": "Dialogflow",
+      "rawText": "Dialogflow",
+      "baseline": 33,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Dialogflow"
+    }
+  ]
+}

@@ -1,0 +1,301 @@
+{
+  "name": "Cloud Router",
+  "width": 243.68455665759018,
+  "height": 189.5699634024154,
+  "elements": [
+    {
+      "type": "line",
+      "id": "swzoYJCLYh3qyA",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 167.33914081006196,
+      "y": 66.78465187496067,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 76.34541584752824,
+      "height": 95.46689942908193,
+      "seed": 222433367,
+      "groupIds": [
+        "x560VNZZLP_3Tg",
+        "hX7m_A57lhU1jg"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          28.647098921486247
+        ],
+        [
+          -47.698304250732726,
+          -19.086341286572775
+        ],
+        [
+          0.03516130794483985,
+          -66.8198005075957
+        ],
+        [
+          0.03516130794483985,
+          -38.20784388109039
+        ],
+        [
+          28.64711159679552,
+          -38.20784388109039
+        ],
+        [
+          28.64711159679552,
+          -0.0351359573262755
+        ],
+        [
+          0,
+          -0.0351359573262755
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "TTthPyKvBW8mww",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 33.73468525867838,
+      "y": 28.61195028885095,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 76.3454015878053,
+      "height": 95.43175079644638,
+      "seed": 1810302105,
+      "groupIds": [
+        "x560VNZZLP_3Tg",
+        "hX7m_A57lhU1jg"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -28.61195187326433,
+          0
+        ],
+        [
+          -28.61195187326433,
+          38.17270158610949
+        ],
+        [
+          0,
+          38.17270158610949
+        ],
+        [
+          0,
+          66.81980050759572
+        ],
+        [
+          47.73344971454097,
+          19.086360299536707
+        ],
+        [
+          0,
+          -28.61195028885067
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "3SZxCr5H7x66_Q",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 119.64083655932882,
+      "y": 95.39661483912005,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 95.43175079644638,
+      "height": 76.38055180485453,
+      "seed": 1835789687,
+      "groupIds": [
+        "x560VNZZLP_3Tg",
+        "hX7m_A57lhU1jg"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -28.647098921486236
+        ],
+        [
+          -38.172701586109476,
+          -28.647098921486236
+        ],
+        [
+          -38.172701586109476,
+          0
+        ],
+        [
+          -66.78465187496013,
+          0
+        ],
+        [
+          -19.086341286572782,
+          47.7334528833683
+        ],
+        [
+          28.64709892148624,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "KDL9yAjqGE0wdg",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 119.64083655932882,
+      "y": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "#4285f4",
+      "width": 95.43175079644638,
+      "height": 76.3454015878053,
+      "seed": 1638730105,
+      "groupIds": [
+        "x560VNZZLP_3Tg",
+        "hX7m_A57lhU1jg"
+      ],
+      "strokeSharpness": "sharp",
+      "boundElements": [],
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          28.61195028885065
+        ],
+        [
+          -38.172701586109476,
+          28.61195028885065
+        ],
+        [
+          -38.172701586109476,
+          0
+        ],
+        [
+          -66.78465187496013,
+          0
+        ],
+        [
+          -19.086341286572782,
+          -47.73345129895465
+        ],
+        [
+          28.64709892148624,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "id": "rrjhN_4zqLGfQA",
+      "fillStyle": "hachure",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 150.5699634024154,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 201,
+      "height": 39,
+      "seed": 580724375,
+      "groupIds": [
+        "555eIYGCYyZ5fg",
+        "JDQd5Vmrjlxjsw",
+        "IcS-lEPGufZNnw",
+        "guq0ZIwn84IynQ",
+        "z43sQjHUvsjNOQ",
+        "sqkgHbZ8n4JiWg",
+        "yJb-bMKQk56tAw",
+        "hX7m_A57lhU1jg"
+      ],
+      "strokeSharpness": "round",
+      "boundElements": [],
+      "fontSize": 33.94285714285716,
+      "fontFamily": 2,
+      "text": "Cloud Router",
+      "rawText": "Cloud Router",
+      "baseline": 31,
+      "textAlign": "center",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Cloud Router"
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "name": "user-text",
+  "width": 144.04727435915197,
+  "height": 118.2052677427292,
+  "elements": [
+    {
+      "type": "line",
+      "id": "gcXrslETRvzuEA",
+      "fillStyle": "solid",
+      "strokeWidth": 4,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 27.36649887438375,
+      "y": 0.9932434502775322,
+      "strokeColor": "#aaa",
+      "backgroundColor": "transparent",
+      "width": 116.41346201192735,
+      "height": 117.21202429245167,
+      "seed": 1219058900,
+      "groupIds": [
+        "2uMwA0cfw0rcbw",
+        "rcJAsnUFOtjx0g"
+      ],
+      "roundness": null,
+      "boundElements": null,
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -45.41825822666448,
+          21.93317786250327
+        ],
+        [
+          -56.008758020263684,
+          73.89921309644683
+        ],
+        [
+          -23.226449164345212,
+          114.8019249876782
+        ],
+        [
+          27.771448817200238,
+          115.98170475270521
+        ],
+        [
+          60.404703991663666,
+          74.07373494971006
+        ],
+        [
+          51.975750469818365,
+          26.413023041480926
+        ],
+        [
+          0.9647884008229255,
+          -1.2303195397464606
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "id": "XmwYf3LP_oghww",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 28.628603426312793,
+      "y": 0,
+      "strokeColor": "#fff",
+      "backgroundColor": "#228be6",
+      "width": 115.41867093283915,
+      "height": 115.59042490744159,
+      "seed": 1992723052,
+      "groupIds": [
+        "2uMwA0cfw0rcbw",
+        "rcJAsnUFOtjx0g"
+      ],
+      "roundness": null,
+      "boundElements": null,
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -46.03006519345368,
+          22.156262723714654
+        ],
+        [
+          -57.194073542612244,
+          73.85420907904887
+        ],
+        [
+          -25.59134221576342,
+          114.90340900903183
+        ],
+        [
+          25.591342215763476,
+          115.59042490744159
+        ],
+        [
+          58.224597390226904,
+          73.68245510444643
+        ],
+        [
+          46.8888350664659,
+          21.984508749112223
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "rectangle",
+      "id": "SAczrmDTpJNKpg",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 0,
+      "y": 22.677915416456017,
+      "strokeColor": "#fff",
+      "backgroundColor": "#fff",
+      "width": 60.941823410247025,
+      "height": 63.84180990164948,
+      "seed": 1252018388,
+      "groupIds": [
+        "iSKU1AI1ueeh_g",
+        "rcJAsnUFOtjx0g"
+      ],
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": null
+    },
+    {
+      "type": "ellipse",
+      "id": "hx17aIL_rt8v7g",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 21.83365960613901,
+      "y": 34.01514331165822,
+      "strokeColor": "#228be6",
+      "backgroundColor": "#228be6",
+      "width": 17.436948693871955,
+      "height": 17.265156095902725,
+      "seed": 1694785132,
+      "groupIds": [
+        "iSKU1AI1ueeh_g",
+        "rcJAsnUFOtjx0g"
+      ],
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": null
+    },
+    {
+      "type": "line",
+      "id": "EJuyNYsfDEpv-Q",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 10.753037037126887,
+      "y": 76.10432981410759,
+      "strokeColor": "#228be6",
+      "backgroundColor": "#228be6",
+      "width": 40.78430126515832,
+      "height": 17.860683402997722,
+      "seed": 583536212,
+      "groupIds": [
+        "iSKU1AI1ueeh_g",
+        "rcJAsnUFOtjx0g"
+      ],
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": null,
+      "startBinding": null,
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          22.752176123870413,
+          -0.23203298726812704
+        ],
+        [
+          38.13308105557189,
+          -0.4530342423499292
+        ],
+        [
+          40.78430126515832,
+          -5.552987946992431
+        ],
+        [
+          38.932573886758746,
+          -11.912288326321715
+        ],
+        [
+          22.474659708527724,
+          -17.860683402997722
+        ],
+        [
+          1.9747437844346223,
+          -11.808586065707317
+        ],
+        [
+          1.3838966824378076,
+          -6.608732978683747
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "id": "a673fMxlSuAhhA",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 10.072424095088309,
+      "y": 85.77294836414609,
+      "strokeColor": "#fff",
+      "backgroundColor": "transparent",
+      "width": 41.75994873046875,
+      "height": 25,
+      "seed": 2063193964,
+      "groupIds": [
+        "rcJAsnUFOtjx0g"
+      ],
+      "roundness": null,
+      "boundElements": null,
+      "fontSize": 20,
+      "fontFamily": 1,
+      "text": "user",
+      "textAlign": "center",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "user",
+      "lineHeight": 1.25
+    }
+  ]
+}
