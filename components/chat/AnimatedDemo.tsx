@@ -22,6 +22,8 @@ interface DemoEdge {
 }
 
 interface Demo {
+    title: string
+    titleEn?: string
     prompt: string
     promptEn?: string
     nodes: DemoNode[]
@@ -31,8 +33,10 @@ interface Demo {
 // Demo configurations - different diagram types
 const demos: Demo[] = [
     {
-        prompt: "画一个用户登录流程图",
-        promptEn: "Draw a user login flowchart",
+        title: "用户登录流程图",
+        titleEn: "User login flowchart",
+        prompt: "画一个用户登录流程图：用户输入账号密码后，系统验证凭据，验证成功则跳转首页，失败则显示错误信息并允许重试，包含开始、输入、验证、成功、失败等节点。",
+        promptEn: "Draw a user login flowchart: After the user enters the account and password, the system verifies the credentials. If successful, redirect to the homepage; if failed, display an error message and allow retry. Include start, input, validation, success, and failure nodes.",
         nodes: [
             { id: "start", x: 50, y: 80, width: 60, height: 60, label: "开始", type: "circle", color: "#10b981" },
             { id: "input", x: 150, y: 80, width: 80, height: 50, label: "输入账号", type: "rounded", color: "#3b82f6" },
@@ -49,8 +53,10 @@ const demos: Demo[] = [
     },
     // AWS + K8s 混合架构图
     {
-        prompt: "AWS + K8s 架构：CloudFront → API Gateway → Lambda → EKS（微服务 + Service Mesh）→ RDS/ElastiCache",
-        promptEn: "AWS + K8s: CloudFront → API Gateway → Lambda → EKS (microservices) → RDS",
+        title: "AWS 云原生微服务架构",
+        titleEn: "AWS Cloud Native Microservices",
+        prompt: "画一个 AWS 云原生微服务架构图：用户通过 CloudFront（CDN）访问，请求经 API Gateway 路由到 Lambda 函数，Lambda 连接 EKS 集群（内含用户服务、订单服务、支付服务三个 Pod，通过 Service Mesh 通信），数据层使用 RDS 和 ElastiCache，所有组件使用正确的 AWS 和 K8s 图标。",
+        promptEn: "Draw an AWS cloud native microservices architecture: Users access via CloudFront (CDN), requests are routed through API Gateway to Lambda functions, Lambda connects to EKS cluster (containing User Service, Order Service, Payment Service pods communicating via Service Mesh), data layer uses RDS and ElastiCache, all components use correct AWS and K8s icons.",
         nodes: [
             // AWS 服务链 (y=85 居中)
             { id: "user", x: 20, y: 75, width: 50, height: 50, label: "User", type: "circle", color: "#64748b" },
@@ -79,28 +85,33 @@ const demos: Demo[] = [
         ],
     },
     {
-        prompt: "设计一个三层架构图",
-        promptEn: "Design a 3-tier architecture diagram",
+        title: "OSI 七层网络模型",
+        titleEn: "OSI 7-Layer Network Model",
+        prompt: "画一个 OSI 七层网络架构图：从上到下依次是应用层（HTTP/FTP）、表示层（加密/压缩）、会话层（连接管理）、传输层（TCP/UDP）、网络层（IP路由）、数据链路层（MAC帧）、物理层（电信号），各层用不同颜色区分，显示层级编号和数据流向。",
+        promptEn: "Draw an OSI 7-layer network architecture diagram: From top to bottom - Application layer (HTTP/FTP), Presentation layer (encryption/compression), Session layer (connection management), Transport layer (TCP/UDP), Network layer (IP routing), Data Link layer (MAC frames), Physical layer (electrical signals), use different colors for each layer, show layer numbers and data flow direction.",
         nodes: [
-            { id: "ui1", x: 60, y: 30, width: 70, height: 40, label: "Web", type: "rounded", color: "#8b5cf6" },
-            { id: "ui2", x: 150, y: 30, width: 70, height: 40, label: "Mobile", type: "rounded", color: "#8b5cf6" },
-            { id: "ui3", x: 240, y: 30, width: 70, height: 40, label: "API", type: "rounded", color: "#8b5cf6" },
-            { id: "svc1", x: 80, y: 100, width: 80, height: 40, label: "用户服务", type: "rect", color: "#3b82f6" },
-            { id: "svc2", x: 200, y: 100, width: 80, height: 40, label: "订单服务", type: "rect", color: "#3b82f6" },
-            { id: "db", x: 140, y: 170, width: 100, height: 40, label: "数据库", type: "rounded", color: "#10b981" },
+            { id: "l7", x: 80, y: 10, width: 180, height: 28, label: "7. 应用层", type: "rounded", color: "#ef4444" },
+            { id: "l6", x: 80, y: 42, width: 180, height: 28, label: "6. 表示层", type: "rounded", color: "#f97316" },
+            { id: "l5", x: 80, y: 74, width: 180, height: 28, label: "5. 会话层", type: "rounded", color: "#eab308" },
+            { id: "l4", x: 80, y: 106, width: 180, height: 28, label: "4. 传输层", type: "rounded", color: "#22c55e" },
+            { id: "l3", x: 80, y: 138, width: 180, height: 28, label: "3. 网络层", type: "rounded", color: "#06b6d4" },
+            { id: "l2", x: 80, y: 170, width: 180, height: 28, label: "2. 数据链路层", type: "rounded", color: "#3b82f6" },
+            { id: "l1", x: 80, y: 202, width: 180, height: 28, label: "1. 物理层", type: "rounded", color: "#8b5cf6" },
         ],
         edges: [
-            { from: "ui1", to: "svc1" },
-            { from: "ui2", to: "svc1" },
-            { from: "ui2", to: "svc2" },
-            { from: "ui3", to: "svc2" },
-            { from: "svc1", to: "db" },
-            { from: "svc2", to: "db" },
+            { from: "l7", to: "l6" },
+            { from: "l6", to: "l5" },
+            { from: "l5", to: "l4" },
+            { from: "l4", to: "l3" },
+            { from: "l3", to: "l2" },
+            { from: "l2", to: "l1" },
         ],
     },
     {
-        prompt: "画一个简单的思维导图",
-        promptEn: "Draw a simple mind map",
+        title: "AI 绘图思维导图",
+        titleEn: "AI Drawing Mind Map",
+        prompt: "画一个 AI 绘图功能的思维导图：中心节点为“AI 绘图”，四个分支分别是流程图、架构图、时序图和 ER 图，使用不同颜色区分各个分支。",
+        promptEn: "Draw a mind map of AI drawing features: Center node is 'AI Drawing', with four branches for Flowchart, Architecture Diagram, Sequence Diagram, and ER Diagram, using different colors to distinguish each branch.",
         nodes: [
             { id: "center", x: 160, y: 90, width: 80, height: 50, label: "AI 绘图", type: "rounded", color: "#ec4899" },
             { id: "b1", x: 50, y: 30, width: 70, height: 35, label: "流程图", type: "rounded", color: "#8b5cf6" },
@@ -116,8 +127,10 @@ const demos: Demo[] = [
         ],
     },
     {
-        prompt: "绘制一个审批流程",
-        promptEn: "Draw an approval workflow",
+        title: "审批流程图",
+        titleEn: "Approval Workflow",
+        prompt: "绘制一个企业审批流程图：员工提交申请后，先经主管审批，通过后转经理审批，经理通过则审批完成，任一环节拒绝则返回驳回状态，使用菱形表示审批决策节点。",
+        promptEn: "Draw an enterprise approval workflow: After employee submits a request, it goes through supervisor approval first, then manager approval if approved, completion if manager approves, rejection status if rejected at any stage, use diamonds for approval decision nodes.",
         nodes: [
             { id: "submit", x: 30, y: 90, width: 60, height: 40, label: "提交", type: "rounded", color: "#3b82f6" },
             { id: "review1", x: 120, y: 90, width: 70, height: 50, label: "主管", type: "diamond", color: "#f59e0b" },
@@ -203,14 +216,14 @@ export function AnimatedDemo({ onPromptClick, className = "" }: AnimatedDemoProp
         return `M ${startX} ${startY} L ${endX} ${endY}`
     }, [currentDemo, getNodeCenter])
 
-    // Typing animation
+    // Typing animation - displays title
     useEffect(() => {
         if (phase !== "typing") return
 
-        const prompt = currentDemo.prompt
-        if (typedText.length < prompt.length) {
+        const title = currentDemo.title
+        if (typedText.length < title.length) {
             const timer = setTimeout(() => {
-                setTypedText(prompt.slice(0, typedText.length + 1))
+                setTypedText(title.slice(0, typedText.length + 1))
             }, TYPING_SPEED)
             return () => clearTimeout(timer)
         } else {
@@ -218,7 +231,7 @@ export function AnimatedDemo({ onPromptClick, className = "" }: AnimatedDemoProp
             const timer = setTimeout(() => setPhase("nodes"), 300)
             return () => clearTimeout(timer)
         }
-    }, [phase, typedText, currentDemo.prompt])
+    }, [phase, typedText, currentDemo.title])
 
     // Node appearance animation
     useEffect(() => {
