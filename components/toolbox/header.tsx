@@ -6,6 +6,7 @@ import {
     Maximize2,
     Save,
     Settings2,
+    Share2,
 } from "lucide-react"
 import { ButtonWithTooltip } from "@/components/button-with-tooltip"
 import { cn } from "@/shared/utils"
@@ -45,6 +46,7 @@ const TOOLBAR_ICONS: Record<string, React.ReactNode> = {
     preview: <Maximize2 className="h-4 w-4" />,
     save: <Save className="h-4 w-4" />,
     export: <Download className="h-4 w-4" />,
+    share: <Share2 className="h-4 w-4" />,
     upload: <ImageIcon className="h-4 w-4" />,
     url: <Link className="h-4 w-4" />,
     model: <Settings2 className="h-4 w-4" />,

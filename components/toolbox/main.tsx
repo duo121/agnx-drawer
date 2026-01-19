@@ -225,6 +225,8 @@ export interface ToolboxProps {
     onSessionDelete?: (id: string) => void
     onSessionCreate?: () => void
     onSessionRename?: (id: string, newTitle: string) => void
+    // 分享命令回调
+    onShareCommand?: () => void
 }
 
 export interface ToolboxRef {
@@ -274,6 +276,7 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
             onSessionDelete,
             onSessionCreate,
             onSessionRename,
+            onShareCommand,
         } = props
 
         // 使用传入的 filteredSessions，如果没有则退回 sessions
@@ -824,10 +827,14 @@ export const Toolbox = forwardRef<ToolboxRef, ToolboxProps>(
         const toolbarActions: Record<string, () => void> = useMemo(() => ({
             save: handleSaveVersion,
             export: () => setCurrentView("export"),
+            share: () => {
+                onClose()
+                onShareCommand?.()
+            },
             upload: onUploadFile,
             url: () => setCurrentView("url"),
             model: () => setCurrentView("config"),
-        }), [handleSaveVersion, onUploadFile])
+        }), [handleSaveVersion, onUploadFile, onClose, onShareCommand])
 
         // ============ 键盘导航 ============
 

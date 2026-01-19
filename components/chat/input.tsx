@@ -190,8 +190,8 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
         handleDragLeave,
         handleDrop,
         handleRemoveUrl,
-        handleCommandClick: originalHandleCommandClick,
-        handleSelectableItemClick: originalHandleSelectableItemClick,
+        handleCommandClick,
+        handleSelectableItemClick,
         handleToolboxKeyDown,
         // 操作
         toggleToolbox,
@@ -200,26 +200,6 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
         dict,
     } = chatInput
 
-    // Wrap command handlers to intercept /share
-    const handleCommandClick = useCallback((cmd: any) => {
-        if (cmd.id === "share" && onShareCommand) {
-            setIsToolboxOpen(false)
-            setToolboxSearchQuery("")
-            onShareCommand()
-            return
-        }
-        originalHandleCommandClick(cmd)
-    }, [originalHandleCommandClick, onShareCommand, setIsToolboxOpen, setToolboxSearchQuery])
-
-    const handleSelectableItemClick = useCallback((item: any) => {
-        if (item.type === "command" && item.id === "share" && onShareCommand) {
-            setIsToolboxOpen(false)
-            setToolboxSearchQuery("")
-            onShareCommand()
-            return
-        }
-        originalHandleSelectableItemClick(item)
-    }, [originalHandleSelectableItemClick, onShareCommand, setIsToolboxOpen, setToolboxSearchQuery])
     
     // Toolbox 的 ref
     const toolboxRef = useRef<ToolboxRef>(null)
@@ -573,6 +553,8 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
                         onSessionDelete={onSessionDelete}
                         onSessionCreate={onSessionCreate}
                         onSessionRename={onSessionRename}
+                        // 分享命令
+                        onShareCommand={onShareCommand}
                     />
                 )}
 
