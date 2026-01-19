@@ -83,6 +83,8 @@ interface ChatInputProps extends UseChatInputOptions {
     onSessionDelete?: (id: string) => void
     onSessionCreate?: () => void
     onSessionRename?: (id: string, newTitle: string) => void
+    // Share command callback (triggered when /share is clicked from toolbox)
+    onShareCommand?: () => void
 }
 
 export interface ChatInputRef {
@@ -126,6 +128,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
     onSessionDelete,
     onSessionCreate,
     onSessionRename,
+    onShareCommand,
 }, ref) {
     const chatInput = useChatInput({
         input,
@@ -187,8 +190,8 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
         handleDragLeave,
         handleDrop,
         handleRemoveUrl,
-        handleCommandClick,
-        handleSelectableItemClick,
+        handleCommandClick: originalHandleCommandClick,
+        handleSelectableItemClick: originalHandleSelectableItemClick,
         handleToolboxKeyDown,
         // 操作
         toggleToolbox,
@@ -196,6 +199,27 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
         // 字典
         dict,
     } = chatInput
+
+    // Wrap command handlers to intercept /share
+    const handleCommandClick = useCallback((cmd: any) => {
+        if (cmd.id === "share" && onShareCommand) {
+            setIsToolboxOpen(false)
+            setToolboxSearchQuery("")
+            onShareCommand()
+            return
+        }
+        originalHandleCommandClick(cmd)
+    }, [originalHandleCommandClick, onShareCommand, setIsToolboxOpen, setToolboxSearchQuery])
+
+    const handleSelectableItemClick = useCallback((item: any) => {
+        if (item.type === "command" && item.id === "share" && onShareCommand) {
+            setIsToolboxOpen(false)
+            setToolboxSearchQuery("")
+            onShareCommand()
+            return
+        }
+        originalHandleSelectableItemClick(item)
+    }, [originalHandleSelectableItemClick, onShareCommand, setIsToolboxOpen, setToolboxSearchQuery])
     
     // Toolbox 的 ref
     const toolboxRef = useRef<ToolboxRef>(null)

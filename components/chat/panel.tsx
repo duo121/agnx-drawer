@@ -43,7 +43,9 @@ import { sanitizeMessages, type ExcalidrawHistoryEntry } from "@/hooks/session"
 import { type FileData, useFileProcessor } from "@/hooks/use-file-processor"
 import { useQuotaManager } from "@/hooks/use-quota-manager"
 import { cn, formatXML, isRealDiagram } from "@/shared/utils"
+import { Button } from "@/components/ui/button"
 import { ChatMessageDisplay } from "./message-display"
+import { SharePreviewDialog } from "@/components/share/preview-dialog"
 
 // localStorage keys for persistence
 const STORAGE_SESSION_ID_KEY = "agnx-session-id"
@@ -234,6 +236,12 @@ export default function ChatPanel({
     const [minimalStyle, setMinimalStyle] = useState(false)
     // 选中的 SKILL IDs（支持多选，引擎类 SKILL 互斥）
     const [selectedSkillIds, setSelectedSkillIds] = useState<Set<string>>(() => new Set([activeEngine]))
+    // Share mode state
+    const [isShareMode, setIsShareMode] = useState(false)
+    const [selectedShareMessageIds, setSelectedShareMessageIds] = useState<Set<string>>(
+        () => new Set(),
+    )
+    const [isShareDialogOpen, setIsShareDialogOpen] = useState(false)
 
     // Restore input from sessionStorage on mount
     useEffect(() => {
@@ -904,8 +912,19 @@ export default function ChatPanel({
         e.preventDefault()
         const isProcessing = status === "streaming" || status === "submitted"
         debugLog("submit", { inputLength: input.length, isProcessing, files })
-        if (input.trim() && !isProcessing) {
-            const trimmedInput = input.trim()
+        const rawInput = input ?? ""
+        if (rawInput.trim() && !isProcessing) {
+            const trimmedInput = rawInput.trim()
+
+            // Handle /share command locally: enter share mode instead of sending to AI
+            if (trimmedInput === "/share") {
+                setIsShareMode(true)
+                setSelectedShareMessageIds(new Set())
+                setInput("")
+                sessionStorage.removeItem(SESSION_STORAGE_INPUT_KEY)
+                return
+            }
+
             // Check if input matches a cached example (only when no messages yet)
             if (messages.length === 0) {
                 const cached = findCachedResponse(
@@ -1546,6 +1565,19 @@ export default function ChatPanel({
                         // 清理截断续传状态
                         partialXmlRef.current = ""
                     }}
+                    shareMode={isShareMode}
+                    selectedMessageIds={selectedShareMessageIds}
+                    onToggleMessageSelected={(id) => {
+                        setSelectedShareMessageIds((prev) => {
+                            const next = new Set(prev)
+                            if (next.has(id)) {
+                                next.delete(id)
+                            } else {
+                                next.add(id)
+                            }
+                            return next
+                        })
+                    }}
                 />
             </main>
 
@@ -1557,6 +1589,46 @@ export default function ChatPanel({
                     isMobile ? "p-2" : "p-4"
                 )}
             >
+                {isShareMode && (
+                    <div className="mb-2 flex items-center justify-between rounded-xl border border-border/60 bg-muted/60 px-3 py-2 text-xs text-muted-foreground">
+                        <div>
+                            已选择 <span className="font-medium text-foreground">{selectedShareMessageIds.size}</span> 条对话
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 px-2 text-xs"
+                                onClick={() => {
+                                    setSelectedShareMessageIds(
+                                        new Set(messages.map((m) => m.id)),
+                                    )
+                                }}
+                            >
+                                全选
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 px-2 text-xs"
+                                onClick={() => {
+                                    setIsShareMode(false)
+                                    setSelectedShareMessageIds(new Set())
+                                }}
+                            >
+                                退出
+                            </Button>
+                            <Button
+                                size="sm"
+                                className="h-7 px-3 text-xs"
+                                disabled={selectedShareMessageIds.size === 0}
+                                onClick={() => setIsShareDialogOpen(true)}
+                            >
+                                分享
+                            </Button>
+                        </div>
+                    </div>
+                )}
                 <ChatInput
                     ref={chatInputRef}
                     input={input}
@@ -1620,6 +1692,10 @@ export default function ChatPanel({
                     onSessionDelete={handleDeleteSession}
                     onSessionCreate={handleNewChat}
                     onSessionRename={sessionManager.renameSession}
+                    onShareCommand={() => {
+                        setIsShareMode(true)
+                        setSelectedShareMessageIds(new Set())
+                    }}
                     onEngineSwitch={async () => {
                         // 防止重复点击或在引擎切换过程中再次点击
                         if (engineSwitchInProgressRef.current) return
@@ -1647,6 +1723,14 @@ export default function ChatPanel({
                 open={showModelConfigDialog}
                 onOpenChange={setShowModelConfigDialog}
                 modelConfig={modelConfig}
+            />
+
+            <SharePreviewDialog
+                open={isShareDialogOpen}
+                onOpenChange={(open) => setIsShareDialogOpen(open)}
+                messages={messages as any}
+                selectedIds={Array.from(selectedShareMessageIds)}
+                darkMode={darkMode}
             />
         </div>
     )

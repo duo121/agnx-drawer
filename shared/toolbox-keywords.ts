@@ -98,6 +98,12 @@ export const TOOLBAR_BUTTON_KEYWORDS: ToolbarButtonKeywords[] = [
         tooltip: '/export 导出图表',
     },
     {
+        key: 'share',
+        command: '/share',
+        keywords: ['share', '分享', 'image', '图片', 'markdown', '长图'],
+        tooltip: '/share 分享会话为图片或 Markdown',
+    },
+    {
         key: 'upload',
         command: '/upload',
         keywords: ['upload', '上传', 'image', '图片', 'file', '文件'],

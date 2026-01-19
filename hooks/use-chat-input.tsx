@@ -239,6 +239,14 @@ export function useChatInput({
             enabled: true, // 始终可用，AI 会自动切换到 Excalidraw
             badge: "Excalidraw",
         },
+        {
+            id: "share",
+            type: "command",
+            label: "/share",
+            desc: "选择多条会话并生成长图或 Markdown 分享",
+            enabled: true,
+            badge: "Chat",
+        },
     ]
 
     // Skills 定义 - 使用 selectedSkillIds 判断 isCurrent

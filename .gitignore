@@ -79,6 +79,7 @@ yarn-error.log*
 .vscode/
 .spec-workflow
 CLAUDE.md
+WARP.md
 
 # ===== 自动生成 =====
 next-env.d.ts

@@ -21,6 +21,7 @@ import {
     ReasoningContent,
     ReasoningTrigger,
 } from "@/components/ai-elements/reasoning"
+import { cn } from "@/shared/utils"
 import { ChatLobby } from "./chat-lobby"
 import { ToolCallCard } from "./tool-call-card"
 import type { DiagramOperation, ToolPartLike } from "./types"
@@ -114,6 +115,10 @@ interface ChatMessageDisplayProps {
     isRestored?: boolean
     loadedMessageIdsRef?: MutableRefObject<Set<string>>
     onStop?: () => void
+    // Share mode: allow multi-select messages for export
+    shareMode?: boolean
+    selectedMessageIds?: Set<string>
+    onToggleMessageSelected?: (messageId: string) => void
 }
 
 export function ChatMessageDisplay({
@@ -131,6 +136,9 @@ export function ChatMessageDisplay({
     isRestored = false,
     loadedMessageIdsRef,
     onStop,
+    shareMode = false,
+    selectedMessageIds,
+    onToggleMessageSelected,
 }: ChatMessageDisplayProps) {
     const dict = useDictionary()
     const {
@@ -675,10 +683,11 @@ export function ChatMessageDisplay({
                         const isRestoredMessage =
                             loadedMessageIdsRef?.current.has(message.id) ??
                             false
+                        const isSelected = selectedMessageIds?.has(message.id) ?? false
                         return (
                             <div
                                 key={message.id}
-                                className={`flex w-full ${message.role === "user" ? "justify-end" : "justify-start"} ${isRestoredMessage ? "" : "animate-message-in"}`}
+                                className={`flex w-full items-start gap-2 ${isRestoredMessage ? "" : "animate-message-in"}`}
                                 style={
                                     isRestoredMessage
                                         ? undefined
@@ -687,7 +696,27 @@ export function ChatMessageDisplay({
                                           }
                                 }
                             >
-                                <div className={message.role === "user" ? "max-w-[85%] min-w-0" : "flex-1 min-w-0"}>
+                                {shareMode && (
+                                    <button
+                                        type="button"
+                                        className="mt-2 h-4 w-4 flex-shrink-0 rounded-full border border-border flex items-center justify-center bg-background"
+                                        onClick={() => onToggleMessageSelected?.(message.id)}
+                                    >
+                                        <span
+                                            className={cn(
+                                                "h-2.5 w-2.5 rounded-full",
+                                                isSelected ? "bg-primary" : "bg-transparent",
+                                            )}
+                                        />
+                                    </button>
+                                )}
+                                <div
+                                    className={
+                                        message.role === "user"
+                                            ? "max-w-[85%] min-w-0 ml-auto"
+                                            : "flex-1 min-w-0"
+                                    }
+                                >
                                     {/* Reasoning blocks - displayed first for assistant messages */}
                                     {message.role === "assistant" &&
                                         message.parts?.map(
