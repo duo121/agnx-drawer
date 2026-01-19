@@ -226,6 +226,8 @@ export function SharePreviewDialog({
                                             {parts.map((part: any, partIndex: number) => {
                                                 // Text part
                                                 if (part.type === "text" && part.text?.trim()) {
+                                                    // Trim leading/trailing whitespace and normalize multiple newlines
+                                                    const trimmedText = part.text.trim()
                                                     return (
                                                         <div
                                                             key={`${m.id}-text-${partIndex}`}
@@ -247,7 +249,7 @@ export function SharePreviewDialog({
                                                                           ),
                                                                 )}
                                                             >
-                                                                {part.text}
+                                                                {trimmedText}
                                                             </div>
                                                         </div>
                                                     )
