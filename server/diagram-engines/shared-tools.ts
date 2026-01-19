@@ -4,7 +4,7 @@
  * 使用 BaseTool 统一管理所有共享工具
  */
 
-import { readTool, switchCanvasTool } from "@/server/tools"
+import { readTool, writeTool, switchCanvasTool, bashTool } from "@/server/tools"
 
 /**
  * 获取所有共享工具的定义
@@ -17,6 +17,18 @@ export function getSharedTools(): Record<string, any> {
             description: readTool.description,
             inputSchema: readTool.getInputSchema(),
             execute: readTool.execute.bind(readTool),
+        },
+        // 文件写入工具
+        [writeTool.name]: {
+            description: writeTool.description,
+            inputSchema: writeTool.getInputSchema(),
+            execute: writeTool.execute.bind(writeTool),
+        },
+        // Bash 执行工具
+        [bashTool.name]: {
+            description: bashTool.description,
+            inputSchema: bashTool.getInputSchema(),
+            execute: bashTool.execute.bind(bashTool),
         },
         // 画布切换工具（客户端工具）
         [switchCanvasTool.name]: {
@@ -33,6 +45,8 @@ export function getSharedTools(): Record<string, any> {
 export function getSharedToolInstances() {
     return {
         readTool,
+        writeTool,
+        bashTool,
         switchCanvasTool,
     }
 }

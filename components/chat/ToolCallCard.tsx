@@ -9,7 +9,9 @@ import {
   Copy,
   Cpu,
   Download,
+  FileEdit,
   MousePointerClick,
+  Terminal,
   XCircle,
 } from "lucide-react";
 import type {Dispatch, SetStateAction} from "react";
@@ -178,6 +180,10 @@ export function ToolCallCard({
         return "Edit Diagram";
       case "read_file":
         return "Read File";
+      case "write_file":
+        return "Write File";
+      case "bash":
+        return "Execute Command";
       case "switch_canvas":
         return "Switch Canvas";
       case "convert_plantuml_to_drawio":
@@ -626,6 +632,79 @@ export function ToolCallCard({
               {(input as { reason?: string }).reason}
             </div>
           )}
+        </div>
+      )}
+      {/* Show write_file output */}
+      {toolName === "write_file" && state === "output-available" && isExpanded && (
+        <div className="px-4 py-3 border-t border-border/40">
+          {(() => {
+            const writeResult = output as { success?: boolean; path?: string; bytesWritten?: number; mode?: string; error?: string } | null;
+            if (writeResult?.success) {
+              return (
+                <div className="text-xs text-muted-foreground flex items-center gap-2">
+                  <FileEdit className="w-3 h-3 text-green-600" />
+                  <span>
+                    {writeResult.mode === "created" ? "Created" : writeResult.mode === "appended" ? "Appended to" : "Overwrote"}{" "}
+                    <code className="bg-muted px-1 rounded">{writeResult.path}</code>
+                  </span>
+                  <span className="text-muted-foreground/60">({writeResult.bytesWritten} bytes)</span>
+                </div>
+              );
+            }
+            return (
+              <div className="text-xs text-red-600 flex items-center gap-2">
+                <XCircle className="w-3 h-3" />
+                <span>{writeResult?.error || "Failed to write file"}</span>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+      {/* Show bash output */}
+      {toolName === "bash" && state === "output-available" && isExpanded && (
+        <div className="px-4 py-3 border-t border-border/40">
+          {(() => {
+            const bashResult = output as { 
+              success?: boolean; 
+              command?: string;
+              stdout?: string; 
+              stderr?: string; 
+              exitCode?: number; 
+              error?: string 
+            } | null;
+            return (
+              <>
+                {bashResult?.command && (
+                  <div className="text-xs text-muted-foreground mb-2 flex items-center gap-2">
+                    <Terminal className="w-3 h-3" />
+                    <code className="bg-muted px-1.5 py-0.5 rounded font-mono">{bashResult.command}</code>
+                    {bashResult.success ? (
+                      <span className="text-green-600 text-[10px]">✓ exit 0</span>
+                    ) : (
+                      <span className="text-red-600 text-[10px]">✗ exit {bashResult.exitCode ?? 1}</span>
+                    )}
+                  </div>
+                )}
+                {(bashResult?.stdout || bashResult?.stderr) && (
+                  <pre className="text-xs bg-muted/50 p-2 rounded-md overflow-auto max-h-60 whitespace-pre-wrap font-mono">
+                    {bashResult.stdout && (
+                      <span className="text-foreground/80">{bashResult.stdout.substring(0, 3000)}</span>
+                    )}
+                    {bashResult.stderr && (
+                      <span className="text-red-600">{bashResult.stderr.substring(0, 1000)}</span>
+                    )}
+                    {((bashResult.stdout?.length || 0) > 3000 || (bashResult.stderr?.length || 0) > 1000) && "\n..."}
+                  </pre>
+                )}
+                {bashResult?.error && !bashResult.stdout && !bashResult.stderr && (
+                  <div className="text-xs text-red-600 flex items-center gap-2">
+                    <XCircle className="w-3 h-3" />
+                    <span>{bashResult.error}</span>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
       )}
     </div>

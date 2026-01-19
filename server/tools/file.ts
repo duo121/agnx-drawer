@@ -116,3 +116,116 @@ For skill documentation, common paths include:
  * 创建 Read 工具实例
  */
 export const readTool = new ReadTool()
+
+/**
+ * Write 工具输入
+ */
+const WriteInputSchema = z.object({
+    file_path: z.string().describe("The path to the file to write (absolute or relative to cwd)"),
+    content: z.string().describe("The content to write to the file"),
+    append: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe("If true, append to file instead of overwriting"),
+    create_dirs: z
+        .boolean()
+        .optional()
+        .default(true)
+        .describe("If true, create parent directories if they don't exist"),
+})
+
+type WriteInput = z.infer<typeof WriteInputSchema>
+
+/**
+ * Write 工具结果
+ */
+interface WriteResult extends ToolResult {
+    path?: string
+    bytesWritten?: number
+    mode?: "created" | "overwritten" | "appended"
+}
+
+/**
+ * Write 工具
+ * 写入内容到文件
+ */
+export class WriteTool extends BaseTool<WriteInput, WriteResult> {
+    name = "write_file"
+    description = `Write content to a file.
+
+Usage:
+- The file_path can be absolute or relative to the current working directory
+- By default, this will overwrite the file if it exists
+- Set append=true to append to the file instead
+- Parent directories will be created automatically by default
+
+Use this tool to create or modify files.`
+
+    getInputSchema() {
+        return WriteInputSchema
+    }
+
+    async execute(input: WriteInput): Promise<WriteResult> {
+        const { file_path, content, append = false, create_dirs = true } = input
+
+        try {
+            // 解析路径（支持相对路径）
+            const resolvedPath = path.isAbsolute(file_path)
+                ? file_path
+                : path.resolve(process.cwd(), file_path)
+
+            // 检查是否是已存在的目录
+            if (fs.existsSync(resolvedPath)) {
+                const stat = fs.statSync(resolvedPath)
+                if (stat.isDirectory()) {
+                    return {
+                        success: false,
+                        error: `Path is a directory: ${file_path}`,
+                    }
+                }
+            }
+
+            // 创建父目录
+            if (create_dirs) {
+                const dir = path.dirname(resolvedPath)
+                if (!fs.existsSync(dir)) {
+                    fs.mkdirSync(dir, { recursive: true })
+                }
+            }
+
+            // 判断模式
+            const fileExists = fs.existsSync(resolvedPath)
+            let mode: "created" | "overwritten" | "appended"
+
+            if (append) {
+                fs.appendFileSync(resolvedPath, content, "utf-8")
+                mode = "appended"
+            } else {
+                fs.writeFileSync(resolvedPath, content, "utf-8")
+                mode = fileExists ? "overwritten" : "created"
+            }
+
+            const bytesWritten = Buffer.byteLength(content, "utf-8")
+
+            return {
+                success: true,
+                output: `Successfully ${mode} ${file_path} (${bytesWritten} bytes)`,
+                path: resolvedPath,
+                bytesWritten,
+                mode,
+            }
+        } catch (err) {
+            const message = err instanceof Error ? err.message : String(err)
+            return {
+                success: false,
+                error: `Error writing file: ${message}`,
+            }
+        }
+    }
+}
+
+/**
+ * 创建 Write 工具实例
+ */
+export const writeTool = new WriteTool()
