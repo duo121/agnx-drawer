@@ -67,11 +67,21 @@ function buildMarkdown(messages: UIMessage[]): string {
                             toolContent += `\n\n\`\`\`\n${p.input.code}\n\`\`\``
                         } else if (p.input.xml) {
                             toolContent += `\n\n\`\`\`xml\n${p.input.xml}\n\`\`\``
+                        } else if (p.input.elements && Array.isArray(p.input.elements)) {
+                            // Excalidraw elements - show summary
+                            toolContent += `\n\n> 包含 ${p.input.elements.length} 个图形元素`
+                        } else if (p.input.operations && Array.isArray(p.input.operations)) {
+                            // Edit operations - show summary
+                            toolContent += `\n\n> 包含 ${p.input.operations.length} 个编辑操作`
                         } else {
-                            // Show JSON for other inputs
+                            // Show JSON for other inputs (with size limit)
                             const inputStr = JSON.stringify(p.input, null, 2)
                             if (inputStr.length < 2000) {
                                 toolContent += `\n\n\`\`\`json\n${inputStr}\n\`\`\``
+                            } else {
+                                // Too large, show summary
+                                const keys = Object.keys(p.input)
+                                toolContent += `\n\n> 包含 ${keys.length} 个字段: ${keys.slice(0, 5).join(", ")}${keys.length > 5 ? "..." : ""}`
                             }
                         }
                     }

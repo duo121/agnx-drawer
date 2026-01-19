@@ -1589,16 +1589,16 @@ export default function ChatPanel({
                     isMobile ? "p-2" : "p-4"
                 )}
             >
-                {isShareMode && (
-                    <div className="mb-2 flex items-center justify-between rounded-xl border border-border/60 bg-muted/60 px-3 py-2 text-xs text-muted-foreground">
-                        <div>
+                {isShareMode ? (
+                    <div className="flex items-center justify-between rounded-xl border border-border/60 bg-muted/60 px-3 py-2.5 text-sm">
+                        <div className="text-muted-foreground">
                             已选择 <span className="font-medium text-foreground">{selectedShareMessageIds.size}</span> 条对话
                         </div>
                         <div className="flex items-center gap-2">
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-7 px-2 text-xs"
+                                className="h-8 px-3"
                                 onClick={() => {
                                     setSelectedShareMessageIds(
                                         new Set(messages.map((m) => m.id)),
@@ -1610,7 +1610,7 @@ export default function ChatPanel({
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-7 px-2 text-xs"
+                                className="h-8 px-3"
                                 onClick={() => {
                                     setIsShareMode(false)
                                     setSelectedShareMessageIds(new Set())
@@ -1620,7 +1620,7 @@ export default function ChatPanel({
                             </Button>
                             <Button
                                 size="sm"
-                                className="h-7 px-3 text-xs"
+                                className="h-8 px-4"
                                 disabled={selectedShareMessageIds.size === 0}
                                 onClick={() => setIsShareDialogOpen(true)}
                             >
@@ -1628,7 +1628,7 @@ export default function ChatPanel({
                             </Button>
                         </div>
                     </div>
-                )}
+                ) : (
                 <ChatInput
                     ref={chatInputRef}
                     input={input}
@@ -1717,6 +1717,7 @@ export default function ChatPanel({
                         partialXmlRef.current = ""
                     }}
                 />
+                )}
             </footer>
 
             <ModelConfigDialog
