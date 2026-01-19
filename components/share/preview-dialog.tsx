@@ -212,90 +212,99 @@ export function SharePreviewDialog({
                             {/* Messages */}
                             <div className="p-4 space-y-4">
                                 {selectedMessages.map((m) => {
-                                    const text = getMessageText(m)
-                                    const toolParts = getToolParts(m)
                                     const isUser = m.role === "user"
-                                    const hasContent = text.trim() || toolParts.length > 0
+                                    const parts = m.parts || []
+                                    const hasContent = parts.some(
+                                        (p: any) => (p.type === "text" && p.text?.trim()) || p.type?.startsWith("tool-")
+                                    )
 
                                     if (!hasContent) return null
 
                                     return (
                                         <div key={m.id} className="space-y-2">
-                                            {/* Text content */}
-                                            {text.trim() && (
-                                                <div
-                                                    className={cn(
-                                                        "flex w-full",
-                                                        isUser ? "justify-end" : "justify-start",
-                                                    )}
-                                                >
-                                                    <div
-                                                        className={cn(
-                                                            "rounded-2xl px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words",
-                                                            isUser
-                                                                ? "bg-primary text-primary-foreground rounded-br-md max-w-[85%]"
-                                                                : cn(
-                                                                      "rounded-bl-md w-full",
-                                                                      darkMode
-                                                                          ? "bg-slate-700/50"
-                                                                          : "bg-white border border-slate-200",
-                                                                  ),
-                                                        )}
-                                                    >
-                                                        {text}
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* Tool calls */}
-                                            {toolParts.map((part: any) => {
-                                                const toolCallId = part.toolCallId
-                                                const toolName = part.type?.replace("tool-", "") || ""
-                                                const metadata = getToolMetadata(toolName)
-                                                const IconComponent = metadata.icon
-                                                const isComplete = part.state === "output-available"
-                                                const previewUrl = (part.output as any)?.thumbnailDataUrl
-
-                                                return (
-                                                    <div
-                                                        key={toolCallId}
-                                                        className={cn(
-                                                            "rounded-xl border overflow-hidden",
-                                                            darkMode
-                                                                ? "bg-slate-700/30 border-slate-600"
-                                                                : "bg-white border-slate-200",
-                                                        )}
-                                                    >
-                                                        {/* Tool header */}
+                                            {/* Render parts in original order */}
+                                            {parts.map((part: any, partIndex: number) => {
+                                                // Text part
+                                                if (part.type === "text" && part.text?.trim()) {
+                                                    return (
                                                         <div
+                                                            key={`${m.id}-text-${partIndex}`}
                                                             className={cn(
-                                                                "flex items-center gap-2 px-3 py-2",
-                                                                darkMode ? "bg-slate-700/50" : "bg-slate-100",
+                                                                "flex w-full",
+                                                                isUser ? "justify-end" : "justify-start",
                                                             )}
                                                         >
-                                                            {IconComponent && (
-                                                                <IconComponent className="w-4 h-4 text-primary" />
+                                                            <div
+                                                                className={cn(
+                                                                    "rounded-2xl px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words",
+                                                                    isUser
+                                                                        ? "bg-primary text-primary-foreground rounded-br-md max-w-[85%]"
+                                                                        : cn(
+                                                                              "rounded-bl-md w-full",
+                                                                              darkMode
+                                                                                  ? "bg-slate-700/50"
+                                                                                  : "bg-white border border-slate-200",
+                                                                          ),
+                                                                )}
+                                                            >
+                                                                {part.text}
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                }
+
+                                                // Tool part
+                                                if (part.type?.startsWith("tool-")) {
+                                                    const toolCallId = part.toolCallId
+                                                    const toolName = part.type?.replace("tool-", "") || ""
+                                                    const metadata = getToolMetadata(toolName)
+                                                    const IconComponent = metadata.icon
+                                                    const isComplete = part.state === "output-available"
+                                                    const previewUrl = (part.output as any)?.thumbnailDataUrl
+
+                                                    return (
+                                                        <div
+                                                            key={toolCallId || `${m.id}-tool-${partIndex}`}
+                                                            className={cn(
+                                                                "rounded-xl border overflow-hidden",
+                                                                darkMode
+                                                                    ? "bg-slate-700/30 border-slate-600"
+                                                                    : "bg-white border-slate-200",
                                                             )}
-                                                            <span className="text-xs font-medium flex-1">
-                                                                {metadata.displayName}
-                                                            </span>
-                                                            {isComplete && (
-                                                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                                        >
+                                                            {/* Tool header */}
+                                                            <div
+                                                                className={cn(
+                                                                    "flex items-center gap-2 px-3 py-2",
+                                                                    darkMode ? "bg-slate-700/50" : "bg-slate-100",
+                                                                )}
+                                                            >
+                                                                {IconComponent && (
+                                                                    <IconComponent className="w-4 h-4 text-primary" />
+                                                                )}
+                                                                <span className="text-xs font-medium flex-1">
+                                                                    {metadata.displayName}
+                                                                </span>
+                                                                {isComplete && (
+                                                                    <CheckCircle className="w-4 h-4 text-green-500" />
+                                                                )}
+                                                            </div>
+
+                                                            {/* Tool preview image - always show if available */}
+                                                            {previewUrl && (
+                                                                <div className="p-2">
+                                                                    <img
+                                                                        src={previewUrl}
+                                                                        alt="Preview"
+                                                                        className="w-full rounded-lg"
+                                                                    />
+                                                                </div>
                                                             )}
                                                         </div>
+                                                    )
+                                                }
 
-                                                        {/* Tool preview image - always show if available */}
-                                                        {previewUrl && (
-                                                            <div className="p-2">
-                                                                <img
-                                                                    src={previewUrl}
-                                                                    alt="Preview"
-                                                                    className="w-full rounded-lg"
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )
+                                                return null
                                             })}
                                         </div>
                                     )
