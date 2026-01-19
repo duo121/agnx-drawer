@@ -40,20 +40,47 @@ function buildMarkdown(messages: UIMessage[]): string {
         .map((m) => {
             const roleLabel =
                 m.role === "user" ? "User" : m.role === "assistant" ? "Assistant" : "System"
-            const text = getMessageText(m)
-            const toolParts = getToolParts(m)
-            let toolsText = ""
-            if (toolParts.length > 0) {
-                toolsText = toolParts
-                    .map((p: any) => {
-                        const toolName = p.type?.replace("tool-", "") || ""
-                        const metadata = getToolMetadata(toolName)
-                        const status = p.state === "output-available" ? "✅" : p.state === "output-error" ? "❌" : "⏳"
-                        return `${status} ${metadata.displayName}`
-                    })
-                    .join("\n")
+            const parts = m.parts || []
+            
+            // Render parts in original order
+            const contentParts: string[] = []
+            
+            for (const part of parts) {
+                // Text part
+                if (part.type === "text" && (part as any).text?.trim()) {
+                    contentParts.push((part as any).text.trim())
+                }
+                
+                // Tool part - include full details
+                if (part.type?.startsWith("tool-")) {
+                    const p = part as any
+                    const toolName = p.type?.replace("tool-", "") || ""
+                    const metadata = getToolMetadata(toolName)
+                    const status = p.state === "output-available" ? "✅" : p.state === "output-error" ? "❌" : "⏳"
+                    
+                    let toolContent = `${status} **${metadata.displayName}**`
+                    
+                    // Include input if available
+                    if (p.input && typeof p.input === "object" && Object.keys(p.input).length > 0) {
+                        // For code-based tools, show code
+                        if (p.input.code) {
+                            toolContent += `\n\n\`\`\`\n${p.input.code}\n\`\`\``
+                        } else if (p.input.xml) {
+                            toolContent += `\n\n\`\`\`xml\n${p.input.xml}\n\`\`\``
+                        } else {
+                            // Show JSON for other inputs
+                            const inputStr = JSON.stringify(p.input, null, 2)
+                            if (inputStr.length < 2000) {
+                                toolContent += `\n\n\`\`\`json\n${inputStr}\n\`\`\``
+                            }
+                        }
+                    }
+                    
+                    contentParts.push(toolContent)
+                }
             }
-            const content = [text, toolsText].filter(Boolean).join("\n\n")
+            
+            const content = contentParts.join("\n\n")
             return `**${roleLabel}:**\n\n${content}`
         })
         .join("\n\n---\n\n")
