@@ -66,7 +66,7 @@ interface EngineContextType {
 
     // DrawIO 操作
     loadDiagram: (chart: string, skipValidation?: boolean) => string | null
-    handleExport: () => void
+    handleExport: () => Promise<string | null>
     handleExportWithoutHistory: () => void
     handleDiagramExport: (data: any) => void
     handleDrawioAutoSave: (data: { xml: string }) => void

@@ -26,30 +26,8 @@ import { ToolCallCard } from "./tool-call-card"
 import type { DiagramOperation, ToolPartLike } from "./types"
 import { useDictionary } from "@/hooks/use-dictionary"
 import { getApiEndpoint } from "@/shared/base-path"
-import {
-    applyDiagramOperations,
-    convertToLegalXml,
-    extractCompleteMxCells,
-    validateAndFixXml,
-} from "@/shared/utils"
+import { applyDiagramOperations } from "@/shared/utils"
 import type { ExcalidrawOperation } from "@/hooks/engines"
-
-// Helper to extract complete operations from streaming input
-function getCompleteOperations(
-    operations: DiagramOperation[] | undefined,
-): DiagramOperation[] {
-    if (!operations || !Array.isArray(operations)) return []
-    return operations.filter(
-        (op) =>
-            op &&
-            typeof op.operation === "string" &&
-            ["update", "add", "delete"].includes(op.operation) &&
-            typeof op.cell_id === "string" &&
-            op.cell_id.length > 0 &&
-            (op.operation === "delete" || typeof op.new_xml === "string"),
-    )
-}
-
 import { useEngine } from "@/hooks/engines/engine-context"
 
 // Helper to split text content into regular text and file sections (PDF or text files)
@@ -166,37 +144,19 @@ export function ChatMessageDisplay({
     } = useEngine()
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const scrollTopRef = useRef<HTMLDivElement>(null)
-    const previousXML = useRef<string>("")
     const processedToolCalls = processedToolCallsRef
-    // Track the last processed XML per toolCallId to skip redundant processing during streaming
-    const lastProcessedXmlRef = useRef<Map<string, string>>(new Map())
 
     // Reset refs when messages become empty (new chat or session switch)
     // This ensures cached examples work correctly after starting a new session
     useEffect(() => {
         if (messages.length === 0) {
-            previousXML.current = ""
-            lastProcessedXmlRef.current.clear()
             // Note: processedToolCalls is passed from parent, so we clear it too
             processedToolCalls.current.clear()
             // Scroll to top to show newest history items
             scrollTopRef.current?.scrollIntoView({ behavior: "instant" })
         }
     }, [messages.length, processedToolCalls])
-    // Debounce streaming diagram updates - store pending XML and timeout
-    const pendingXmlRef = useRef<string | null>(null)
-    const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-        null,
-    )
-    const STREAMING_DEBOUNCE_MS = 150 // Only update diagram every 150ms during streaming
-    // Refs for edit_drawio streaming
-    const pendingEditRef = useRef<{
-        operations: DiagramOperation[]
-        toolCallId: string
-    } | null>(null)
-    const editDebounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-        null,
-    )
+
     const [expandedTools, setExpandedTools] = useState<Record<string, boolean>>(
         {},
     )
@@ -309,79 +269,6 @@ export function ChatMessageDisplay({
             })
         }
     }
-
-    const handleDisplayChart = useCallback(
-        (xml: string, showToast = false) => {
-            let currentXml = xml || ""
-
-            // During streaming (showToast=false), extract only complete mxCell elements
-            // This allows progressive rendering even with partial/incomplete trailing XML
-            if (!showToast) {
-                const completeCells = extractCompleteMxCells(currentXml)
-                if (!completeCells) {
-                    return
-                }
-                currentXml = completeCells
-            }
-
-            const convertedXml = convertToLegalXml(currentXml)
-            if (convertedXml !== previousXML.current) {
-                // Parse and validate XML BEFORE calling replaceNodes
-                const parser = new DOMParser()
-                // Wrap in root element for parsing multiple mxCell elements
-                const testDoc = parser.parseFromString(
-                    `<root>${convertedXml}</root>`,
-                    "text/xml",
-                )
-                const parseError = testDoc.querySelector("parsererror")
-
-                if (parseError) {
-                    // Only show toast if this is the final XML (not during streaming)
-                    if (showToast) {
-                        toast.error(dict.errors.malformedXml)
-                    }
-                    return // Skip this update
-                }
-
-                try {
-                    // If chartXML is empty, create a default mxfile structure to use with replaceNodes
-                    // This ensures the XML is properly wrapped in mxfile/diagram/mxGraphModel format
-                    const baseXML =
-                        chartXML ||
-                        `<mxfile><diagram name="Page-1" id="page-1"><mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel></diagram></mxfile>`
-                    // replaceNodes was removed; use baseXML directly for now
-                    const replacedXML = baseXML
-
-                    // During streaming (showToast=false), skip heavy validation for lower latency
-                    // The quick DOM parse check above catches malformed XML
-                    // Full validation runs on final output (showToast=true)
-                    if (!showToast) {
-                        previousXML.current = convertedXml
-                        onDisplayChart(replacedXML, true)
-                        return
-                    }
-
-                    // Final output: run full validation and auto-fix
-                    const validation = validateAndFixXml(replacedXML)
-                    if (validation.valid) {
-                        previousXML.current = convertedXml
-                        // Use fixed XML if available, otherwise use original
-                        const xmlToLoad = validation.fixed || replacedXML
-                        onDisplayChart(xmlToLoad, true)
-                    } else {
-                        toast.error(dict.errors.validationFailed)
-                    }
-                } catch (error) {
-                    console.error("Error processing XML:", error)
-                    // Only show toast if this is the final XML (not during streaming)
-                    if (showToast) {
-                        toast.error(dict.errors.failedToProcess)
-                    }
-                }
-            }
-        },
-        [chartXML, onDisplayChart],
-    )
 
     const handleReinsert = useCallback(
         async ({
@@ -700,178 +587,48 @@ export function ChatMessageDisplay({
                             }))
                         }
 
+                        // NOTE: display_drawio streaming preview is DISABLED
+                        // The tool handler (handleDisplayDrawio) properly loads the diagram.
+                        // Streaming preview caused race conditions where the debounced update
+                        // would overwrite the correctly loaded diagram with malformed XML.
+                        // Only track processed state for cleanup purposes.
                         if (
                             part.type === "tool-display_drawio" &&
-                            input?.xml
+                            state === "output-available" &&
+                            !processedToolCalls.current.has(toolCallId)
                         ) {
-                            const xml = input.xml as string
-
-                            // Skip if XML hasn't changed since last processing
-                            const lastXml =
-                                lastProcessedXmlRef.current.get(toolCallId)
-                            if (lastXml === xml) {
-                                return // Skip redundant processing
-                            }
-
-                            if (
-                                state === "input-streaming" ||
-                                state === "input-available"
-                            ) {
-                                // Debounce streaming updates - queue the XML and process after delay
-                                pendingXmlRef.current = xml
-
-                                if (!debounceTimeoutRef.current) {
-                                    // No pending timeout - set one up
-                                    debounceTimeoutRef.current = setTimeout(
-                                        () => {
-                                            const pendingXml =
-                                                pendingXmlRef.current
-                                            debounceTimeoutRef.current = null
-                                            pendingXmlRef.current = null
-                                            if (pendingXml) {
-                                                handleDisplayChart(
-                                                    pendingXml,
-                                                    false,
-                                                )
-                                                lastProcessedXmlRef.current.set(
-                                                    toolCallId,
-                                                    pendingXml,
-                                                )
-                                            }
-                                        },
-                                        STREAMING_DEBOUNCE_MS,
-                                    )
-                                }
-                            } else if (
-                                state === "output-available" &&
-                                !processedToolCalls.current.has(toolCallId)
-                            ) {
-                                // Final output - process immediately (clear any pending debounce)
-                                if (debounceTimeoutRef.current) {
-                                    clearTimeout(debounceTimeoutRef.current)
-                                    debounceTimeoutRef.current = null
-                                    pendingXmlRef.current = null
-                                }
-                                // Show toast only if final XML is malformed
-                                handleDisplayChart(xml, true)
-                                processedToolCalls.current.add(toolCallId)
-                                // Clean up the ref entry - tool is complete, no longer needed
-                                lastProcessedXmlRef.current.delete(toolCallId)
-                            }
+                            processedToolCalls.current.add(toolCallId)
                         }
 
-                        // Handle edit_drawio streaming - apply operations incrementally for preview
-                        // Uses shared editDiagramOriginalXmlRef to coordinate with tool handler
+                        // NOTE: edit_drawio streaming preview is DISABLED
+                        // The tool handler (handleEditDrawio) properly loads the diagram.
+                        // Streaming preview caused race conditions where the debounced update
+                        // would overwrite the correctly loaded diagram with malformed XML
+                        // (duplicate root elements, duplicate IDs).
+                        // We still need to capture the original XML for the tool handler.
                         if (
                             part.type === "tool-edit_drawio" &&
                             input?.operations
                         ) {
-                            const completeOps = getCompleteOperations(
-                                input.operations as DiagramOperation[],
-                            )
-
-                            if (completeOps.length === 0) return
-
                             // Capture original XML when streaming starts (store in shared ref)
+                            // This is needed by the tool handler for applying operations
                             if (
-                                !editDiagramOriginalXmlRef.current.has(
-                                    toolCallId,
-                                )
+                                (state === "input-streaming" || state === "input-available") &&
+                                !editDiagramOriginalXmlRef.current.has(toolCallId)
                             ) {
-                                if (!chartXML) {
-                                    console.warn(
-                                        "[edit_drawio streaming] No chart XML available",
+                                if (chartXML) {
+                                    editDiagramOriginalXmlRef.current.set(
+                                        toolCallId,
+                                        chartXML,
                                     )
-                                    return
                                 }
-                                editDiagramOriginalXmlRef.current.set(
-                                    toolCallId,
-                                    chartXML,
-                                )
                             }
 
-                            const originalXml =
-                                editDiagramOriginalXmlRef.current.get(
-                                    toolCallId,
-                                )
-                            if (!originalXml) return
-
-                            // Skip if no change from last processed state
-                            const lastCount = lastProcessedXmlRef.current.get(
-                                toolCallId + "-opCount",
-                            )
-                            if (lastCount === String(completeOps.length)) return
-
+                            // Track processed state for cleanup
                             if (
-                                state === "input-streaming" ||
-                                state === "input-available"
-                            ) {
-                                // Queue the operations for debounced processing
-                                pendingEditRef.current = {
-                                    operations: completeOps,
-                                    toolCallId,
-                                }
-
-                                if (!editDebounceTimeoutRef.current) {
-                                    editDebounceTimeoutRef.current = setTimeout(
-                                        () => {
-                                            const pending =
-                                                pendingEditRef.current
-                                            editDebounceTimeoutRef.current =
-                                                null
-                                            pendingEditRef.current = null
-
-                                            if (pending) {
-                                                const origXml =
-                                                    editDiagramOriginalXmlRef.current.get(
-                                                        pending.toolCallId,
-                                                    )
-                                                if (!origXml) return
-
-                                                try {
-                                                    const {
-                                                        result: editedXml,
-                                                    } = applyDiagramOperations(
-                                                        origXml,
-                                                        pending.operations,
-                                                    )
-                                                    handleDisplayChart(
-                                                        editedXml,
-                                                        false,
-                                                    )
-                                                    lastProcessedXmlRef.current.set(
-                                                        pending.toolCallId +
-                                                            "-opCount",
-                                                        String(
-                                                            pending.operations
-                                                                .length,
-                                                        ),
-                                                    )
-                                                } catch (e) {
-                                                    console.warn(
-                                                        `[edit_drawio streaming] Operation failed:`,
-                                                        e instanceof Error
-                                                            ? e.message
-                                                            : e,
-                                                    )
-                                                }
-                                            }
-                                        },
-                                        STREAMING_DEBOUNCE_MS,
-                                    )
-                                }
-                            } else if (
                                 state === "output-available" &&
                                 !processedToolCalls.current.has(toolCallId)
                             ) {
-                                // Final state - cleanup streaming refs (tool handler does final application)
-                                if (editDebounceTimeoutRef.current) {
-                                    clearTimeout(editDebounceTimeoutRef.current)
-                                    editDebounceTimeoutRef.current = null
-                                }
-                                lastProcessedXmlRef.current.delete(
-                                    toolCallId + "-opCount",
-                                )
                                 processedToolCalls.current.add(toolCallId)
                                 // Note: Don't delete editDiagramOriginalXmlRef here - tool handler needs it
                             }
@@ -881,11 +638,8 @@ export function ChatMessageDisplay({
             }
         })
 
-        // NOTE: Don't cleanup debounce timeouts here!
-        // The cleanup runs on every re-render (when messages changes),
-        // which would cancel the timeout before it fires.
-        // Let the timeouts complete naturally - they're harmless if component unmounts.
-    }, [messages, handleDisplayChart, chartXML])
+        // Note: chartXML is needed for capturing original XML for edit_drawio
+    }, [messages, chartXML])
 
     // Handle prompt click from AnimatedDemo
     const handlePromptClick = (prompt: string) => {

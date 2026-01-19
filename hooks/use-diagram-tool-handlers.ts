@@ -46,7 +46,7 @@ interface UseDiagramToolHandlersParams {
     chartXMLRef: MutableRefObject<string>
     onDisplayChart: (xml: string, skipValidation?: boolean) => string | null
     onFetchChart: (saveToHistory?: boolean) => Promise<string>
-    onExport: () => void
+    onExport: () => Promise<string | null>
     onSelectCells?: (ids?: string[]) => void
     getExcalidrawScene?: () => any
     setExcalidrawScene?: (scene: any) => Promise<void>
@@ -206,7 +206,7 @@ export function useDiagramToolHandlers({
                 })
                 return
             }
-            handleAppendDrawio(toolCall, addToolOutput)
+            await handleAppendDrawio(toolCall, addToolOutput)
         } else if (toolCall.toolName === "convert_plantuml_to_drawio") {
             if (!await ensureCorrectEngine("drawio")) {
                 addToolOutput({
@@ -397,26 +397,34 @@ ${finalXml}
                 )
             }
             
-            // 先输出工具结果，然后异步触发导出保存历史
-            // 缩略图会在 session auto-save 时通过 buildSessionData 捕获
+            // 延迟等待图表渲染完成，然后导出并捕获缩略图
+            await new Promise(resolve => setTimeout(resolve, 300))
+            
+            let thumbnailDataUrl: string | undefined
+            try {
+                console.log('[display_drawio] Exporting and capturing thumbnail')
+                const svgData = await onExport()
+                if (svgData) {
+                    thumbnailDataUrl = svgData
+                    console.log('[display_drawio] Captured thumbnail SVG')
+                }
+            } catch (err) {
+                console.warn('[display_drawio] Failed to capture thumbnail:', err)
+            }
+            
             addToolOutput({
                 tool: "display_drawio",
                 toolCallId: toolCall.toolCallId,
                 output: {
                     success: true,
                     message: "Successfully displayed the diagram.",
+                    thumbnailDataUrl,
                 },
             })
             
-            // 延迟触发导出以保存到历史记录
-            setTimeout(() => {
-                console.log('[display_drawio] Auto-exporting for history save')
-                onExport()
-            }, 100)
-            
             if (DEBUG) {
                 console.log(
-                    "[display_drawio] Tool output added. Diagram should be visible now.",
+                    "[display_drawio] Tool output added with thumbnail. Diagram should be visible now.",
                 )
             }
         }
@@ -757,11 +765,29 @@ Please fix the operations to avoid structural issues.`,
                 editDiagramOriginalXmlRef.current.delete(toolCall.toolCallId)
                 return
             }
-            onExport()
+            // 延迟等待图表渲染完成，然后导出并捕获缩略图
+            await new Promise(resolve => setTimeout(resolve, 300))
+            
+            let thumbnailDataUrl: string | undefined
+            try {
+                console.log('[edit_drawio] Exporting and capturing thumbnail')
+                const svgData = await onExport()
+                if (svgData) {
+                    thumbnailDataUrl = svgData
+                    console.log('[edit_drawio] Captured thumbnail SVG')
+                }
+            } catch (err) {
+                console.warn('[edit_drawio] Failed to capture thumbnail:', err)
+            }
+            
             addToolOutput({
                 tool: "edit_drawio",
                 toolCallId: toolCall.toolCallId,
-                output: `Successfully applied ${operations.length} operation(s) to the diagram.`,
+                output: {
+                    success: true,
+                    message: `Successfully applied ${operations.length} operation(s) to the diagram.`,
+                    thumbnailDataUrl,
+                },
             })
             // Clean up the shared original XML ref
             editDiagramOriginalXmlRef.current.delete(toolCall.toolCallId)
@@ -924,7 +950,7 @@ Please check cell IDs and retry, or use display_drawio to regenerate.`,
         })
     }
 
-    const handleAppendDrawio = (
+    const handleAppendDrawio = async (
         toolCall: ToolCall,
         addToolOutput: AddToolOutputFn,
     ) => {
@@ -986,20 +1012,30 @@ ${finalXml.substring(0, 2000)}...
 Please use display_drawio with corrected XML.`,
                 })
             } else {
+                // 延迟等待图表渲染完成，然后导出并捕获缩略图
+                await new Promise(resolve => setTimeout(resolve, 300))
+                
+                let thumbnailDataUrl: string | undefined
+                try {
+                    console.log('[append_drawio] Exporting and capturing thumbnail')
+                    const svgData = await onExport()
+                    if (svgData) {
+                        thumbnailDataUrl = svgData
+                        console.log('[append_drawio] Captured thumbnail SVG')
+                    }
+                } catch (err) {
+                    console.warn('[append_drawio] Failed to capture thumbnail:', err)
+                }
+                
                 addToolOutput({
                     tool: "append_drawio",
                     toolCallId: toolCall.toolCallId,
-                    output: "Diagram assembly complete and displayed successfully.",
+                    output: {
+                        success: true,
+                        message: "Diagram assembly complete and displayed successfully.",
+                        thumbnailDataUrl,
+                    },
                 })
-                
-                // 自动触发导出以保存到历史记录
-                setTimeout(() => {
-                    console.log('[append_drawio] Auto-exporting for history save', {
-                        timestamp: Date.now(),
-                        toolCallId: toolCall.toolCallId
-                    })
-                    onExport()
-                }, 100)
             }
         } else {
             // Still incomplete - signal to continue

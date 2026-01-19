@@ -50,7 +50,7 @@ export interface UseDrawioEngineReturn {
     deleteHistory: (index: number) => void
 
     // 导出
-    handleExport: () => void
+    handleExport: () => Promise<string | null>
     handleExportWithoutHistory: () => void
     handleDiagramExport: (data: any) => void
     handleAutoSave: (data: { xml: string }) => void
@@ -185,16 +185,37 @@ export function useDrawioEngine(): UseDrawioEngineReturn {
         setDiagramHistory([])
     }, [loadDiagram])
 
+    // Resolver for handleExport to wait for export completion
+    const exportResolverRef = useRef<((svgData: string | null) => void) | null>(null)
+
     // ========== 导出 ==========
 
-    const handleExport = useCallback(() => {
-        if (drawioRef.current) {
-            expectHistoryExportRef.current = true
-            console.log('[useDrawioEngine.handleExport] Triggering export for history')
-            drawioRef.current.exportDiagram({ format: "xmlsvg" })
-        } else {
+    /**
+     * Export diagram and save to history.
+     * Returns Promise that resolves with SVG data when export completes.
+     */
+    const handleExport = useCallback((): Promise<string | null> => {
+        if (!drawioRef.current) {
             console.warn('[useDrawioEngine.handleExport] DrawIO ref not available')
+            return Promise.resolve(null)
         }
+
+        expectHistoryExportRef.current = true
+        console.log('[useDrawioEngine.handleExport] Triggering export for history')
+
+        return Promise.race([
+            new Promise<string | null>((resolve) => {
+                exportResolverRef.current = resolve
+                drawioRef.current?.exportDiagram({ format: "xmlsvg" })
+            }),
+            new Promise<string | null>((resolve) =>
+                setTimeout(() => {
+                    console.warn('[useDrawioEngine.handleExport] Export timeout')
+                    exportResolverRef.current = null
+                    resolve(null)
+                }, 3000)
+            ),
+        ])
     }, [])
 
     const handleExportWithoutHistory = useCallback(() => {
@@ -272,6 +293,12 @@ export function useDrawioEngine(): UseDrawioEngineReturn {
         if (resolverRef.current) {
             resolverRef.current(data.data)
             resolverRef.current = null
+        }
+
+        // 处理 exportResolver（handleExport 等待的 Promise）
+        if (exportResolverRef.current) {
+            exportResolverRef.current(data.data)
+            exportResolverRef.current = null
         }
     }, [])
 
